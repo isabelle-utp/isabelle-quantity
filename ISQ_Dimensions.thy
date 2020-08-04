@@ -157,9 +157,28 @@ text \<open> We provide a syntax for dimension type expressions, which allows re
   \<^term>\<open>1\<close>, since a dimension type is used only to mark a quantity.
   \<close>
 
-class dim_type = finite +
-  fixes   dim_ty_sem :: "'a itself \<Rightarrow> Dimension"
+
+class unitary = finite +
   assumes unitary_unit_pres: "card (UNIV::'a set) = 1"
+begin
+
+definition "unit = (undefined::'a)"
+
+lemma UNIV_unitary: "UNIV = {a::'a}"
+proof -
+  have "card(UNIV :: 'a set) = 1"
+    by (simp add: local.unitary_unit_pres)
+  thus ?thesis
+    by (metis (full_types) UNIV_I card_1_singletonE empty_iff insert_iff)
+qed
+
+lemma eq_unit: "(a::'a) = b"
+  by (metis (full_types) UNIV_unitary iso_tuple_UNIV_I singletonD)
+
+end
+
+class dim_type = unitary +
+  fixes   dim_ty_sem :: "'a itself \<Rightarrow> Dimension"
 
 syntax
   "_QD" :: "type \<Rightarrow> logic" ("QD'(_')")

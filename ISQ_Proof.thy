@@ -6,32 +6,32 @@ begin
 
 named_theorems si_transfer
 
-definition magQ :: "'a['u::dim_type] \<Rightarrow> 'a" ("\<lbrakk>_\<rbrakk>\<^sub>Q") where
+definition magQ :: "'a['u::dim_type, 's::usys] \<Rightarrow> 'a" ("\<lbrakk>_\<rbrakk>\<^sub>Q") where
 [si_def]: "magQ x = mag (fromQ x)"
 
-definition dimQ :: "'a['u::dim_type] \<Rightarrow> Dimension" where
+definition dimQ :: "'a['u::dim_type, 's::usys] \<Rightarrow> Dimension" where
 [si_def]: "dimQ x = dim (fromQ x)"
 
 lemma quant_eq_iff_mag_eq [si_eq]:
   "x = y \<longleftrightarrow> \<lbrakk>x\<rbrakk>\<^sub>Q = \<lbrakk>y\<rbrakk>\<^sub>Q"
-  by (auto simp add: magQ_def, transfer, simp)
+  by (auto simp add: magQ_def, transfer, simp add: eq_unit)
 
 lemma quant_eqI [si_transfer]:
   "\<lbrakk>x\<rbrakk>\<^sub>Q = \<lbrakk>y\<rbrakk>\<^sub>Q \<Longrightarrow> x = y"
   by (simp add: quant_eq_iff_mag_eq)
 
 lemma quant_equiv_iff [si_eq]:
-  fixes x :: "'a['u\<^sub>1::dim_type]" and y :: "'a['u\<^sub>2::dim_type]"
+  fixes x :: "'a['u\<^sub>1::dim_type, 's::usys]" and y :: "'a['u\<^sub>2::dim_type, 's::usys]"
   shows "x \<cong>\<^sub>Q y \<longleftrightarrow> \<lbrakk>x\<rbrakk>\<^sub>Q = \<lbrakk>y\<rbrakk>\<^sub>Q \<and> QD('u\<^sub>1) = QD('u\<^sub>2)"
 proof -
-  have "\<forall>t ta. (ta::'a['u\<^sub>2]) = t \<or> mag (fromQ ta) \<noteq> mag (fromQ t)"
+  have "\<forall>t ta. (ta::'a['u\<^sub>2, 's]) = t \<or> mag (fromQ ta) \<noteq> mag (fromQ t)"
     by (simp add: magQ_def quant_eq_iff_mag_eq)
   then show ?thesis
     by (metis (full_types) qequiv.rep_eq coerceQuant_eq_iff2 qeq magQ_def)
 qed
 
 lemma quant_equivI [si_transfer]:
-  fixes x :: "'a['u\<^sub>1::dim_type]" and y :: "'a['u\<^sub>2::dim_type]"
+  fixes x :: "'a['u\<^sub>1::dim_type, 's::usys]" and y :: "'a['u\<^sub>2::dim_type, 's::usys]"
   assumes "QD('u\<^sub>1) = QD('u\<^sub>2)" "QD('u\<^sub>1) = QD('u\<^sub>2) \<Longrightarrow> \<lbrakk>x\<rbrakk>\<^sub>Q = \<lbrakk>y\<rbrakk>\<^sub>Q"
   shows "x \<cong>\<^sub>Q y"
   using assms quant_equiv_iff by blast
@@ -76,7 +76,7 @@ lemma magQ_qtimes [si_eq]: "\<lbrakk>x \<^bold>\<cdot> y\<rbrakk>\<^sub>Q = \<lb
 lemma magQ_qinverse [si_eq]: "\<lbrakk>x\<^sup>-\<^sup>\<one>\<rbrakk>\<^sub>Q = inverse \<lbrakk>x\<rbrakk>\<^sub>Q"
   by (simp add: magQ_def, transfer, simp)
 
-lemma magQ_qdivivide [si_eq]: "\<lbrakk>(x::('a::field)[_]) \<^bold>/ y\<rbrakk>\<^sub>Q = \<lbrakk>x\<rbrakk>\<^sub>Q / \<lbrakk>y\<rbrakk>\<^sub>Q"
+lemma magQ_qdivivide [si_eq]: "\<lbrakk>(x::('a::field)[_,_]) \<^bold>/ y\<rbrakk>\<^sub>Q = \<lbrakk>x\<rbrakk>\<^sub>Q / \<lbrakk>y\<rbrakk>\<^sub>Q"
   by (simp add: magQ_def, transfer, simp add: field_class.field_divide_inverse)
 
 lemma magQ_numeral [si_eq]: "\<lbrakk>numeral n\<rbrakk>\<^sub>Q = numeral n"
@@ -87,7 +87,7 @@ lemma magQ_numeral [si_eq]: "\<lbrakk>numeral n\<rbrakk>\<^sub>Q = numeral n"
   done
 
 lemma magQ_coerce [si_eq]: 
-  fixes q :: "'a['d\<^sub>1::dim_type]" and t :: "'d\<^sub>2::dim_type itself"
+  fixes q :: "'a['d\<^sub>1::dim_type, 's::usys]" and t :: "'d\<^sub>2::dim_type itself"
   assumes "QD('d\<^sub>1) = QD('d\<^sub>2)"
   shows "\<lbrakk>coerceQuantT t q\<rbrakk>\<^sub>Q = \<lbrakk>q\<rbrakk>\<^sub>Q"
   by (simp add: coerceQuantT_def magQ_def assms, metis assms qequiv.rep_eq updown_eq_iff)
