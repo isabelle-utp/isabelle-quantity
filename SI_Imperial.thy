@@ -9,19 +9,19 @@ subsection \<open> Definitions \<close>
 default_sort field_char_0
 
 definition inch :: "'a[L]" where
-[si_eq]: "inch = 25.5 \<odot> milli \<odot> meter"
+[si_eq]: "inch = 25.5 \<odot> milli \<odot> metre"
 
 definition foot :: "'a[L]" where
-[si_eq]: "foot = 0.3048 \<odot> meter"
+[si_eq]: "foot = 0.3048 \<odot> metre"
 
 definition yard :: "'a[L]" where
-[si_eq]: "yard = 0.9144 \<odot> meter"
+[si_eq]: "yard = 0.9144 \<odot> metre"
 
 definition mile :: "'a[L]" where
-[si_eq]: "mile = 1609.344 \<odot> meter"
+[si_eq]: "mile = 1609.344 \<odot> metre"
 
 definition nautical_mile :: "'a[L]" where
-[si_eq]: "nautical_mile = 1852 \<odot> meter"
+[si_eq]: "nautical_mile = 1852 \<odot> metre"
 
 definition knot :: "'a[L \<cdot> T\<^sup>-\<^sup>1]" where
 [si_eq]: "knot = 1 \<odot> (nautical_mile \<^bold>/ hour)"
@@ -54,7 +54,7 @@ lemma miles_to_yards: "mile = 1760 \<odot> yard"
 lemma miles_to_feet: "mile = 5280 \<odot> foot"
   by si_simp
 
-lemma mph_to_kmh: "1 \<odot> (mile \<^bold>/ hour) = 1.609344 \<odot> ((kilo \<odot> meter) \<^bold>/ hour)"
+lemma mph_to_kmh: "1 \<odot> (mile \<^bold>/ hour) = 1.609344 \<odot> ((kilo \<odot> metre) \<^bold>/ hour)"
   by si_simp
 
 lemma farenheit_to_celcius: "T\<degree>F = ((T - 32) \<cdot> 5/9)\<degree>C"

@@ -8,13 +8,13 @@ subsection \<open> Core Derived Units \<close>
 
 abbreviation (input) "hertz \<equiv> second\<^sup>-\<^sup>\<one>"
 
-abbreviation "radian \<equiv> meter \<^bold>\<cdot> meter\<^sup>-\<^sup>\<one>"
+abbreviation "radian \<equiv> metre \<^bold>\<cdot> metre\<^sup>-\<^sup>\<one>"
 
-abbreviation "steradian \<equiv> meter\<^sup>\<two> \<^bold>\<cdot> meter\<^sup>-\<^sup>\<two>"
+abbreviation "steradian \<equiv> metre\<^sup>\<two> \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two>"
 
-abbreviation "joule \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot>  second\<^sup>-\<^sup>\<two>"
+abbreviation "joule \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot>  second\<^sup>-\<^sup>\<two>"
 
-abbreviation "watt \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three>"
+abbreviation "watt \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three>"
 
 abbreviation "coulomb \<equiv> ampere \<^bold>\<cdot> second"
 
@@ -35,7 +35,7 @@ abbreviation caesium_frequency:: "'a[T\<^sup>-\<^sup>1]" ("\<Delta>v\<^sub>C\<^s
 text \<open> Speed of light in vacuum \<close>
 
 abbreviation speed_of_light :: "'a[L \<cdot> T\<^sup>-\<^sup>1]" ("\<^bold>c") where
-  "speed_of_light \<equiv> 299792458 \<odot> (meter\<^bold>\<cdot>second\<^sup>-\<^sup>\<one>)"
+  "speed_of_light \<equiv> 299792458 \<odot> (metre\<^bold>\<cdot>second\<^sup>-\<^sup>\<one>)"
 
 text \<open> Planck constant \<close>
 
@@ -71,13 +71,13 @@ theorem second_definition:
   "1 \<odot> second \<cong>\<^sub>Q (9192631770 \<odot> \<one>) \<^bold>/ \<Delta>v\<^sub>C\<^sub>s"
   by si_calc
 
-theorem meter_definition: 
-  "1 \<odot> meter \<cong>\<^sub>Q (\<^bold>c \<^bold>/ (299792458 \<odot> \<one>))\<^bold>\<cdot>second"
-  "1 \<odot> meter \<cong>\<^sub>Q (9192631770 / 299792458) \<odot> (\<^bold>c \<^bold>/ \<Delta>v\<^sub>C\<^sub>s)"
+theorem metre_definition: 
+  "1 \<odot> metre \<cong>\<^sub>Q (\<^bold>c \<^bold>/ (299792458 \<odot> \<one>))\<^bold>\<cdot>second"
+  "1 \<odot> metre \<cong>\<^sub>Q (9192631770 / 299792458) \<odot> (\<^bold>c \<^bold>/ \<Delta>v\<^sub>C\<^sub>s)"
   by si_calc+
 
 theorem kilogram_definition:
-  "1 \<odot> kilogram \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) \<odot> \<one>))\<^bold>\<cdot>meter\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
+  "1 \<odot> kilogram \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) \<odot> \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
   by si_calc
 
 abbreviation "approx_ice_point \<equiv> 273.15 \<odot> kelvin"

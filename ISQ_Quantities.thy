@@ -12,6 +12,9 @@ text \<open> Here, we give a semantic domain for particular values of physical q
 
 class usys = unitary
 
+lemma usys_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, usys_class)"
+  by (simp add: usys_class_def, rule unitary_intro)
+
 record ('a, 's::usys) Quantity =
   mag  :: 'a        \<comment> \<open> Magnitude of the quantity. \<close>
   dim  :: Dimension \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
@@ -150,7 +153,7 @@ section \<open> Dimension Typed Quantities \<close>
 
 text \<open> We can now define the type of quantities with parametrised dimension types. \<close>
 
-typedef (overloaded) ('n, 'd::dim_type, 's::usys) QuantT ("_[_, _]" [999,0] 999) 
+typedef (overloaded) ('n, 'd::dim_type, 's::usys) QuantT ("_[_, _]" [999,0,0] 999) 
                      = "{x :: ('n, 's) Quantity. dim x = QD('d)}"
   morphisms fromQ toQ by (rule_tac x="\<lparr> mag = undefined, dim = QD('d), sys = unit \<rparr>" in exI, simp)
 

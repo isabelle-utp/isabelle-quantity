@@ -10,6 +10,31 @@ begin
 
 subsection \<open> Preliminaries \<close>
 
+class unitary = finite +
+  assumes unitary_unit_pres: "card (UNIV::'a set) = 1"
+begin
+
+definition "unit = (undefined::'a)"
+
+lemma UNIV_unitary: "UNIV = {a::'a}"
+proof -
+  have "card(UNIV :: 'a set) = 1"
+    by (simp add: local.unitary_unit_pres)
+  thus ?thesis
+    by (metis (full_types) UNIV_I card_1_singletonE empty_iff insert_iff)
+qed
+
+lemma eq_unit: "(a::'a) = b"
+  by (metis (full_types) UNIV_unitary iso_tuple_UNIV_I singletonD)
+
+end
+
+lemma unitary_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, unitary_class)"
+  apply (intro_classes, auto)
+  using finite.simps apply blast
+  using card_1_singleton_iff apply blast
+  done
+
 named_theorems si_def and si_eq
 
 instantiation unit :: comm_monoid_add
@@ -156,26 +181,6 @@ text \<open> We provide a syntax for dimension type expressions, which allows re
   to an instance of the type \<^typ>\<open>Dimension\<close>. It requires that any such type has the cardinality
   \<^term>\<open>1\<close>, since a dimension type is used only to mark a quantity.
   \<close>
-
-
-class unitary = finite +
-  assumes unitary_unit_pres: "card (UNIV::'a set) = 1"
-begin
-
-definition "unit = (undefined::'a)"
-
-lemma UNIV_unitary: "UNIV = {a::'a}"
-proof -
-  have "card(UNIV :: 'a set) = 1"
-    by (simp add: local.unitary_unit_pres)
-  thus ?thesis
-    by (metis (full_types) UNIV_I card_1_singletonE empty_iff insert_iff)
-qed
-
-lemma eq_unit: "(a::'a) = b"
-  by (metis (full_types) UNIV_unitary iso_tuple_UNIV_I singletonD)
-
-end
 
 class dim_type = unitary +
   fixes   dim_ty_sem :: "'a itself \<Rightarrow> Dimension"

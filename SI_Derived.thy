@@ -6,31 +6,31 @@ begin
 
 subsection \<open> Definitions \<close>
 
-abbreviation "newton \<equiv> kilogram \<^bold>\<cdot> meter \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
+abbreviation "newton \<equiv> kilogram \<^bold>\<cdot> metre \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
 
-abbreviation "pascal \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
+abbreviation "pascal \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
 
-abbreviation "volt \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
+abbreviation "volt \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
 
-abbreviation "farad \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> meter\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<four> \<^bold>\<cdot> ampere\<^sup>\<two>"
+abbreviation "farad \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<four> \<^bold>\<cdot> ampere\<^sup>\<two>"
 
-abbreviation "ohm \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<two>"
+abbreviation "ohm \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<two>"
 
-abbreviation "siemens \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> meter\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>\<two>"
+abbreviation "siemens \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>\<two>"
 
-abbreviation "weber \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
+abbreviation "weber \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
 
 abbreviation "tesla \<equiv> kilogram \<^bold>\<cdot> second\<^sup>-\<^sup>\<two> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
 
-abbreviation "henry \<equiv> kilogram \<^bold>\<cdot> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<two>"
+abbreviation "henry \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<two>"
 
-abbreviation "lux \<equiv> candela \<^bold>\<cdot> steradian \<^bold>\<cdot> meter\<^sup>-\<^sup>\<two>"
+abbreviation "lux \<equiv> candela \<^bold>\<cdot> steradian \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two>"
 
 abbreviation (input) "becquerel \<equiv> second\<^sup>-\<^sup>\<one>"
 
-abbreviation "gray \<equiv> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
+abbreviation "gray \<equiv> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
 
-abbreviation "sievert \<equiv> meter\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
+abbreviation "sievert \<equiv> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
 
 abbreviation "katal \<equiv> mole \<^bold>\<cdot> second\<^sup>-\<^sup>\<one>"
 
@@ -41,7 +41,7 @@ definition [si_eq]: "gram = milli \<odot> kilogram"
 
 subsection \<open> Equivalences \<close>
 
-lemma joule_alt_def: "joule \<cong>\<^sub>Q newton \<^bold>\<cdot> meter" 
+lemma joule_alt_def: "joule \<cong>\<^sub>Q newton \<^bold>\<cdot> metre" 
   by si_calc
 
 lemma watt_alt_def: "watt \<cong>\<^sub>Q joule \<^bold>/ second"
@@ -62,13 +62,13 @@ lemma siemens_alt_def: "siemens \<cong>\<^sub>Q ampere \<^bold>/ volt"
 lemma weber_alt_def: "weber \<cong>\<^sub>Q volt \<^bold>\<cdot> second"
   by si_calc
 
-lemma tesla_alt_def: "tesla \<cong>\<^sub>Q weber \<^bold>/ meter\<^sup>\<two>"
+lemma tesla_alt_def: "tesla \<cong>\<^sub>Q weber \<^bold>/ metre\<^sup>\<two>"
   by si_calc
 
 lemma henry_alt_def: "henry \<cong>\<^sub>Q weber \<^bold>/ ampere"
   by si_calc
 
-lemma lux_alt_def: "lux = lumen \<^bold>/ meter\<^sup>\<two>"
+lemma lux_alt_def: "lux = lumen \<^bold>/ metre\<^sup>\<two>"
   by simp
 
 lemma gray_alt_def: "gray \<cong>\<^sub>Q joule \<^bold>/ kilogram"
