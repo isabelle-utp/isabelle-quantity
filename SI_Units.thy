@@ -13,27 +13,9 @@ typedef SI = "UNIV :: unit set" by simp
 instance SI :: usys
   by (rule usys_intro[of "Abs_SI ()"], metis (full_types) Abs_SI_cases UNIV_eq_I insert_iff old.unit.exhaust)
 
-type_synonym ('n, 'd) UnitT = "('n, 'd, SI) QuantT" ("_[_]" [999,0] 999)
+abbreviation "SI \<equiv> unit :: SI"
 
-text \<open> Parallel to the seven base quantities, there are seven base units. In the implementation of
-  the SI unit system, we fix these to be precisely those quantities that have a base dimension
-  and a magnitude of \<^term>\<open>1\<close>. Consequently, a base unit corresponds to a unit in the algebraic
-  sense. \<close>
-
-lift_definition is_base_unit :: "'a::one['d::dim_type, 's::usys] \<Rightarrow> bool" 
-  is "\<lambda> x. mag x = 1 \<and> is_BaseDim (dim x)" . 
-
-definition mk_base_unit :: "'u itself \<Rightarrow> 's itself \<Rightarrow> ('a::one)['u::basedim_type, 's::usys]" 
-  where [si_eq]: "mk_base_unit t s = 1"
-
-syntax "_mk_base_unit" :: "type \<Rightarrow> type \<Rightarrow> logic" ("BUNIT'(_, _')")
-translations "BUNIT('a, 's)" == "CONST mk_base_unit TYPE('a) TYPE('s)"
-
-lemma mk_base_unit: "is_base_unit (mk_base_unit a s)"
-  by (simp add: si_eq, transfer, simp add: is_BaseDim)
-
-lemma magQ_mk [si_eq]: "\<lbrakk>BUNIT('u::basedim_type, 's::usys)\<rbrakk>\<^sub>Q = 1"
-  by (simp add: magQ_def si_eq, transfer, simp)
+type_synonym ('n, 'd) SIUnitT = "('n, 'd, SI) QuantT" ("_[_]" [999,0] 999)
 
 text \<open> We now define the seven base units. Effectively, these definitions axiomatise given names
   for the \<^term>\<open>1\<close> elements of the base quantities. \<close>
