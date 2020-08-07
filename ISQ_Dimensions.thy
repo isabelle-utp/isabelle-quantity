@@ -3,7 +3,7 @@ chapter \<open> International System of Quantities \<close>
 section \<open> Quantity Dimensions \<close>
 
 theory ISQ_Dimensions
-  imports Groups_mult 
+  imports Groups_mult Power_int
           HOL.Transcendental 
           "HOL-Eisbach.Eisbach"
 begin

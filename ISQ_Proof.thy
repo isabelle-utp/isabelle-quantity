@@ -92,6 +92,9 @@ lemma magQ_coerce [si_eq]:
   shows "\<lbrakk>coerceQuantT t q\<rbrakk>\<^sub>Q = \<lbrakk>q\<rbrakk>\<^sub>Q"
   by (simp add: coerceQuantT_def magQ_def assms, metis assms qequiv.rep_eq updown_eq_iff)
 
+lemma dimQ [simp]: "dimQ(x :: 'a['d::dim_type, 's::usys]) = QD('d)"
+  by (simp add: dimQ_def, transfer, simp)
+
 text \<open> The following tactic breaks an SI conjecture down to numeric and unit properties \<close>
 
 method si_simp uses add =

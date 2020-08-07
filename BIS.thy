@@ -1,28 +1,33 @@
 section \<open> British Imperial System (1824/1897) \<close>
 
 theory BIS
-  imports ISQ "SI_Units" "HOL-Library.Product_Plus"
+  imports ISQ SI_Units CGS
 begin
-
-hide_const (open) second
 
 text \<open> The values in the British Imperial System (BIS) are derived from the UK Weights and Measures 
   Act 1824. \<close>
 
-typedef BIS = "UNIV :: unit set" ..
+subsection \<open> Preliminaries \<close>
 
+typedef BIS = "UNIV :: unit set" ..
 instance BIS :: usys
   by (rule usys_intro[of "Abs_BIS ()"], metis (full_types) Abs_BIS_cases UNIV_eq_I insert_iff old.unit.exhaust)
-
+instance BIS :: time_second ..
 abbreviation "BIS \<equiv> unit :: BIS"
 
-abbreviation "yard      \<equiv> BUNIT(L, BIS)"
+subsection \<open> Base Units \<close>
 
-definition [si_eq]: "pound     = BUNIT(M, BIS)"
-definition [si_eq]: "second    = BUNIT(T, BIS)"
-definition [si_eq]: "farenheit = BUNIT(\<Theta>, BIS)"
+abbreviation "yard     \<equiv> BUNIT(L, BIS)"
+abbreviation "pound    \<equiv> BUNIT(M, BIS)"
+abbreviation "rankine  \<equiv> BUNIT(\<Theta>, BIS)"
+
+text \<open> We chose Rankine rather than Farenheit as this is more compatible with the SI system and 
+  avoids the need for having an offset in conversion functions. \<close>
+
+subsection \<open> Derived Units \<close>
 
 definition [si_eq]: "foot = 1/3 \<odot> yard"
+
 definition [si_eq]: "inch = 1/12 \<odot> foot"
 
 definition [si_eq]: "furlong = 220 \<odot> yard"
@@ -43,17 +48,35 @@ definition [si_eq]: "peck = 2 \<odot> gallon"
 
 definition [si_eq]: "bushel = 8 \<odot> gallon"
 
-lift_definition BIS_SI :: "(BIS, SI) Conversion" is
-"\<lparr>  cLengthF = 0.9143993
-  , cMassF = 0.453592338
-  , cTimeF = 1
-  , cCurrentF = 1
-  , cTemperatureF = 1 \<comment> \<open> FIXME \<close>
-  , cAmountF = 1
-  , cIntensityF = 1 \<rparr>" by simp
+definition [si_eq]: "minute = 60 \<odot> second"
 
-lemma "qconv BIS_SI (yard :: rat[L, BIS]) = 0.9143993 \<odot> metre"
-  by (simp add: qconv_Length[of BIS_SI], transfer, simp add: metre_def)
+definition [si_eq]: "hour = 60 \<odot> minute"
 
+subsection \<open> Conversion to SI \<close>
+
+instantiation BIS :: metrifiable
+begin
+
+lift_definition convschema_BIS :: "BIS itself \<Rightarrow> (BIS, SI) Conversion" is
+"\<lambda> x. \<lparr> cLengthF = 0.9143993, cMassF = 0.453592338, cTimeF = 1
+      , cCurrentF = 1, cTemperatureF = 5/9, cAmountF = 1, cIntensityF = 1 \<rparr>" by simp
+
+instance ..
+end
+
+lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993" "MassF (convschema a) = 0.453592338"
+  "TimeF (convschema a) = 1" "CurrentF (convschema a) = 1" "TemperatureF (convschema a) = 5/9"
+  by (transfer, simp)+
+
+subsection \<open> Conversion Examples \<close>
+
+lemma "metrify (foot :: rat[L, BIS]) = 0.9143993 / 3 \<odot> metre"
+  by (simp add: foot_def)
+
+lemma "metrify ((70::rat) \<odot> mile \<^bold>/ hour) = (704087461 / 22500000) \<odot> (metre \<^bold>/ second)"
+  by (si_simp)
+
+lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) \<odot> centimetre) = 100000 / 9143993 \<odot> yard"
+  by simp
 
 end

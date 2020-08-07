@@ -12,7 +12,7 @@ lemma scaleQ_add_right: "a \<odot> x + y = (a \<odot> x) + (a \<odot> y)"
 lemma scaleQ_add_left: "a + b \<odot> x = (a \<odot> x) + (b \<odot> x)"
   by (si_simp add: distrib_right)
 
-lemma scaleQ_scaleQ: "a \<odot> b \<odot> x = a \<cdot> b \<odot> x"
+lemma scaleQ_scaleQ [simp]: "a \<odot> b \<odot> x = a \<cdot> b \<odot> x"
   by si_simp
 
 lemma scaleQ_one [simp]: "1 \<odot> x = x"
