@@ -20,7 +20,7 @@ record ConvSchema =
 
 text \<open> We require that all the factors of greater than zero. \<close>
 
-typedef ('s\<^sub>1::usys, 's\<^sub>2::usys) Conversion ("(_/ \<Rightarrow>\<^sub>U _)" [1, 0] 0) =
+typedef ('s\<^sub>1::unit_system, 's\<^sub>2::unit_system) Conversion ("(_/ \<Rightarrow>\<^sub>U _)" [1, 0] 0) =
   "{c :: ConvSchema. cLengthF c > 0 \<and> cMassF c > 0 \<and> cTimeF c > 0 \<and> cCurrentF c > 0
          \<and> cTemperatureF c > 0 \<and> cAmountF c > 0 \<and> cIntensityF c > 0}"
   by (rule_tac x="\<lparr> cLengthF = 1, cMassF = 1, cTimeF = 1, cCurrentF = 1
@@ -28,13 +28,13 @@ typedef ('s\<^sub>1::usys, 's\<^sub>2::usys) Conversion ("(_/ \<Rightarrow>\<^su
 
 setup_lifting type_definition_Conversion
 
-lift_definition LengthF      :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cLengthF .
-lift_definition MassF        :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cMassF .
-lift_definition TimeF        :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cTimeF .
-lift_definition CurrentF     :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cCurrentF .
-lift_definition TemperatureF :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cTemperatureF .
-lift_definition AmountF      :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cAmountF .
-lift_definition IntensityF   :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> rat" is cIntensityF .
+lift_definition LengthF      :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cLengthF .
+lift_definition MassF        :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cMassF .
+lift_definition TimeF        :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cTimeF .
+lift_definition CurrentF     :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cCurrentF .
+lift_definition TemperatureF :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cTemperatureF .
+lift_definition AmountF      :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cAmountF .
+lift_definition IntensityF   :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> rat" is cIntensityF .
 
 lemma Conversion_props [simp]: "LengthF c > 0" "MassF c > 0" "TimeF c > 0" "CurrentF c > 0"
   "TemperatureF c > 0" "AmountF c > 0" "IntensityF c > 0"
@@ -42,7 +42,7 @@ lemma Conversion_props [simp]: "LengthF c > 0" "MassF c > 0" "TimeF c > 0" "Curr
 
 subsection \<open> Conversion Algebra \<close>
 
-lift_definition convid :: "'s::usys \<Rightarrow>\<^sub>U 's" ("id\<^sub>C")
+lift_definition convid :: "'s::unit_system \<Rightarrow>\<^sub>U 's" ("id\<^sub>C")
 is "
   \<lparr> cLengthF = 1
   , cMassF = 1
@@ -53,14 +53,14 @@ is "
   , cIntensityF = 1 \<rparr>" by simp
 
 lift_definition convcomp :: 
-  "('s\<^sub>2 \<Rightarrow>\<^sub>U 's\<^sub>3::usys) \<Rightarrow> ('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> ('s\<^sub>1 \<Rightarrow>\<^sub>U 's\<^sub>3)" (infixl "\<circ>\<^sub>C" 55) is
+  "('s\<^sub>2 \<Rightarrow>\<^sub>U 's\<^sub>3::unit_system) \<Rightarrow> ('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> ('s\<^sub>1 \<Rightarrow>\<^sub>U 's\<^sub>3)" (infixl "\<circ>\<^sub>C" 55) is
 "\<lambda> c\<^sub>1 c\<^sub>2. \<lparr> cLengthF = cLengthF c\<^sub>1 * cLengthF c\<^sub>2, cMassF = cMassF c\<^sub>1 * cMassF c\<^sub>2
          , cTimeF = cTimeF c\<^sub>1 * cTimeF c\<^sub>2, cCurrentF = cCurrentF c\<^sub>1 * cCurrentF c\<^sub>2
          , cTemperatureF = cTemperatureF c\<^sub>1 * cTemperatureF c\<^sub>2
          , cAmountF = cAmountF c\<^sub>1 * cAmountF c\<^sub>2, cIntensityF = cIntensityF c\<^sub>1 * cIntensityF c\<^sub>2 \<rparr>"
   by simp
 
-lift_definition convinv :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) Conversion \<Rightarrow> ('s\<^sub>2 \<Rightarrow>\<^sub>U 's\<^sub>1) Conversion" ("inv\<^sub>C") is
+lift_definition convinv :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> ('s\<^sub>2 \<Rightarrow>\<^sub>U 's\<^sub>1)" ("inv\<^sub>C") is
 "\<lambda> c. \<lparr> cLengthF = inverse (cLengthF c), cMassF = inverse (cMassF c), cTimeF = inverse (cTimeF c)
       , cCurrentF = inverse (cCurrentF c), cTemperatureF = inverse (cTemperatureF c)
       , cAmountF = inverse (cAmountF c), cIntensityF = inverse (cIntensityF c) \<rparr>" by simp
@@ -91,7 +91,7 @@ lemma Conversion_comps [simp]: "LengthF (c\<^sub>1 \<circ>\<^sub>C c\<^sub>2) = 
 
 subsection \<open> Conversion Functions \<close>
 
-definition dconvfactor :: "('s\<^sub>1::usys \<Rightarrow>\<^sub>U 's\<^sub>2::usys) \<Rightarrow> Dimension \<Rightarrow> rat" where
+definition dconvfactor :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> Dimension \<Rightarrow> rat" where
 "dconvfactor c d = 
   LengthF c ^\<^sub>Z Length d 
   * MassF c ^\<^sub>Z Mass d 
@@ -125,7 +125,7 @@ lemma dconvfactor_times:
   "dconvfactor c (x \<cdot> y) = dconvfactor c x \<cdot> dconvfactor c y"
   by (auto simp add: dconvfactor_def  mult_ac intpow_mult_combine times_Dimension_ext_def)
                                                                                                                                            
-lift_definition qconv :: "('s\<^sub>1, 's\<^sub>2) Conversion \<Rightarrow> ('a::field_char_0)['d::dim_type, 's\<^sub>1::usys] \<Rightarrow> 'a['d, 's\<^sub>2::usys]"
+lift_definition qconv :: "('s\<^sub>1, 's\<^sub>2) Conversion \<Rightarrow> ('a::field_char_0)['d::dim_type, 's\<^sub>1::unit_system] \<Rightarrow> 'a['d, 's\<^sub>2::unit_system]"
 is "\<lambda> c q. \<lparr> mag = of_rat (dconvfactor c (dim q)) * mag q, dim = dim q, sys = unit \<rparr>" by simp
 
 lemma magQ_qconv: "\<lbrakk>qconv c q\<rbrakk>\<^sub>Q = of_rat (dconvfactor c (dimQ q)) * \<lbrakk>q\<rbrakk>\<^sub>Q"

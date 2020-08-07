@@ -7,8 +7,8 @@ begin
 subsection \<open> Preliminaries \<close>
 
 typedef CGS = "UNIV :: unit set" ..
-instance CGS :: usys
-  by (rule usys_intro[of "Abs_CGS ()"], metis (full_types) Abs_CGS_cases UNIV_eq_I insert_iff old.unit.exhaust)
+instance CGS :: unit_system
+  by (rule unit_system_intro[of "Abs_CGS ()"], metis (full_types) Abs_CGS_cases UNIV_eq_I insert_iff old.unit.exhaust)
 instance CGS :: time_second ..
 abbreviation "CGS \<equiv> unit :: CGS"
 

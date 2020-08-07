@@ -10,8 +10,8 @@ text \<open> The values in the British Imperial System (BIS) are derived from th
 subsection \<open> Preliminaries \<close>
 
 typedef BIS = "UNIV :: unit set" ..
-instance BIS :: usys
-  by (rule usys_intro[of "Abs_BIS ()"], metis (full_types) Abs_BIS_cases UNIV_eq_I insert_iff old.unit.exhaust)
+instance BIS :: unit_system
+  by (rule unit_system_intro[of "Abs_BIS ()"], metis (full_types) Abs_BIS_cases UNIV_eq_I insert_iff old.unit.exhaust)
 instance BIS :: time_second ..
 abbreviation "BIS \<equiv> unit :: BIS"
 

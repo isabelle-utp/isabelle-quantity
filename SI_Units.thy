@@ -10,8 +10,8 @@ text \<open> An SI unit is simply a particular kind of quantity. \<close>
 
 typedef SI = "UNIV :: unit set" by simp
 
-instance SI :: usys
-  by (rule usys_intro[of "Abs_SI ()"], metis (full_types) Abs_SI_cases UNIV_eq_I insert_iff old.unit.exhaust)
+instance SI :: unit_system
+  by (rule unit_system_intro[of "Abs_SI ()"], metis (full_types) Abs_SI_cases UNIV_eq_I insert_iff old.unit.exhaust)
 
 abbreviation "SI \<equiv> unit :: SI"
 
@@ -30,7 +30,7 @@ abbreviation "candela  \<equiv> BUNIT(J, SI)"
 text \<open> The second is commonly used in unit systems other than SI. Consequently, we define it 
   polymorphically, and require that the system type instantiate a type class to use it. \<close>
 
-class time_second = usys
+class time_second = unit_system
 
 instance SI :: time_second ..
 
@@ -69,7 +69,7 @@ lemma "(metre \<^bold>\<cdot> second\<^sup>-\<^sup>\<one>) \<^bold>\<cdot> secon
 
 subsection \<open> Metrification \<close>
 
-class metrifiable = usys +
+class metrifiable = unit_system +
   fixes convschema :: "'a itself \<Rightarrow> ('a, SI) Conversion" ("schema\<^sub>C")
 
 instantiation SI :: metrifiable
