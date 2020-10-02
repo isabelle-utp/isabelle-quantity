@@ -11,7 +11,8 @@ subsection \<open> Preliminaries \<close>
 
 typedef BIS = "UNIV :: unit set" ..
 instance BIS :: unit_system
-  by (rule unit_system_intro[of "Abs_BIS ()"], metis (full_types) Abs_BIS_cases UNIV_eq_I insert_iff old.unit.exhaust)
+  by (rule unit_system_intro[of "Abs_BIS ()"], 
+      metis (full_types) Abs_BIS_cases UNIV_eq_I insert_iff old.unit.exhaust)
 instance BIS :: time_second ..
 abbreviation "BIS \<equiv> unit :: BIS"
 
@@ -64,8 +65,11 @@ lift_definition convschema_BIS :: "BIS itself \<Rightarrow> (BIS, SI) Conversion
 instance ..
 end
 
-lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993" "MassF (convschema a) = 0.453592338"
-  "TimeF (convschema a) = 1" "CurrentF (convschema a) = 1" "TemperatureF (convschema a) = 5/9"
+lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993" 
+                           "MassF (convschema a) = 0.453592338"
+                           "TimeF (convschema a) = 1" 
+                           "CurrentF (convschema a) = 1" 
+                           "TemperatureF (convschema a) = 5/9"
   by (transfer, simp)+
 
 subsection \<open> Conversion Examples \<close>

@@ -70,6 +70,16 @@ text \<open> Quantity dimensions are used to distinguish quantities of different
   integer that denotes the power to which it is raised. We use a record to represent this 7-tuple, 
   to enable code generation and thus efficient proof. \<close>
 
+
+record V1 = 
+   v1 :: int
+
+record V2 = V1 +
+   v2 :: int
+
+record V3 = V2 +
+   v3 :: int
+
 record Dimension = 
   Length      :: int
   Mass        :: int
@@ -78,6 +88,11 @@ record Dimension =
   Temperature :: int 
   Amount      :: int
   Intensity   :: int
+
+
+
+
+(* *)
 
 text \<open> Next, we define dimension multiplication, and its unit, which corresponds to a dimensionless
   quantity. These are then shown to form a commutative monoid. \<close>

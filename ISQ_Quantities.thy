@@ -34,8 +34,10 @@ text \<open> We can define several arithmetic operators on quantities. Multiplic
 
 instantiation Quantity_ext :: (times, unit_system, times) times
 begin
-  definition times_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" where
-  [si_def]: "times_Quantity_ext x y = \<lparr> mag = mag x \<cdot> mag y, dim = dim x \<cdot> dim y, sys = unit, \<dots> = more x \<cdot> more y \<rparr>"
+definition times_Quantity_ext :: 
+    "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" 
+    where  [si_def]: "times_Quantity_ext x y = \<lparr> mag = mag x \<cdot> mag y, dim = dim x \<cdot> dim y, 
+                                                 sys = unit, \<dots> = more x \<cdot> more y \<rparr>"
 instance ..
 end
 
@@ -397,7 +399,8 @@ instance
   by (intro_classes, simp add: uniformity_QuantT_def)
 end
 
-instantiation QuantT :: ("{dist_norm,open_uniformity,uniformity_dist}",dim_type,unit_system) open_uniformity
+instantiation QuantT :: ("{dist_norm,open_uniformity,uniformity_dist}",dim_type,unit_system) 
+                        open_uniformity
 begin
 
 definition open_QuantT :: "('a['b,'c]) set \<Rightarrow> bool" where
