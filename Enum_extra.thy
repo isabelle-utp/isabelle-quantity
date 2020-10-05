@@ -88,4 +88,7 @@ qed
 lemma enum_ind_inj: "inj (enum_ind :: 'a::enum \<Rightarrow> nat)"
   by (rule inj_on_inverseI[of _ "\<lambda> i. ENUM('a) ! i"], simp)
 
+lemma enum_ind_neq [simp]: "x \<noteq> y \<Longrightarrow> enum_ind x \<noteq> enum_ind y"
+  by (simp add: enum_ind_inj inj_eq)
+
 end

@@ -3,8 +3,9 @@ chapter \<open> International System of Quantities \<close>
 section \<open> Quantity Dimensions \<close>
 
 theory ISQ_Dimensions
-  imports Groups_mult Power_int
+  imports Groups_mult Power_int Enum_extra
           HOL.Transcendental 
+          "HOL-Analysis.Finite_Cartesian_Product"
           "HOL-Eisbach.Eisbach"
 begin
 
@@ -70,7 +71,44 @@ text \<open> Quantity dimensions are used to distinguish quantities of different
   integer that denotes the power to which it is raised. We use a record to represent this 7-tuple, 
   to enable code generation and thus efficient proof. \<close>
 
+datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensity
 
+lemma sdim_UNIV: "(UNIV :: sdim set) = {Length, Mass, Time, Current, Temperature, Amount, Intensity}"
+  using sdim.exhaust by blast
+
+instantiation sdim :: enum
+begin
+  definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
+  definition "enum_all_sdim P \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> P Current \<and> P Temperature \<and> P Amount \<and> P Intensity"
+  definition "enum_ex_sdim P \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> P Current \<or> P Temperature \<or> P Amount \<or> P Intensity"
+  instance
+    by (intro_classes, simp_all add: sdim_UNIV enum_sdim_def enum_all_sdim_def enum_ex_sdim_def)
+end
+
+typedef 'd DimScheme = "UNIV :: ('d::enum \<Rightarrow> int) set"
+  morphisms dim_nth dim_lambda ..
+
+declare dim_lambda_inject [simplified, simp]
+declare dim_nth_inverse [simp]
+declare dim_lambda_inverse [simplified, simp]
+
+instantiation DimScheme :: (enum) "{zero, one}"
+begin
+definition one_DimScheme :: "'a DimScheme" where "one_DimScheme = dim_lambda (\<lambda> i. 0)"
+instance ..
+end
+
+type_synonym Dimension = "sdim DimScheme"
+
+definition MkDimScheme :: "int list \<Rightarrow> 'd::enum DimScheme" 
+  where "MkDimScheme ds = (if (length ds = CARD('d)) then dim_lambda (\<lambda> d. ds ! enum_ind d) else 1)"
+
+code_datatype MkDimScheme
+
+lemma one_MkDimScheme [code]: "(1::'a::enum DimScheme) = MkDimScheme (replicate CARD('a) 0)"
+  by (auto simp add: MkDimScheme_def one_DimScheme_def)
+
+(*
 record V1 = 
    v1 :: int
 
@@ -88,84 +126,70 @@ record Dimension =
   Temperature :: int 
   Amount      :: int
   Intensity   :: int
-
+*)
 
 
 
 (* *)
 
-text \<open> Next, we define dimension multiplication, and its unit, which corresponds to a dimensionless
-  quantity. These are then shown to form a commutative monoid. \<close>
-
-instantiation Dimension_ext :: (one) one
+instantiation DimScheme :: (enum) times
 begin
-  \<comment> \<open> Here, $1$ is the dimensionless unit \<close>
-definition one_Dimension_ext :: "'a Dimension_ext" 
-  where  [code_unfold, si_def]:  "1 = \<lparr> Length = 0, Mass = 0, Time = 0, Current = 0
-                               , Temperature = 0, Amount = 0, Intensity = 0, \<dots> = 1 \<rparr>"
-  instance ..
+definition times_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme \<Rightarrow> 'a DimScheme" where
+"times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
+instance ..
 end
 
-instantiation Dimension_ext :: (times) times
-begin
-  \<comment> \<open> Multiplication is defined by adding together the powers \<close>
-definition times_Dimension_ext :: "'a Dimension_ext \<Rightarrow> 'a Dimension_ext \<Rightarrow> 'a Dimension_ext" 
-  where [code_unfold, si_def]:
-  "x * y = \<lparr> Length = Length x + Length y, Mass = Mass x + Mass y
-           , Time = Time x + Time y, Current = Current x + Current y
-           , Temperature = Temperature x + Temperature y, Amount = Amount x + Amount y
-           , Intensity = Intensity x + Intensity y, \<dots> = more x * more y \<rparr>"
-  instance ..
-end
+lemma times_MkDimScheme [code]:
+  "(MkDimScheme xs * MkDimScheme ys :: 'a::enum DimScheme) = 
+  (if (length xs = CARD('a) \<and> length ys = CARD('a))
+    then MkDimScheme (map (\<lambda> (x, y). x + y) (zip xs ys))
+    else if length xs = CARD('a) then MkDimScheme xs else MkDimScheme ys)"
+  by (auto simp add: times_DimScheme_def MkDimScheme_def fun_eq_iff one_DimScheme_def)
 
-instance Dimension_ext :: (comm_monoid_mult) comm_monoid_mult
-proof
-  fix a b c :: "'a Dimension_ext"
-  show "a * b * c = a * (b * c)"
-    by (simp add: times_Dimension_ext_def mult.assoc)
-  show "a * b = b * a"
-    by (simp add: times_Dimension_ext_def mult.commute)
-  show "1 * a = a"
-    by (simp add: times_Dimension_ext_def one_Dimension_ext_def)
-qed
+instance DimScheme :: (enum) comm_monoid_mult
+  by (intro_classes; simp add: times_DimScheme_def one_DimScheme_def fun_eq_iff)
 
 text \<open> We also define the inverse and division operations, and an abelian group, which will allow
   us to perform dimensional analysis. \<close>
 
-instantiation Dimension_ext :: ("{times,inverse}") inverse
+instantiation DimScheme :: (enum) inverse
 begin
-definition inverse_Dimension_ext :: "'a Dimension_ext \<Rightarrow> 'a Dimension_ext" 
-  where [code_unfold, si_def]:
-  "inverse x = \<lparr> Length = - Length x, Mass = - Mass x
-               , Time = - Time x, Current = - Current x
-               , Temperature = - Temperature x, Amount = - Amount x
-               , Intensity = - Intensity x, \<dots> = inverse (more x) \<rparr>"
+definition inverse_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme" where
+"inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
 
-definition divide_Dimension_ext :: "'a Dimension_ext \<Rightarrow> 'a Dimension_ext \<Rightarrow> 'a Dimension_ext" 
-  where [code_unfold, si_def]: 
-  "divide_Dimension_ext x y = x * (inverse y)"
+definition divide_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme \<Rightarrow> 'a DimScheme" where
+[code_unfold, si_def]: "divide_DimScheme x y = x * (inverse y)"
+
   instance ..
 end
- 
-instance Dimension_ext :: (ab_group_mult) ab_group_mult
-proof
-  fix a b :: "'a Dimension_ext"
-  show "inverse a \<cdot> a  = 1"
-    by (simp add: inverse_Dimension_ext_def times_Dimension_ext_def one_Dimension_ext_def)
-  show "a \<cdot> inverse b = a div b"
-    by (simp add: divide_Dimension_ext_def)
-qed
+
+lemma inverse_MkDimScheme [code]:
+  "(inverse (MkDimScheme xs) :: 'a::enum DimScheme) = 
+   (if (length xs = CARD('a)) then MkDimScheme (map uminus xs) else 1)"
+  by (auto simp add: inverse_DimScheme_def one_DimScheme_def MkDimScheme_def fun_eq_iff)  
+
+instance DimScheme :: (enum) ab_group_mult
+  by (intro_classes, simp_all add: inverse_DimScheme_def one_DimScheme_def times_DimScheme_def divide_DimScheme_def)
 
 text \<open> A base dimension is a dimension where precisely one component has power 1: it is the 
   dimension of a base quantity. Here we define the seven base dimensions. \<close>
 
-definition LengthBD      ("\<^bold>L") where [si_def]: "\<^bold>L = (1::Dimension)\<lparr>Length := 1\<rparr>"
-definition MassBD        ("\<^bold>M") where [si_def]: "\<^bold>M = (1::Dimension)\<lparr>Mass := 1\<rparr>"
-definition TimeBD        ("\<^bold>T") where [si_def]: "\<^bold>T = (1::Dimension)\<lparr>Time := 1\<rparr>"
-definition CurrentBD     ("\<^bold>I") where [si_def]: "\<^bold>I = (1::Dimension)\<lparr>Current := 1\<rparr>"
-definition TemperatureBD ("\<^bold>\<Theta>") where [si_def]: "\<^bold>\<Theta> = (1::Dimension)\<lparr>Temperature := 1\<rparr>"
-definition AmountBD      ("\<^bold>N") where [si_def]: "\<^bold>N = (1::Dimension)\<lparr>Amount := 1\<rparr>"
-definition IntensityBD   ("\<^bold>J") where [si_def]: "\<^bold>J = (1::Dimension)\<lparr>Intensity := 1\<rparr>"
+definition MkBaseDim :: "'d::enum \<Rightarrow> 'd DimScheme" where
+"MkBaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+
+lemma MkBaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> MkBaseDim x \<noteq> MkBaseDim y"
+  by (auto simp add: MkBaseDim_def fun_eq_iff)
+
+lemma MkBaseDim_code [code]: "MkBaseDim (d::'d::enum) = MkDimScheme (list_update (replicate CARD('d) 0) (enum_ind d) 1)"
+  by (auto simp add: MkBaseDim_def MkDimScheme_def fun_eq_iff)
+
+definition LengthBD      ("\<^bold>L") where [code_unfold, si_def]: "\<^bold>L = MkBaseDim Length"
+definition MassBD        ("\<^bold>M") where [code_unfold, si_def]: "\<^bold>M = MkBaseDim Mass"
+definition TimeBD        ("\<^bold>T") where [code_unfold, si_def]: "\<^bold>T = MkBaseDim Time"
+definition CurrentBD     ("\<^bold>I") where [code_unfold, si_def]: "\<^bold>I = MkBaseDim Current"
+definition TemperatureBD ("\<^bold>\<Theta>") where [code_unfold, si_def]: "\<^bold>\<Theta> = MkBaseDim Temperature"
+definition AmountBD      ("\<^bold>N") where [code_unfold, si_def]: "\<^bold>N = MkBaseDim Amount"
+definition IntensityBD   ("\<^bold>J") where [code_unfold, si_def]: "\<^bold>J = MkBaseDim Intensity"
 
 abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
 
