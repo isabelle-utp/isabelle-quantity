@@ -15,10 +15,14 @@ class unit_system = unitary
 lemma unit_system_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, unit_system_class)"
   by (simp add: unit_system_class_def, rule unitary_intro)
 
-record ('a, 's::unit_system) Quantity =
-  mag  :: 'a        \<comment> \<open> Magnitude of the quantity. \<close>
-  dim  :: Dimension \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
-  sys  :: 's        \<comment> \<open> The system of units being employed \<close>
+class dimension = ab_group_mult
+
+instance Dimension_ext :: (ab_group_mult) dimension ..
+
+record ('a, 'd::dimension, 's::unit_system) Quantity =
+  mag  :: 'a \<comment> \<open> Magnitude of the quantity. \<close>
+  dim  :: 'd \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
+  sys  :: 's \<comment> \<open> The system of units being employed \<close>
 
 text \<open> The quantity type is parametric as we permit the magnitude to be represented using any kind
   of numeric type, such as \<^typ>\<open>int\<close>, \<^typ>\<open>rat\<close>, or \<^typ>\<open>real\<close>, though we usually minimally expect
@@ -32,10 +36,10 @@ lemma Quantity_eq_intro:
 text \<open> We can define several arithmetic operators on quantities. Multiplication takes multiplies
   both the magnitudes and the dimensions. \<close>
 
-instantiation Quantity_ext :: (times, unit_system, times) times
+instantiation Quantity_ext :: (times, dimension, unit_system, times) times
 begin
 definition times_Quantity_ext :: 
-    "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" 
+    "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" 
     where  [si_def]: "times_Quantity_ext x y = \<lparr> mag = mag x \<cdot> mag y, dim = dim x \<cdot> dim y, 
                                                  sys = unit, \<dots> = more x \<cdot> more y \<rparr>"
 instance ..
@@ -48,7 +52,7 @@ lemma more_times [simp]: "more (x \<cdot> y) = more x \<cdot> more y" by (simp a
 text \<open> The zero and one quantities are both dimensionless quantities with magnitude of \<^term>\<open>0\<close> and
   \<^term>\<open>1\<close>, respectively. \<close>
 
-instantiation Quantity_ext :: (zero, unit_system, zero) zero
+instantiation Quantity_ext :: (zero, dimension, unit_system, zero) zero
 begin
   definition "zero_Quantity_ext = \<lparr> mag = 0, dim = 1, sys = unit, \<dots> = 0 \<rparr>"
 instance ..
@@ -58,7 +62,7 @@ lemma mag_zero  [simp]:  "mag 0 = 0" by (simp add: zero_Quantity_ext_def)
 lemma dim_zero  [simp]:  "dim 0 = 1" by (simp add: zero_Quantity_ext_def)
 lemma more_zero [simp]: "more 0 = 0" by (simp add: zero_Quantity_ext_def)
 
-instantiation Quantity_ext :: (one, unit_system, one) one
+instantiation Quantity_ext :: (one, dimension, unit_system, one) one
 begin
   definition    [si_def]: "one_Quantity_ext = \<lparr> mag = 1, dim = 1, sys = unit, \<dots> = 1 \<rparr>"
 instance ..
@@ -71,11 +75,11 @@ lemma more_one [simp]: "more 1 = 1" by (simp add: one_Quantity_ext_def)
 text \<open> Quantity inversion inverts both the magnitude and the dimension. Similarly, division of
   one quantity by another, divides both the magnitudes and the dimensions. \<close>
 
-instantiation Quantity_ext :: (inverse, unit_system, inverse) inverse
+instantiation Quantity_ext :: (inverse, dimension, unit_system, inverse) inverse
 begin
-definition inverse_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" where 
+definition inverse_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" where 
   [si_def]: "inverse_Quantity_ext x = \<lparr> mag = inverse (mag x), dim = inverse (dim x), sys = unit, \<dots> = inverse (more x) \<rparr>"
-definition divide_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" where
+definition divide_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" where
   [si_def]: "divide_Quantity_ext x y = \<lparr> mag = mag x / mag y, dim = dim x / dim y, sys = unit, \<dots> = more x / more y \<rparr>"
 instance ..
 end
@@ -100,51 +104,51 @@ lemma more_divide [simp]: "more (x / y) = more x / more y"
 
 text \<open> As for dimensions, quantities form a commutative monoid and an abelian group. \<close>
 
-instance Quantity_ext :: (comm_monoid_mult, unit_system, comm_monoid_mult) comm_monoid_mult
+instance Quantity_ext :: (comm_monoid_mult, dimension, unit_system, comm_monoid_mult) comm_monoid_mult
   by (intro_classes, simp_all add: eq_unit one_Quantity_ext_def times_Quantity_ext_def mult.assoc
      ,simp add: mult.commute)
 
-instance Quantity_ext :: (ab_group_mult, unit_system, ab_group_mult) ab_group_mult
+instance Quantity_ext :: (ab_group_mult, dimension, unit_system, ab_group_mult) ab_group_mult
   by (intro_classes, rule Quantity_eq_intro, simp_all add: eq_unit)
 
 text \<open> We can also define a partial order on quantities. \<close>
 
-instantiation Quantity_ext :: (ord, unit_system, ord) ord
+instantiation Quantity_ext :: (ord, dimension, unit_system, ord) ord
 begin
-  definition less_eq_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> bool"
+  definition less_eq_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> bool"
     where "less_eq_Quantity_ext x y = (mag x \<le> mag y \<and> dim x = dim y \<and> more x \<le> more y)"
-  definition less_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> bool"
+  definition less_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> bool"
     where "less_Quantity_ext x y = (x \<le> y \<and> \<not> y \<le> x)"
 
 instance ..
 
 end
 
-instance Quantity_ext :: (order, unit_system, order) order
+instance Quantity_ext :: (order, dimension, unit_system, order) order
   by (intro_classes, auto simp add: less_Quantity_ext_def less_eq_Quantity_ext_def eq_unit)
 
 text \<open> We can define plus and minus as well, but these are partial operators as they are defined
   only when the quantities have the same dimension. \<close>
 
-instantiation Quantity_ext :: (plus, unit_system, plus) plus
+instantiation Quantity_ext :: (plus, dimension, unit_system, plus) plus
 begin
-definition plus_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" 
+definition plus_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" 
     where [si_def]:
     "dim x = dim y \<Longrightarrow> 
      plus_Quantity_ext x y = \<lparr> mag = mag x + mag y, dim = dim x, sys = unit, \<dots> = more x + more y \<rparr>"
 instance ..
 end
 
-instantiation Quantity_ext :: (uminus, unit_system, uminus) uminus
+instantiation Quantity_ext :: (uminus, dimension, unit_system, uminus) uminus
 begin
-  definition uminus_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" where 
+  definition uminus_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" where 
   [si_def]: "uminus_Quantity_ext x = \<lparr> mag = - mag x , dim = dim x, sys = unit, \<dots> = - more x \<rparr>"
 instance ..
 end
 
-instantiation Quantity_ext :: (minus, unit_system, minus) minus
+instantiation Quantity_ext :: (minus, dimension, unit_system, minus) minus
 begin
-  definition minus_Quantity_ext :: "('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme \<Rightarrow> ('a, 'b, 'c) Quantity_scheme" where 
+  definition minus_Quantity_ext :: "('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme \<Rightarrow> ('a, 'b, 'c, 'd) Quantity_scheme" where 
   [si_def]:
     "dim x = dim y \<Longrightarrow> 
       minus_Quantity_ext x y = \<lparr> mag = mag x - mag y, dim = dim x, sys = unit, \<dots> = more x - more y \<rparr>"
@@ -156,14 +160,14 @@ section \<open> Dimension Typed Quantities \<close>
 text \<open> We can now define the type of quantities with parametrised dimension types. \<close>
 
 typedef (overloaded) ('n, 'd::dim_type, 's::unit_system) QuantT ("_[_, _]" [999,0,0] 999) 
-                     = "{x :: ('n, 's) Quantity. dim x = QD('d)}"
+                     = "{x :: ('n, Dimension, 's) Quantity. dim x = QD('d)}"
   morphisms fromQ toQ by (rule_tac x="\<lparr> mag = undefined, dim = QD('d), sys = unit \<rparr>" in exI, simp)
 
 setup_lifting type_definition_QuantT
 
 text \<open> A dimension typed quantity is parameterised by two types: \<^typ>\<open>'a\<close>, the numeric type for the
   magntitude, and \<^typ>\<open>'d\<close> for the dimension expression, which is an element of \<^class>\<open>dim_type\<close>. 
-  The type \<^typ>\<open>('n, 'd, 's) QuantT\<close> is to \<^typ>\<open>('n, 's) Quantity\<close> as dimension types are to \<^typ>\<open>Dimension\<close>. 
+  The type \<^typ>\<open>('n, 'd, 's) QuantT\<close> is to \<^typ>\<open>('n, 'd, 's) Quantity\<close> as dimension types are to \<^typ>\<open>Dimension\<close>. 
   Specifically, an element of \<^typ>\<open>('n', 'd, 's) QuantT\<close> is a quantity whose dimension is \<^typ>\<open>'d\<close>.
 
   Intuitively, the formula \<^term>\<open>x :: 'n['d, 's]\<close> can be read as ``$x$ is a quantity of \<^typ>\<open>'d\<close>'',
