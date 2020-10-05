@@ -105,6 +105,6 @@ text \<open> The next tactic additionally compiles the semantics of the underlyi
 method si_calc uses add = 
   (si_simp add: add; simp add: si_def add)
 
-lemma "QD(N \<cdot> \<Theta> \<cdot> N) = QD(\<Theta> \<cdot> N\<^sup>2)" by (simp add: si_eq si_def)
-
+lemma "QD(N \<cdot> \<Theta> \<cdot> N) = QD(\<Theta> \<cdot> N\<^sup>2)" by (simp add: si_eq si_def fun_eq_iff)
+  
 end

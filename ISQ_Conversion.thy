@@ -91,15 +91,17 @@ lemma Conversion_comps [simp]: "LengthF (c\<^sub>1 \<circ>\<^sub>C c\<^sub>2) = 
 
 subsection \<open> Conversion Functions \<close>
 
+term dim_nth
+
 definition dconvfactor :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> Dimension \<Rightarrow> rat" where
 "dconvfactor c d = 
-  LengthF c ^\<^sub>Z Length d 
-  * MassF c ^\<^sub>Z Mass d 
-  * TimeF c ^\<^sub>Z Time d 
-  * CurrentF c ^\<^sub>Z Current d 
-  * TemperatureF c ^\<^sub>Z Temperature d
-  * AmountF c ^\<^sub>Z Amount d
-  * IntensityF c ^\<^sub>Z Intensity d"
+  LengthF c ^\<^sub>Z dim_nth d Length
+  * MassF c ^\<^sub>Z dim_nth d Mass 
+  * TimeF c ^\<^sub>Z dim_nth d Time 
+  * CurrentF c ^\<^sub>Z dim_nth d Current 
+  * TemperatureF c ^\<^sub>Z dim_nth d Temperature
+  * AmountF c ^\<^sub>Z dim_nth d Amount
+  * IntensityF c ^\<^sub>Z dim_nth d Intensity"
 
 lemma dconvfactor_pos [simp]: "dconvfactor c d > 0"
   by (simp add: dconvfactor_def)
@@ -119,11 +121,11 @@ lemma dconvfactor_compose:
 
 lemma dconvfactor_inverse:
   "dconvfactor c (inverse d) = inverse (dconvfactor c d)"
-  by (simp add: dconvfactor_def inverse_Dimension_ext_def intpow_uminus)
+  by (simp add: dconvfactor_def inverse_DimScheme_def intpow_uminus)
 
 lemma dconvfactor_times:
   "dconvfactor c (x \<cdot> y) = dconvfactor c x \<cdot> dconvfactor c y"
-  by (auto simp add: dconvfactor_def  mult_ac intpow_mult_combine times_Dimension_ext_def)
+  by (auto simp add: dconvfactor_def  mult_ac intpow_mult_combine times_DimScheme_def)
                                                                                                                                            
 lift_definition qconv :: "('s\<^sub>1, 's\<^sub>2) Conversion \<Rightarrow> ('a::field_char_0)['d::dim_type, 's\<^sub>1::unit_system] \<Rightarrow> 'a['d, 's\<^sub>2::unit_system]"
 is "\<lambda> c q. \<lparr> mag = of_rat (dconvfactor c (dim q)) * mag q, dim = dim q, sys = unit \<rparr>" by simp
@@ -156,24 +158,24 @@ lemma qconv_qinverse [simp]: "qconv c (x\<^sup>-\<^sup>\<one>) = (qconv c x)\<^s
   by (transfer, simp add: inverse_Quantity_ext_def dconvfactor_inverse of_rat_inverse)
 
 lemma qconv_Length [simp]: "qconv c BUNIT(L, _) = LengthF c \<odot> BUNIT(L, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq LengthBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Mass [simp]: "qconv c BUNIT(M, _) = MassF c \<odot> BUNIT(M, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq MassBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Time [simp]: "qconv c BUNIT(T, _) = TimeF c \<odot> BUNIT(T, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq TimeBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Current [simp]: "qconv c BUNIT(I, _) = CurrentF c \<odot> BUNIT(I, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq CurrentBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Temperature [simp]: "qconv c BUNIT(\<Theta>, _) = TemperatureF c \<odot> BUNIT(\<Theta>, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq TemperatureBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Amount [simp]: "qconv c BUNIT(N, _) = AmountF c \<odot> BUNIT(N, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq AmountBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 lemma qconv_Intensity [simp]: "qconv c BUNIT(J, _) = IntensityF c \<odot> BUNIT(J, _)" 
-  by (simp add: dconvfactor_def magQ_qconv si_eq IntensityBD_def one_Dimension_ext_def)
+  by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 end

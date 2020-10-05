@@ -76,6 +76,9 @@ datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensit
 lemma sdim_UNIV: "(UNIV :: sdim set) = {Length, Mass, Time, Current, Temperature, Amount, Intensity}"
   using sdim.exhaust by blast
 
+lemma CARD_sdim [simp]: "CARD(sdim) = 7"
+  by (simp add: sdim_UNIV)
+
 instantiation sdim :: enum
 begin
   definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
@@ -85,126 +88,118 @@ begin
     by (intro_classes, simp_all add: sdim_UNIV enum_sdim_def enum_all_sdim_def enum_ex_sdim_def)
 end
 
-typedef 'd DimScheme = "UNIV :: ('d::enum \<Rightarrow> int) set"
+lemma sdim_enum [simp]:
+  "enum_ind Length = 0" "enum_ind Mass = 1" "enum_ind Time = 2" "enum_ind Current = 3"
+  "enum_ind Temperature = 4" "enum_ind Amount = 5" "enum_ind Intensity = 6"
+  by (simp_all add: enum_ind_def enum_sdim_def)
+
+typedef ('n, 'd) DimScheme = "UNIV :: ('d::enum \<Rightarrow> 'n) set"
   morphisms dim_nth dim_lambda ..
 
 declare dim_lambda_inject [simplified, simp]
 declare dim_nth_inverse [simp]
 declare dim_lambda_inverse [simplified, simp]
 
-instantiation DimScheme :: (enum) "{zero, one}"
+instantiation DimScheme :: (zero, enum) "one"
 begin
-definition one_DimScheme :: "'a DimScheme" where "one_DimScheme = dim_lambda (\<lambda> i. 0)"
+definition one_DimScheme :: "('a, 'b) DimScheme" where "one_DimScheme = dim_lambda (\<lambda> i. 0)"
 instance ..
 end
 
-type_synonym Dimension = "sdim DimScheme"
+type_synonym Dimension = "(int, sdim) DimScheme"
 
-definition MkDimScheme :: "int list \<Rightarrow> 'd::enum DimScheme" 
+definition MkDimScheme :: "'n list \<Rightarrow> ('n::zero, 'd::enum) DimScheme" 
   where "MkDimScheme ds = (if (length ds = CARD('d)) then dim_lambda (\<lambda> d. ds ! enum_ind d) else 1)"
 
 code_datatype MkDimScheme
 
-lemma one_MkDimScheme [code]: "(1::'a::enum DimScheme) = MkDimScheme (replicate CARD('a) 0)"
+lemma one_MkDimScheme [code]: "(1::('n::zero, 'a::enum) DimScheme) = MkDimScheme (replicate CARD('a) 0)"
   by (auto simp add: MkDimScheme_def one_DimScheme_def)
 
-(*
-record V1 = 
-   v1 :: int
-
-record V2 = V1 +
-   v2 :: int
-
-record V3 = V2 +
-   v3 :: int
-
-record Dimension = 
-  Length      :: int
-  Mass        :: int
-  Time        :: int
-  Current     :: int 
-  Temperature :: int 
-  Amount      :: int
-  Intensity   :: int
-*)
-
-
-
-(* *)
-
-instantiation DimScheme :: (enum) times
+instantiation DimScheme :: (plus, enum) times
 begin
-definition times_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme \<Rightarrow> 'a DimScheme" where
-"times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
+definition times_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
+[si_def]: "times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
 instance ..
 end
 
 lemma times_MkDimScheme [code]:
-  "(MkDimScheme xs * MkDimScheme ys :: 'a::enum DimScheme) = 
+  "(MkDimScheme xs * MkDimScheme ys :: ('n::monoid_add, 'a::enum) DimScheme) = 
   (if (length xs = CARD('a) \<and> length ys = CARD('a))
     then MkDimScheme (map (\<lambda> (x, y). x + y) (zip xs ys))
     else if length xs = CARD('a) then MkDimScheme xs else MkDimScheme ys)"
   by (auto simp add: times_DimScheme_def MkDimScheme_def fun_eq_iff one_DimScheme_def)
 
-instance DimScheme :: (enum) comm_monoid_mult
-  by (intro_classes; simp add: times_DimScheme_def one_DimScheme_def fun_eq_iff)
+instance DimScheme :: (comm_monoid_add, enum) comm_monoid_mult
+  by ((intro_classes; simp add: times_DimScheme_def one_DimScheme_def fun_eq_iff add.assoc), simp add: add.commute)
 
 text \<open> We also define the inverse and division operations, and an abelian group, which will allow
   us to perform dimensional analysis. \<close>
 
-instantiation DimScheme :: (enum) inverse
+instantiation DimScheme :: ("{plus,uminus}", enum) inverse
 begin
-definition inverse_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme" where
-"inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
+definition inverse_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
+[si_def]: "inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
 
-definition divide_DimScheme :: "'a DimScheme \<Rightarrow> 'a DimScheme \<Rightarrow> 'a DimScheme" where
+definition divide_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
 [code_unfold, si_def]: "divide_DimScheme x y = x * (inverse y)"
 
   instance ..
 end
 
 lemma inverse_MkDimScheme [code]:
-  "(inverse (MkDimScheme xs) :: 'a::enum DimScheme) = 
+  "(inverse (MkDimScheme xs) :: ('n::group_add, 'a::enum) DimScheme) = 
    (if (length xs = CARD('a)) then MkDimScheme (map uminus xs) else 1)"
   by (auto simp add: inverse_DimScheme_def one_DimScheme_def MkDimScheme_def fun_eq_iff)  
 
-instance DimScheme :: (enum) ab_group_mult
+instance DimScheme :: (ab_group_add, enum) ab_group_mult
   by (intro_classes, simp_all add: inverse_DimScheme_def one_DimScheme_def times_DimScheme_def divide_DimScheme_def)
 
 text \<open> A base dimension is a dimension where precisely one component has power 1: it is the 
   dimension of a base quantity. Here we define the seven base dimensions. \<close>
 
-definition MkBaseDim :: "'d::enum \<Rightarrow> 'd DimScheme" where
-"MkBaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+definition mk_BaseDim :: "'d::enum \<Rightarrow> (int, 'd) DimScheme" where
+[si_def]: "mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
 
-lemma MkBaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> MkBaseDim x \<noteq> MkBaseDim y"
-  by (auto simp add: MkBaseDim_def fun_eq_iff)
+lemma mk_BaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> mk_BaseDim x \<noteq> mk_BaseDim y"
+  by (auto simp add: mk_BaseDim_def fun_eq_iff)
 
-lemma MkBaseDim_code [code]: "MkBaseDim (d::'d::enum) = MkDimScheme (list_update (replicate CARD('d) 0) (enum_ind d) 1)"
-  by (auto simp add: MkBaseDim_def MkDimScheme_def fun_eq_iff)
+lemma mk_BaseDim_code [code]: "mk_BaseDim (d::'d::enum) = MkDimScheme (list_update (replicate CARD('d) 0) (enum_ind d) 1)"
+  by (auto simp add: mk_BaseDim_def MkDimScheme_def fun_eq_iff)
 
-definition LengthBD      ("\<^bold>L") where [code_unfold, si_def]: "\<^bold>L = MkBaseDim Length"
-definition MassBD        ("\<^bold>M") where [code_unfold, si_def]: "\<^bold>M = MkBaseDim Mass"
-definition TimeBD        ("\<^bold>T") where [code_unfold, si_def]: "\<^bold>T = MkBaseDim Time"
-definition CurrentBD     ("\<^bold>I") where [code_unfold, si_def]: "\<^bold>I = MkBaseDim Current"
-definition TemperatureBD ("\<^bold>\<Theta>") where [code_unfold, si_def]: "\<^bold>\<Theta> = MkBaseDim Temperature"
-definition AmountBD      ("\<^bold>N") where [code_unfold, si_def]: "\<^bold>N = MkBaseDim Amount"
-definition IntensityBD   ("\<^bold>J") where [code_unfold, si_def]: "\<^bold>J = MkBaseDim Intensity"
+definition is_BaseDim :: "(int, 'd::enum) DimScheme \<Rightarrow> bool" 
+  where "is_BaseDim x \<equiv> (\<exists> i. x = dim_lambda ((\<lambda> x. 0)(i := 1)))"
+
+lemma is_BaseDim_mk [simp]: "is_BaseDim (mk_BaseDim x)"
+  by (auto simp add: mk_BaseDim_def is_BaseDim_def fun_eq_iff)
+
+abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
+abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
+abbreviation TimeBD        ("\<^bold>T") where "\<^bold>T \<equiv> mk_BaseDim Time"
+abbreviation CurrentBD     ("\<^bold>I") where "\<^bold>I \<equiv> mk_BaseDim Current"
+abbreviation TemperatureBD ("\<^bold>\<Theta>") where "\<^bold>\<Theta> \<equiv> mk_BaseDim Temperature"
+abbreviation AmountBD      ("\<^bold>N") where "\<^bold>N \<equiv> mk_BaseDim Amount"
+abbreviation IntensityBD   ("\<^bold>J") where "\<^bold>J \<equiv> mk_BaseDim Intensity"
 
 abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
 
 text \<open> The following lemma confirms that there are indeed seven unique base dimensions. \<close>
 
 lemma seven_BaseDimensions: "card BaseDimensions = 7"
-  by (simp add: si_def)
-
-definition is_BaseDim :: "Dimension \<Rightarrow> bool" where [si_def]: "is_BaseDim x \<equiv> x \<in> BaseDimensions"
+  by simp
 
 text \<open> We can use the base dimensions and algebra to form dimension expressions. Some examples
   are shown below. \<close>
 
 term "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
 term "\<^bold>M\<cdot>\<^bold>L\<^sup>-\<^sup>3"
+
+lemma BD_code: 
+  "\<^bold>L = MkDimScheme [1, 0, 0, 0, 0, 0, 0]"
+  "\<^bold>M = MkDimScheme [0, 1, 0, 0, 0, 0, 0]"
+  "\<^bold>T = MkDimScheme [0, 0, 1, 0, 0, 0, 0]"
+  "\<^bold>I = MkDimScheme [0, 0, 0, 1, 0, 0, 0]"
+  by (simp_all add: mk_BaseDim_code eval_nat_numeral)
 
 subsection \<open> Dimensions Type Expressions \<close>
 
@@ -278,49 +273,49 @@ text\<open> Next, we embed the base dimensions into the dimension type expressio
 instantiation Length :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Length (_::Length itself) = \<^bold>L"
-instance by (intro_classes, auto simp add: dim_ty_sem_Length_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Length_def, (transfer, simp)+)
 end
 
 instantiation Mass :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Mass (_::Mass itself) = \<^bold>M"
-instance by (intro_classes, auto simp add: dim_ty_sem_Mass_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Mass_def, (transfer, simp)+)
 end
 
 instantiation Time :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Time (_::Time itself) = \<^bold>T"
-instance by (intro_classes, auto simp add: dim_ty_sem_Time_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Time_def, (transfer, simp)+)
 end
 
 instantiation Current :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Current (_::Current itself) = \<^bold>I"
-instance by (intro_classes, auto simp add: dim_ty_sem_Current_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Current_def, (transfer, simp)+)
 end
 
 instantiation Temperature :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Temperature (_::Temperature itself) = \<^bold>\<Theta>"
-instance by (intro_classes, auto simp add: dim_ty_sem_Temperature_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Temperature_def, (transfer, simp)+)
 end
 
 instantiation Amount :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Amount (_::Amount itself) = \<^bold>N"
-instance by (intro_classes, auto simp add: dim_ty_sem_Amount_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Amount_def, (transfer, simp)+)
 end   
 
 instantiation Intensity :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Intensity (_::Intensity itself) = \<^bold>J"
-instance by (intro_classes, auto simp add: dim_ty_sem_Intensity_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_Intensity_def, (transfer, simp)+)
 end
 
 instantiation NoDimension :: dim_type
 begin
 definition [si_eq]: "dim_ty_sem_NoDimension (_::NoDimension itself) = (1::Dimension)"
-instance by (intro_classes, auto simp add: dim_ty_sem_NoDimension_def is_BaseDim_def, (transfer, simp)+)
+instance by (intro_classes, auto simp add: dim_ty_sem_NoDimension_def, (transfer, simp)+)
 end
 
 lemma base_dimension_types [simp]: 
