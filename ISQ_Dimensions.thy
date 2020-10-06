@@ -4,8 +4,7 @@ section \<open> Quantity Dimensions \<close>
 
 theory ISQ_Dimensions
   imports Groups_mult Power_int Enum_extra
-          HOL.Transcendental 
-          "HOL-Analysis.Finite_Cartesian_Product"
+          HOL.Transcendental
           "HOL-Eisbach.Eisbach"
 begin
 
