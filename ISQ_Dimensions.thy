@@ -88,6 +88,13 @@ begin
     by (intro_classes, simp_all add: sdim_UNIV enum_sdim_def enum_all_sdim_def enum_ex_sdim_def)
 end
 
+instantiation sdim :: card_UNIV 
+begin
+  definition "finite_UNIV = Phantom(sdim) True"
+  definition "card_UNIV = Phantom(sdim) 7"
+  instance by (intro_classes, simp_all add: finite_UNIV_sdim_def card_UNIV_sdim_def)
+end
+
 lemma sdim_enum [simp]:
   "enum_ind Length = 0" "enum_ind Mass = 1" "enum_ind Time = 2" "enum_ind Current = 3"
   "enum_ind Temperature = 4" "enum_ind Amount = 5" "enum_ind Intensity = 6"
@@ -108,23 +115,46 @@ end
 
 type_synonym Dimension = "(int, sdim) DimScheme"
 
-definition MkDimScheme :: "'n list \<Rightarrow> ('n::zero, 'd::enum) DimScheme" 
+definition MkDimScheme :: "'n list \<Rightarrow> ('n::ring_1, 'd::enum) DimScheme" 
   where "MkDimScheme ds = (if (length ds = CARD('d)) then dim_lambda (\<lambda> d. ds ! enum_ind d) else 1)"
 
 code_datatype MkDimScheme
 
-lemma one_MkDimScheme [code]: "(1::('n::zero, 'a::enum) DimScheme) = MkDimScheme (replicate CARD('a) 0)"
+lemma MkDimSchema_inj: "inj_on (MkDimScheme :: 'n list \<Rightarrow> ('n::ring_1, 'd::enum) DimScheme) {xs. length xs = CARD('d)}"
+proof (rule inj_onI, safe)
+  fix x y :: "'n list"
+  assume a: "(MkDimScheme x :: ('n, 'd) DimScheme) = MkDimScheme y" "length x = CARD('d)" "length y = CARD('d)"
+  have "\<And>i. i < length x \<Longrightarrow> x ! i = y ! i"
+  proof -
+    fix i
+    assume "i < length x"
+    with a have "enum_ind (ENUM('d) ! i) = i"
+      by (simp)
+    with a show "x ! i = y ! i"
+      by (auto simp add: MkDimScheme_def fun_eq_iff, metis)
+  qed
+
+  then show "x = y"
+    by (metis a(2) a(3) nth_equalityI)
+qed
+
+lemma MkDimSchema_eq_iff [simp]: 
+  assumes "length x = CARD('d)" "length y = CARD('d)"
+  shows "((MkDimScheme x :: ('n::ring_1, 'd::enum) DimScheme) = MkDimScheme y) \<longleftrightarrow> (x = y)"
+  by (rule inj_on_eq_iff[OF MkDimSchema_inj], simp_all add: assms)
+
+lemma one_MkDimScheme [code, si_def]: "(1::('n::ring_1, 'a::enum) DimScheme) = MkDimScheme (replicate CARD('a) 0)"
   by (auto simp add: MkDimScheme_def one_DimScheme_def)
 
 instantiation DimScheme :: (plus, enum) times
 begin
 definition times_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-[si_def]: "times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
+"times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
 instance ..
 end
 
-lemma times_MkDimScheme [code]:
-  "(MkDimScheme xs * MkDimScheme ys :: ('n::monoid_add, 'a::enum) DimScheme) = 
+lemma times_MkDimScheme [code, si_def]:
+  "(MkDimScheme xs * MkDimScheme ys :: ('n::ring_1, 'a::enum) DimScheme) = 
   (if (length xs = CARD('a) \<and> length ys = CARD('a))
     then MkDimScheme (map (\<lambda> (x, y). x + y) (zip xs ys))
     else if length xs = CARD('a) then MkDimScheme xs else MkDimScheme ys)"
@@ -133,24 +163,37 @@ lemma times_MkDimScheme [code]:
 instance DimScheme :: (comm_monoid_add, enum) comm_monoid_mult
   by ((intro_classes; simp add: times_DimScheme_def one_DimScheme_def fun_eq_iff add.assoc), simp add: add.commute)
 
+lemma power_MkDimScheme [si_def]:
+  "(power (MkDimScheme xs) n :: ('n::ring_1, 'a::enum) DimScheme) = 
+    (if (length xs = CARD('a)) then MkDimScheme (map ((*) (of_nat n)) xs) else MkDimScheme xs)"
+  by (induct n, simp add: one_DimScheme_def MkDimScheme_def)
+     (auto simp add: times_MkDimScheme zip_map_map[where f="id", simplified] comp_def split_beta' zip_same_conv_map distrib_right mult.commute)
+  
 text \<open> We also define the inverse and division operations, and an abelian group, which will allow
   us to perform dimensional analysis. \<close>
 
 instantiation DimScheme :: ("{plus,uminus}", enum) inverse
 begin
 definition inverse_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-[si_def]: "inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
+"inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
 
 definition divide_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-[code_unfold, si_def]: "divide_DimScheme x y = x * (inverse y)"
+[code_unfold]: "divide_DimScheme x y = x * (inverse y)"
 
   instance ..
 end
 
-lemma inverse_MkDimScheme [code]:
-  "(inverse (MkDimScheme xs) :: ('n::group_add, 'a::enum) DimScheme) = 
+lemma inverse_MkDimScheme [code, si_def]:
+  "(inverse (MkDimScheme xs) :: ('n::ring_1, 'a::enum) DimScheme) = 
    (if (length xs = CARD('a)) then MkDimScheme (map uminus xs) else 1)"
   by (auto simp add: inverse_DimScheme_def one_DimScheme_def MkDimScheme_def fun_eq_iff)  
+
+lemma divide_MkDimScheme [code, si_def]:
+  "(MkDimScheme xs / MkDimScheme ys :: ('n::ring_1, 'a::enum) DimScheme) = 
+  (if (length xs = CARD('a) \<and> length ys = CARD('a))
+    then MkDimScheme (map (\<lambda> (x, y). x - y) (zip xs ys))
+    else if length ys = CARD('a) then MkDimScheme (map uminus ys) else MkDimScheme xs)"
+  by (auto simp add: divide_DimScheme_def inverse_MkDimScheme times_MkDimScheme zip_map_map[where f="id", simplified] comp_def split_beta')
 
 instance DimScheme :: (ab_group_add, enum) ab_group_mult
   by (intro_classes, simp_all add: inverse_DimScheme_def one_DimScheme_def times_DimScheme_def divide_DimScheme_def)
@@ -159,7 +202,7 @@ text \<open> A base dimension is a dimension where precisely one component has p
   dimension of a base quantity. Here we define the seven base dimensions. \<close>
 
 definition mk_BaseDim :: "'d::enum \<Rightarrow> (int, 'd) DimScheme" where
-[si_def]: "mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+"mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
 
 lemma mk_BaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> mk_BaseDim x \<noteq> mk_BaseDim y"
   by (auto simp add: mk_BaseDim_def fun_eq_iff)
@@ -183,6 +226,16 @@ abbreviation IntensityBD   ("\<^bold>J") where "\<^bold>J \<equiv> mk_BaseDim In
 
 abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
 
+lemma BD_MkDimScheme [si_def]: 
+  "\<^bold>L = MkDimScheme [1, 0, 0, 0, 0, 0, 0]"
+  "\<^bold>M = MkDimScheme [0, 1, 0, 0, 0, 0, 0]"
+  "\<^bold>T = MkDimScheme [0, 0, 1, 0, 0, 0, 0]"
+  "\<^bold>I = MkDimScheme [0, 0, 0, 1, 0, 0, 0]"
+  "\<^bold>\<Theta> = MkDimScheme [0, 0, 0, 0, 1, 0, 0]"
+  "\<^bold>N = MkDimScheme [0, 0, 0, 0, 0, 1, 0]"
+  "\<^bold>J = MkDimScheme [0, 0, 0, 0, 0, 0, 1]"
+  by (simp_all add: mk_BaseDim_code eval_nat_numeral)
+
 text \<open> The following lemma confirms that there are indeed seven unique base dimensions. \<close>
 
 lemma seven_BaseDimensions: "card BaseDimensions = 7"
@@ -194,12 +247,10 @@ text \<open> We can use the base dimensions and algebra to form dimension expres
 term "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
 term "\<^bold>M\<cdot>\<^bold>L\<^sup>-\<^sup>3"
 
-lemma BD_code: 
-  "\<^bold>L = MkDimScheme [1, 0, 0, 0, 0, 0, 0]"
-  "\<^bold>M = MkDimScheme [0, 1, 0, 0, 0, 0, 0]"
-  "\<^bold>T = MkDimScheme [0, 0, 1, 0, 0, 0, 0]"
-  "\<^bold>I = MkDimScheme [0, 0, 0, 1, 0, 0, 0]"
-  by (simp_all add: mk_BaseDim_code eval_nat_numeral)
+value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
+
+lemma "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = MkDimScheme [1, 1, - 2, 0, 0, 0, 0]"
+  by (simp add: si_def)
 
 subsection \<open> Dimensions Type Expressions \<close>
 

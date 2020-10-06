@@ -44,6 +44,10 @@ subsection \<open> Equivalences \<close>
 lemma joule_alt_def: "joule \<cong>\<^sub>Q newton \<^bold>\<cdot> metre" 
   by si_calc
 
+declare mk_BaseDim_def [si_def del]
+declare times_DimScheme_def [si_def del]
+declare inverse_DimScheme_def [si_def del]
+
 lemma watt_alt_def: "watt \<cong>\<^sub>Q joule \<^bold>/ second"
   by si_calc
 

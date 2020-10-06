@@ -68,7 +68,7 @@ proof -
     by (auto simp add: CARD_length_enum)
 qed
 
-lemma enum_ind_nth:
+lemma enum_ind_nth [simp]:
   assumes "i < CARD('a::enum)"
   shows "enum_ind (ENUM('a) ! i) = i"
   using assms first_ind_nth[of "ENUM('a)" i 0, OF enum_distinct]

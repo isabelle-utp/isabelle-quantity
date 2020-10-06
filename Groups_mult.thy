@@ -34,6 +34,9 @@ lemma mult_distrib_inverse' [simp]: "(a * b) / a = b"
 lemma inverse_distrib: "inverse (a * b)  =  (inverse a) * (inverse b)"
   by (simp add: local.mult.inverse_distrib_swap mult_commute)
 
+lemma inverse_divide [simp]: "inverse (a / b) = b / a"
+  by (metis div_conv_mult_inverse inverse_distrib mult.commute mult.inverse_inverse)
+
 end
 
 abbreviation (input) npower :: "'a::{power,inverse} \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<^sup>-\<^sup>_)" [1000,999] 999) 

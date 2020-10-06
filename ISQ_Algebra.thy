@@ -25,10 +25,10 @@ lemma scaleQ_inv: "-a \<odot> x = a \<odot> -x"
   by si_calc
 
 lemma scaleQ_as_qprod: "a \<odot> x \<cong>\<^sub>Q (a \<odot> \<one>) \<^bold>\<cdot> x"
-  by (si_simp)
+  by si_simp
 
 lemma mult_scaleQ_left [simp]: "(a \<odot> x) \<^bold>\<cdot> y = a \<odot> x \<^bold>\<cdot> y"
-  by (si_simp add: mult.assoc)
+  by si_simp
 
 lemma mult_scaleQ_right [simp]: "x \<^bold>\<cdot> (a \<odot> y) = a \<odot> x \<^bold>\<cdot> y"
   by si_simp
@@ -77,10 +77,10 @@ lemma qinverse_nonzero_iff_nonzero: "x\<^sup>-\<^sup>\<one> = 0 \<longleftrighta
   by (auto, si_calc+)
 
 lemma qinverse_qtimes: "(x \<^bold>\<cdot> y)\<^sup>-\<^sup>\<one> \<cong>\<^sub>Q x\<^sup>-\<^sup>\<one> \<^bold>\<cdot> y\<^sup>-\<^sup>\<one>"
-  by si_calc
-  
+  by (si_simp add: inverse_distrib)
+
 lemma qinverse_qdivide: "(x \<^bold>/ y)\<^sup>-\<^sup>\<one> \<cong>\<^sub>Q y \<^bold>/ x"
-  by si_calc
+  by si_simp
 
 lemma qtimes_cancel: "x \<noteq> 0 \<Longrightarrow> x \<^bold>/ x \<cong>\<^sub>Q \<one>"
   by si_calc

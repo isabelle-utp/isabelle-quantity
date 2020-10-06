@@ -91,8 +91,6 @@ lemma Conversion_comps [simp]: "LengthF (c\<^sub>1 \<circ>\<^sub>C c\<^sub>2) = 
 
 subsection \<open> Conversion Functions \<close>
 
-term dim_nth
-
 definition dconvfactor :: "('s\<^sub>1::unit_system \<Rightarrow>\<^sub>U 's\<^sub>2::unit_system) \<Rightarrow> Dimension \<Rightarrow> rat" where
 "dconvfactor c d = 
   LengthF c ^\<^sub>Z dim_nth d Length

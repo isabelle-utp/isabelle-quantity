@@ -1,6 +1,10 @@
+subsection \<open> Integer Powers \<close>
+
 theory Power_int
   imports "HOL.Real"
 begin
+
+text \<open> The standard HOL power operator is only for natural powers. This operator allows integers. \<close>
 
 definition intpow :: "'a::{linordered_field} \<Rightarrow> int \<Rightarrow> 'a" (infixr "^\<^sub>Z" 80) where
 "intpow x n = (if (n < 0) then inverse (x ^ nat (-n)) else (x ^ nat n))"
