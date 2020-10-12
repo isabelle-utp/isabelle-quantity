@@ -48,35 +48,14 @@
 \maketitle
 
 \textbf{ Abstract } 
-Modern Physics is based on the concept of quantifiable properties of physical phenomena such as mass, 
-length, time, etc. These phenomena, called \emph{quantities}, are linked via an 
-\emph{algebra of quantities} to derived concepts such as speed, force, and energy. The latter allows for a 
-\emph{dimensional analysis} of physical equations being already the backbone of Newtonian Physics. 
-In parallel, physicians developped an own research field called "metrology" defined as scientific 
-study of the \emph{measurement} of physical quantities.
 
-The relevant international standard for quantities and measurements is distributed by the
-\emph{Bureau International des Poids et des Mesures} (BIPM), which also develops and distributes
-the \emph{Vocabulaire International de M\`etrologie} (VIM) \cite{bipm-jcgm:2012:VIM}.
-The VIM actually defines two systems: the \emph{International System of Quantities}
-(ISQ) and the \emph{International System of Units} (SI, abbreviated from the French  Syst\`eme 
-international (d’unit\'es)). Finally, the VIM defines concrete reference
-measurement procedures as well as a terminology for measurement errors. 
-
-In parallel to the ISQ, the SI comprises a coherent system of units of measurement built on 
-seven base units, which are the second, metre, kilogram, ampere, kelvin, mole, candela, and a 
-set of twenty prefixes to the unit names and unit symbols that may be used when specifying multiples 
-and fractions of the units. The system also specifies names for 22 derived units, such as lumen and 
-watt, for other common physical quantities. 
-While there is still nowadays a wealth of different measuring systems such as the 
-\emph{British Imperial System} (BIS) and the \emph{United States customary system} (USC), the
-SI became more or less the de-facto reference behind all these systems.
-
-The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a 
-deep integration into Isabelle's type system. Quantities and units were represented in a way that 
-they have a  \emph{quantity type} as well as \emph{unit type} based on its 
-base vectors and their magnitudes. Since the algebra of quantities induces congruences on 
-quantity and SI types, specific tactic support has been developed to capture these.
+The present Isabelle theory builds a formal model for both the \emph{International System of Quantities}
+(ISQ) and the \emph{International System of Units} (SI), which are both fundamental for physics
+and engineering~\cite{bipm-jcgm:2012:VIM}. Both the ISQ and the SI were deeply integrated into 
+Isabelle's type system, i.e. quantities and units were represented in a way that 
+they have a  \emph{quantity type} as well as \emph{unit type} based on its base vectors and their 
+magnitudes. Since the underlying "algebra of quantities" from ~\cite{bipm-jcgm:2012:VIM} induces 
+congruences on  quantity and SI types, specific tactic support has been developed to capture these.
 Our construction is validated by a test-set of known equivalences between both quantities and SI units.
 Moreover, the presented theory can be used for type-safe conversions between the SI system and
 others, like the British Imperial System (BIS).
@@ -87,48 +66,94 @@ others, like the British Imperial System (BIS).
 \parindent 0pt\parskip 0.5ex
 
 
-\chapter{SI Units in Isabelle \\ An Introduction}
+\chapter{Introduction}
 
-The International System of Units (SI, abbreviated from the French
-Système international (d'unités)) is the modern form of the metric
-system and is the most widely used system of measurement. It comprises
-a coherent system of units of measurement built on seven base units,
-which are the second, metre, kilogram, ampere, kelvin, mole, candela,
-and a set of twenty prefixes to the unit names and unit symbols that
-may be used when specifying multiples and fractions of the units.
-The system also specifies names for 22 derived units, such as lumen and
-watt, for other common physical quantities.
+Modern Physics is based on the concept of quantifiable properties of physical phenomena such 
+as mass, length, time, etc. These phenomena, called \emph{quantities}, are linked via an 
+\emph{algebra of quantities} to derived concepts such as speed, force, and energy. The latter 
+allows for a \emph{dimensional analysis} of physical equations, which had already been the 
+backbone of Newtonian Physics. In parallel, physicians developped an own research field called 
+"metrology" defined as scientific study of the \emph{measurement} of physical quantities.
 
-(cited from \url{https://en.wikipedia.org/wiki/International_System_of_Units}).
 
-In more detail, the SI provides the following fundamental concepts:
+The relevant international standard for quantities and measurements is distributed by the
+\emph{Bureau International des Poids et des Mesures} (BIPM), which also develops and distributes
+the \emph{Vocabulaire International de M\`etrologie} (VIM) \cite{bipm-jcgm:2012:VIM}.
+The VIM actually defines two systems: the \emph{International System of Quantities}
+(ISQ) and the \emph{International System of Units} (SI, abbreviated from the French  Syst\`eme 
+international (d’unit\'es)). Finally, the VIM defines concrete reference measurement procedures 
+as well as a terminology for measurement errors. 
 
+Conceived as a refinement of the ISQ, the SI comprises a coherent system of units of measurement built
+ on seven base units, which are the second, metre, kilogram, ampere, kelvin, mole, candela, and a 
+set of twenty prefixes to the unit names and unit symbols that may be used when specifying multiples 
+and fractions of the units. The system also specifies names for 22 derived units, such as lumen and 
+watt, for other common physical quantities. While there is still nowadays a wealth of different 
+measuring systems such as the \emph{British Imperial System} (BIS) and the \emph{United States 
+customary system} (USC), the SI became more or less the de-facto reference behind all these systems.
+
+The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a 
+deep integration into Isabelle's type system. Quantities and units were represented in a way that 
+they have a  \emph{quantity type} as well as \emph{unit type} based on its 
+base vectors and their magnitudes. Since the algebra of quantities induces congruences on 
+quantity and SI types, specific tactic support has been developed to capture these.
+Our construction is validated by a test-set of known equivalences between both quantities and SI units.
+Moreover, the presented theory can be used for type-safe conversions between the SI system and
+others, like the British Imperial System (BIS).
+
+% The International System of Units (SI, abbreviated from the French
+% Système International (d'unités)) is the modern form of the metric
+% system and is the most widely used system of measurement. It comprises
+% a coherent system of units of measurement built on seven base units,
+% which are the second, metre, kilogram, ampere, kelvin, mole, candela,
+% and a set of twenty prefixes to the unit names and unit symbols that
+% may be used when specifying multiples and fractions of the units.
+% The system also specifies names for 22 derived units, such as lumen and
+% watt, for other common physical quantities.
+% 
+% (cited from \url{https://en.wikipedia.org/wiki/International_System_of_Units}).
+
+In more detail, the ISQ provides the following fundamental concepts:
 %
 \begin{enumerate}%
-\item \emph{quantities}, i.e. \emph{time}, \emph{length}, \emph{mass}, \emph{electric current},
-\emph{temperature}, \emph{amount of substance},\emph{luminous intensity},
-and other derived quantities such as \emph{volume};
+\item \emph{quantities}, which are seen as a scalar vectorspace over the base vectors
+      \emph{time}, \emph{length}, \emph{mass}, \emph{electric current},
+      \emph{temperature}, \emph{amount of substance}, and \emph{luminous intensity},
+ 
+\item \emph{dimensions}, i.e. a set of the symbols  \isa{T}, \isa{L}, \isa{M}, \isa{I},  
+      \isa{{\isasymTheta}}, \isa{N}, \isa{J}  corresponding to the above mentioned base 
+      quantities, indexed by an integer exponent,
 
-\item \emph{dimensions}, i.e. a set of the symbols  \isa{T}, \isa{L}, \isa{M}, \isa{I},  \isa{{\isasymTheta}}, \isa{N}, \isa{J}  corresponding
-to the above mentioned base quantities,  indexed by an integer exponent
-(dimensions were also called \emph{base unit names} or just \emph{base units});
+\item \emph{derived dimensions} such as \emph{volume} $\isa{L}^3$ or energy 
+      $\isa{M}\isa{L}^2\isa{T}^{-2}$ corresponding to \emph{derived quantities}, 
 
-\item \emph{magnitudes}, i.e. a factor or \emph{prefix}
-(typically integers, reals, vectors on real or complex numbers);
+\item \emph{magnitudes}, i.e. the scalar component in the quantity vector-space, and a
 
-\item \emph{units}, which are basically pairs of magnitudes and dimensions denoting quantities.
+\item \item{quantity calculus} consisting of \item{quantity equations} allowing to infer that 
+      $\isa{L}\isa{T}^{-1}\isa{T}^{-1}\isa{M} = \isa{M}\isa{L}\isa{T}^{-2} = \isa{F} $ 
+      (the left-hand-side equals mass times acceleration which is equal to force). 
 \end{enumerate}
 
-Note that \emph{quantities} are understood as idealized  \emph{physical concepts}, and are sharply 
-distinguished from  \emph{units} representing \emph{a means to measure} them. The difference is 
-roughly similar between words (or: symbols) and notions. This distinction reflects the fact that
-these concepts have been at times heavily questioned in the history of physics; the interested
-reader is referred to the debate around the "relativistic mass" at in the twenties of the last century.
+On the other side, the SI refines the ISQ with the following fundamental concepts:
+\begin{enumerate}%
+\item measuring units corresponding to the ISQ base quantities sich
+      as \emph{second}, \emph{meter}, \emph{kilogram}, \emph{ampere}, \emph{kelvin}, \emph{mole} and
+      \emph{candela} \footnote{together with procedures how to measure a meter, for example, which are
+      defined in accompanying standards},
+\item a standardized set of symbols for units such as $s$,$m$,$kg$,$A$,$K$,$mol$ and $cd$,
+\item a standardized set of symbols of SI prefixes for multiples of SI units, such as 
+      $giga$ ($=10^9$), $kilo$ ($=10^3$), $milli$ ($=10^-3$), etc., and a set of
+\item \emph{unit equations} and conversion equations such as $J = kg\,m^2/s^2$ or $1 km/h = 1/3.6\,m/s$
 
-The purpose of the presented theory is to model SI units with polymorphic magnitudes inside the
-Isabelle/HOL\cite{nipkow.ea:isabelle:2002} system. The objective of our construction is to
+\end{enumerate}
+
+The purpose of the presented theory is to model quantities and SI units with polymorphic magnitudes 
+inside the Isabelle/HOL\cite{nipkow.ea:isabelle:2002} system. The objective of our construction is to
 reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
-calculations on SI units.
+calculations on SI units and their conversion to other measuring systems.
+
+
+TODO : REVISE THIS ...
 
 As a result, it is possible to express "4500.0 kilogram times meter per second square" which can
 have the type 
