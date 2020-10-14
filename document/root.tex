@@ -191,8 +191,8 @@ This type means that the magnitude $4500$ of the dimension
 \isactrlsup {\isadigit{3}} \isactrlsup {\isachardot}\   T\isactrlsup {\isadigit{1}}
 } is a quantity intended to be measured in the SI-system, which means that it actually
 represents a force measured in Newton. For short, the above expression gets thy type $(\isasymreal)newton$.
-In the example, the \emph{magnitude} type of the measurement unit a real number. 
-In general, however, however, magnitude types can be arbitrary types from the HOL library, so 
+In the example, the \emph{magnitude} type of the measurement unit is a real number. 
+In general, however, magnitude types can be arbitrary types from the HOL library, so 
 for example integer numbers (\isa{int}), integer numbers representable by 32 bits (\isa{int32}), 
 IEEE-754 floating-point numbers (\isa{float}), or, 
 a vector in the three-dimensional space  \isa{\isasymreal}$^3$. Thus, our type-system allows
@@ -202,7 +202,7 @@ implementation issues in concrete physical calculations on a computer.
 As mentioned before,  it is a main objective of this work to support the quantity calculus of ISQ 
 and the resulting  equations on derived SI entities 
 (cf. \url{https://www.quora.com/What-are-examples-of-SI-units}),
-both from a type-checking as well as a proof perspective.
+both from a type-checking as well as a proof-checking perspective.
 Unfortunately, our design objectives are for the case of the Isabelle system somewhat contradictory:
 on the one hand, we want a deep integration into the Isabelle/HOL's type-system,
 on the other, we have to do normal-form calulations on types.
