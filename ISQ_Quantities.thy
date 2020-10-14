@@ -15,10 +15,21 @@ class unit_system = unitary
 lemma unit_system_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, unit_system_class)"
   by (simp add: unit_system_class_def, rule unitary_intro)
 
+record ('a, 'd::enum) Quantity' =
+  mag       :: 'a                    \<comment> \<open> Magnitude of the quantity. \<close>
+  dim       :: "(int, 'd) DimScheme" \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
+
+record ('a, 'd::enum, 's::unit_system) Measurement_System = "('a, 'd::enum) Quantity'" + 
+  unit_sys  :: 's              \<comment> \<open> The system of units being employed \<close>
+ 
+
 record ('a, 'd::enum, 's::unit_system) Quantity =
   mag  :: 'a                    \<comment> \<open> Magnitude of the quantity. \<close>
   dim  :: "(int, 'd) DimScheme" \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
   sys  :: 's                    \<comment> \<open> The system of units being employed \<close>
+
+
+
 
 text \<open> The quantity type is parametric as we permit the magnitude to be represented using any kind
   of numeric type, such as \<^typ>\<open>int\<close>, \<^typ>\<open>rat\<close>, or \<^typ>\<open>real\<close>, though we usually minimally expect

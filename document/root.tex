@@ -129,7 +129,7 @@ In more detail, the ISQ provides the following fundamental concepts:
 
 \item \emph{magnitudes}, i.e. the scalar component in the quantity vector-space, and a
 
-\item \item{quantity calculus} consisting of \item{quantity equations} allowing to infer that 
+\item{quantity calculus} consisting of \emph{quantity equations} allowing to infer that 
       $\isa{L}\isa{T}^{-1}\isa{T}^{-1}\isa{M} = \isa{M}\isa{L}\isa{T}^{-2} = \isa{F} $ 
       (the left-hand-side equals mass times acceleration which is equal to force). 
 \end{enumerate}
@@ -152,21 +152,26 @@ inside the Isabelle/HOL\cite{nipkow.ea:isabelle:2002} system. The objective of o
 reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
 calculations on SI units and their conversion to other measuring systems.
 
-
-TODO : REVISE THIS ...
-
-As a result, it is possible to express "4500.0 kilogram times meter per second square" which can
-have the type 
+As a result, it is possible to express "4500.0 kilogram times meter per second square" which has 
+the type 
 \isa{{\isasymreal}\ {\isacharbrackleft}M\ \isactrlsup {\isachardot}\ L\ \isactrlsup 
  {\isachardot}\ T\isactrlsup {\isacharminus}\isactrlsup {\isadigit{3}} 
- \isactrlsup {\isachardot}\   T\isactrlsup {\isadigit{1}}{\isacharbrackright}}. 
-For units of this type we can infer that this corresponds to the derived unit "4.5 kN" (kilo-Newton) 
- of type \isa{{\isasymreal}\ {\isacharbrackleft}M\ \isactrlsup {\isachardot}\ L\ \isactrlsup 
- {\isachardot}\ T\isactrlsup {\isacharminus}\isactrlsup {\isadigit{2}}{\isacharbrackright}}.  
+ \isactrlsup {\isachardot}\   T\isactrlsup {\isadigit{1}}, SI{\isacharbrackright}}. 
+This type means that the magnitude $4500$ of the dimension 
+\isa{M\ \isactrlsup {\isachardot}\ L\ \isactrlsup  {\isachardot}\ T\isactrlsup {\isacharminus}
+\isactrlsup {\isadigit{3}} \isactrlsup {\isachardot}\   T\isactrlsup {\isadigit{1}}
+} is a quantity measured in the SI-system so that it actually
+represents a Newton synonym to $(\isasymreal)newton$.
+ The type also expresses the type of the scalar \emph{magnitude} of the 
+measurements, which is in this case a real number. However, magnitude types in HOL can also be 
+integer numbers (\isa{int}), integer numbers representable by 32 bits (\isa{int32}), or, for example,
+a vector in the three-dimensional space  \isa{\isasymreal}$^3$. Thus, our typesystem allows
+to express both conceptual entities in physics as well as 
+implementation issues in concrete calculations on a computer.
 
-This is an attempt to model the standard SI system and its derived entities (cf.
-\url{https://www.quora.com/What-are-examples-of-SI-units}),
-both from a type-checking as well as a proof-support perspective.
+It is a main objective of this work to support the quantity calculus of ISQ and the resulting 
+equations on derived SI entities (cf. \url{https://www.quora.com/What-are-examples-of-SI-units}),
+both from a type-checking as well as a proof perspective.
 These design objectives are for the case of Isabelle system somewhat contradictory.
 Since the Isabelle type system follows the Curry-style paradigm, which can be 
 characterized by: "be as implicit as possible, inference as automatic as possible", it is not
@@ -177,6 +182,8 @@ establish and exploit type isomorphisms implicitely. For example, the implicit
 type isomorhisms for the dimensions $T^{-2} * T$ and $T^{-1}$ is dealt with appropriate
 rules on terms and a special form of equivalence. 
 
+%% TODO bu : revise the rest. No longer accurate.
+
 Our construction proceeds in three phases:
 \begin{enumerate}%
 \item We construct a type \isa{Dimension} which is basically a "semantic representation" or
@@ -184,7 +191,7 @@ Our construction proceeds in three phases:
 it serves to give semantics to type-constructors by operations on this domain, too.
 We construct a multiplicative group on it.
 
-\item From \isa{Dimension} we build a language of type-constructors of \isa{dimS}-types, 
+\item From \isa{Dimension} we build a language of type-constructors of \isa{quantity}-types, 
  captured in a type class \isa{dim-types} giving it a pseudo-inductive structure. Types of
  this class are required to have  an interpretation function into \isa{Dimension}'s, which
  allows for establishing equivalences on \isa{dim-types}.

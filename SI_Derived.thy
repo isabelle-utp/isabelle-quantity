@@ -8,13 +8,23 @@ subsection \<open> Definitions \<close>
 
 abbreviation "newton \<equiv> kilogram \<^bold>\<cdot> metre \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
 
+type_synonym 'a newton = "'a[M \<cdot> L \<cdot> T\<^sup>-\<^sup>2, SI]"
+
 abbreviation "pascal \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<^sup>-\<^sup>\<two>"
+
+type_synonym 'a pascal = "'a[M \<cdot> L\<^sup>-\<^sup>1 \<cdot> T\<^sup>-\<^sup>2, SI]"
 
 abbreviation "volt \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<one>"
 
+type_synonym 'a volt = "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>3 \<cdot> I\<^sup>-\<^sup>1, SI]"
+
 abbreviation "farad \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<four> \<^bold>\<cdot> ampere\<^sup>\<two>"
 
+type_synonym 'a farad = "'a[M\<^sup>-\<^sup>1 \<cdot> L\<^sup>-\<^sup>2 \<cdot> T\<^sup>4 \<cdot> I\<^sup>2, SI]"
+
 abbreviation "ohm \<equiv> kilogram \<^bold>\<cdot> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>-\<^sup>\<two>"
+
+type_synonym 'a ohm = "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>3 \<cdot> I\<^sup>-\<^sup>2, SI]"
 
 abbreviation "siemens \<equiv> kilogram\<^sup>-\<^sup>\<one> \<^bold>\<cdot> metre\<^sup>-\<^sup>\<two> \<^bold>\<cdot> second\<^sup>\<three> \<^bold>\<cdot> ampere\<^sup>\<two>"
 
