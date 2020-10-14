@@ -93,20 +93,20 @@ measuring systems such as the \emph{British Imperial System} (BIS) and the \emph
 customary system} (USC), the SI became more or less the de-facto reference behind all these systems.
 
 The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a 
-deep integration into Isabelle's type system. Quantities and units were represented in a way that 
-they have a  \emph{quantity type} as well as \emph{unit type} based on its 
-base vectors and their magnitudes. Since the algebra of quantities induces congruences on 
+deep integration into Isabelle's type system\cite{nipkow.ea:isabelle:2002}. Quantities and units 
+were represented in a way that they have a  \emph{quantity type} as well as \emph{unit type} based 
+on its base vectors and their magnitudes. Since the algebra of quantities induces congruences on 
 quantity and SI types, specific tactic support has been developed to capture these.
 Our construction is validated by a test-set of known equivalences between both quantities and SI units.
 Moreover, the presented theory can be used for type-safe conversions between the SI system and
 others, like the British Imperial System (BIS).
 
-We would like to stress that it is not only our objective to provide a sound type-system for
-ISQ and SI; rather, our semantic construction produces an integration of quantities and SI units 
-\emph{as types} inside the Hindley-Milner style type system of
- Isabelle/HOL\cite{nipkow.ea:isabelle:2002}. The objective of our construction is to
-reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
-calculations on SI units and their conversion to other measuring systems.
+% We would like to stress that it is not only our objective to provide a sound type-system for
+% ISQ and SI; rather, our semantic construction produces an integration of quantities and SI units 
+% \emph{as types} inside the Hindley-Milner style type system of
+%  Isabelle/HOL\cite{nipkow.ea:isabelle:2002}. The objective of our construction is to
+% reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
+% calculations on SI units and their conversion to other measuring systems.
 
 % The International System of Units (SI, abbreviated from the French
 % Système International (d'unités)) is the modern form of the metric
@@ -120,7 +120,8 @@ calculations on SI units and their conversion to other measuring systems.
 % 
 % (cited from \url{https://en.wikipedia.org/wiki/International_System_of_Units}).
 
-In more detail, our ISQ model provides the following fundamental concepts:
+In the following we describe the overall theory architecture in more detail.
+Our ISQ model provides the following fundamental concepts:
 %
 \begin{enumerate}%
 \item \emph{dimensions} represented by a type \isa{(int, 'd::enum) DimScheme} , i.e. an \isa{'d}-indexed
@@ -135,7 +136,7 @@ In more detail, our ISQ model provides the following fundamental concepts:
       $\isa{L}\isa{T}^{-1}\isa{T}^{-1}\isa{M} = \isa{M}\isa{L}\isa{T}^{-2} = \isa{F} $ 
       (the left-hand-side equals mass times acceleration which is equal to force). 
 
-\item An kind of equivalence relation $\_\cong_{Q}\_$ on quantities, permitting to relate
+\item a kind of equivalence relation $\_\cong_{Q}\_$ on quantities, permitting to relate
       quantities of different dimension type.
 
 
@@ -149,8 +150,8 @@ In more detail, our ISQ model provides the following fundamental concepts:
 
 \item \emph{(Abstract) Measurement Systems} represented by type 
       \isa{('a, 'd::enum, 's::unit\_system) Measurement\_System}, which are a refinement
-      of quantities. The refinement is modeled as polymorphic record extensions; as a 
-      consequence, type inherits the algebraic properties of quantities.
+      of quantities. The refinement is modeled by a polymorphic record extensions; as a 
+      consequence, Measurement Systems inherit the algebraic properties of quantities.
  
 
 \item \emph{derived dimensions} such as \emph{volume} $\isa{L}^3$ or energy 
@@ -159,15 +160,16 @@ In more detail, our ISQ model provides the following fundamental concepts:
 \end{enumerate}
 
 Via a fresh type-constructor \isa{SI}, the abstract measurement systems were instantiated
-to the SI system (the \emph{British Imperial System} (BIS) is constructed analogously).
-Technically, \isa{SI} is a tag-type that represents the fact that the magnitude in a quantity is
-actually a quantifiable entity in the sense of the SI system, i.e., that the \isa{1[L]} actually 
-refers to one meter measured according to the SI standard. At this point, it becomes impossible,
-for example, to add to one foot in the sense of the BIS one meter without creating a 
-type-inconsistency.
+to the SI system --- the \emph{British Imperial System} (BIS) is constructed analogously.
+Technically, \isa{SI} is a tag-type that represents the fact that the magnitude of a quantity is
+actually a quantifiable entity in the sense of the SI system. In other words, this means that the 
+magnitude $1$ in quantity \isa{1[L]} actually refers to one meter intended to be measured 
+according to the SI standard. At this point, it becomes impossible, for example, to add to one 
+foot in the sense of the BIS one meter without creating a type-inconsistency.
 
-The theory of the SI is created for the instance of the \isa{Measurement\_System} with SI.
-It provides the following fundamental concepts:
+The theory of the SI is created by specializing the \isa{Measurement\_System}-type with the 
+SI-tag-type and adding new infrastructure. THe SI theory provides the following fundamental 
+concepts:
 \begin{enumerate}%
 \item measuring units and types corresponding to the ISQ base quantities sich
       as \emph{second}, \emph{meter}, \emph{kilogram}, \emph{ampere}, \emph{kelvin}, \emph{mole} and
@@ -177,7 +179,6 @@ It provides the following fundamental concepts:
 \item a standardized set of symbols of SI prefixes for multiples of SI units, such as 
       $giga$ ($=10^9$), $kilo$ ($=10^3$), $milli$ ($=10^-3$), etc., and a set of
 \item \emph{unit equations} and conversion equations such as $J = kg\,m^2/s^2$ or $1 km/h = 1/3.6\,m/s$
-
 \end{enumerate}
 
 As a result, it is possible to express "4500.0 kilogram times meter per second square" which has 
@@ -188,17 +189,19 @@ the type
 This type means that the magnitude $4500$ of the dimension 
 \isa{M\ \isactrlsup {\isachardot}\ L\ \isactrlsup  {\isachardot}\ T\isactrlsup {\isacharminus}
 \isactrlsup {\isadigit{3}} \isactrlsup {\isachardot}\   T\isactrlsup {\isadigit{1}}
-} is a quantity measured in the SI-system so that it actually
-represents a Newton synonym to $(\isasymreal)newton$.
- The type also expresses the type of the scalar \emph{magnitude} of the 
-measurements, which is in this case a real number. However, magnitude types in HOL can also be 
-integer numbers (\isa{int}), integer numbers representable by 32 bits (\isa{int32}), or, for example,
+} is a quantity intended to be measured in the SI-system, which means that it actually
+represents a force measured in Newton. For short, the above expression gets thy type $(\isasymreal)newton$.
+In the example, the \emph{magnitude} type of the measurement unit a real number. 
+In general, however, however, magnitude types can be arbitrary types from the HOL library, so 
+for example integer numbers (\isa{int}), integer numbers representable by 32 bits (\isa{int32}), 
+IEEE-754 floating-point numbers (\isa{float}), or, 
 a vector in the three-dimensional space  \isa{\isasymreal}$^3$. Thus, our type-system allows
-to express both conceptual entities in physics as well as 
+to capture both conceptual entities in physics as well as 
 implementation issues in concrete physical calculations on a computer.
 
-As mentioned before,  it is a main objective of this work to support the quantity calculus of ISQ and the resulting 
-equations on derived SI entities (cf. \url{https://www.quora.com/What-are-examples-of-SI-units}),
+As mentioned before,  it is a main objective of this work to support the quantity calculus of ISQ 
+and the resulting  equations on derived SI entities 
+(cf. \url{https://www.quora.com/What-are-examples-of-SI-units}),
 both from a type-checking as well as a proof perspective.
 Unfortunately, our design objectives are for the case of the Isabelle system somewhat contradictory:
 on the one hand, we want a deep integration into the Isabelle/HOL's type-system,
