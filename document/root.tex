@@ -66,7 +66,7 @@ others, like the British Imperial System (BIS).
 \parindent 0pt\parskip 0.5ex
 
 
-\chapter{Introduction}
+\chapter{ISQ and SI: An Introduction}
 
 Modern Physics is based on the concept of quantifiable properties of physical phenomena such 
 as mass, length, time, etc. These phenomena, called \emph{quantities}, are linked via an 
@@ -101,6 +101,13 @@ Our construction is validated by a test-set of known equivalences between both q
 Moreover, the presented theory can be used for type-safe conversions between the SI system and
 others, like the British Imperial System (BIS).
 
+We would like to stress that it is not only our objective to provide a sound type-system for
+ISQ and SI; rather, our semantic construction produces an integration of quantities and SI units 
+\emph{as types} inside the Hindley-Milner style type system of
+ Isabelle/HOL\cite{nipkow.ea:isabelle:2002}. The objective of our construction is to
+reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
+calculations on SI units and their conversion to other measuring systems.
+
 % The International System of Units (SI, abbreviated from the French
 % Système International (d'unités)) is the modern form of the metric
 % system and is the most widely used system of measurement. It comprises
@@ -113,30 +120,56 @@ others, like the British Imperial System (BIS).
 % 
 % (cited from \url{https://en.wikipedia.org/wiki/International_System_of_Units}).
 
-In more detail, the ISQ provides the following fundamental concepts:
+In more detail, our ISQ model provides the following fundamental concepts:
 %
 \begin{enumerate}%
-\item \emph{quantities}, which are seen as a scalar vectorspace over the base vectors
-      \emph{time}, \emph{length}, \emph{mass}, \emph{electric current},
-      \emph{temperature}, \emph{amount of substance}, and \emph{luminous intensity},
- 
-\item \emph{dimensions}, i.e. a set of the symbols  \isa{T}, \isa{L}, \isa{M}, \isa{I},  
-      \isa{{\isasymTheta}}, \isa{N}, \isa{J}  corresponding to the above mentioned base 
-      quantities, indexed by an integer exponent,
+\item \emph{dimensions} represented by a type \isa{(int, 'd::enum) DimScheme} , i.e. an \isa{'d}-indexed
+      vectorspace of integers representing the exponents of the dimension vector. 
+      \isa{'d} is constrained to be a dimension type later.
 
-\item \emph{derived dimensions} such as \emph{volume} $\isa{L}^3$ or energy 
-      $\isa{M}\isa{L}^2\isa{T}^{-2}$ corresponding to \emph{derived quantities}, 
 
-\item \emph{magnitudes}, i.e. the scalar component in the quantity vector-space, and a
+\item \emph{quantities} represented by type \isa{('a, 'd::enum) Quantity}, which are constructed as 
+      a  vectorspace and a magnitude type \isa{'a}. 
 
 \item{quantity calculus} consisting of \emph{quantity equations} allowing to infer that 
       $\isa{L}\isa{T}^{-1}\isa{T}^{-1}\isa{M} = \isa{M}\isa{L}\isa{T}^{-2} = \isa{F} $ 
       (the left-hand-side equals mass times acceleration which is equal to force). 
+
+\item An kind of equivalence relation $\_\cong_{Q}\_$ on quantities, permitting to relate
+      quantities of different dimension type.
+
+
+\item \emph{base vectors} for
+      \emph{time}, \emph{length}, \emph{mass}, \emph{electric current},
+      \emph{temperature}, \emph{amount of substance}, and \emph{luminous intensity}, 
+      serving as concrete instance of the vector instances, and as syntax a
+      a set of the symbols  \isa{T}, \isa{L}, \isa{M}, \isa{I},  
+      \isa{{\isasymTheta}}, \isa{N}, \isa{J}  corresponding to the above mentioned base 
+      base vectors.
+
+\item \emph{(Abstract) Measurement Systems} represented by type 
+      \isa{('a, 'd::enum, 's::unit\_system) Measurement\_System}, which are a refinement
+      of quantities. The refinement is modeled as polymorphic record extensions; as a 
+      consequence, type inherits the algebraic properties of quantities.
+ 
+
+\item \emph{derived dimensions} such as \emph{volume} $\isa{L}^3$ or energy 
+      $\isa{M}\isa{L}^2\isa{T}^{-2}$ corresponding to \emph{derived quantities}.
+
 \end{enumerate}
 
-On the other side, the SI refines the ISQ with the following fundamental concepts:
+Via a fresh type-constructor \isa{SI}, the abstract measurement systems were instantiated
+to the SI system (the \emph{British Imperial System} (BIS) is constructed analogously).
+Technically, \isa{SI} is a tag-type that represents the fact that the magnitude in a quantity is
+actually a quantifiable entity in the sense of the SI system, i.e., that the \isa{1[L]} actually 
+refers to one meter measured according to the SI standard. At this point, it becomes impossible,
+for example, to add to one foot in the sense of the BIS one meter without creating a 
+type-inconsistency.
+
+The theory of the SI is created for the instance of the \isa{Measurement\_System} with SI.
+It provides the following fundamental concepts:
 \begin{enumerate}%
-\item measuring units corresponding to the ISQ base quantities sich
+\item measuring units and types corresponding to the ISQ base quantities sich
       as \emph{second}, \emph{meter}, \emph{kilogram}, \emph{ampere}, \emph{kelvin}, \emph{mole} and
       \emph{candela} \footnote{together with procedures how to measure a meter, for example, which are
       defined in accompanying standards},
@@ -146,11 +179,6 @@ On the other side, the SI refines the ISQ with the following fundamental concept
 \item \emph{unit equations} and conversion equations such as $J = kg\,m^2/s^2$ or $1 km/h = 1/3.6\,m/s$
 
 \end{enumerate}
-
-The purpose of the presented theory is to model quantities and SI units with polymorphic magnitudes 
-inside the Isabelle/HOL\cite{nipkow.ea:isabelle:2002} system. The objective of our construction is to
-reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
-calculations on SI units and their conversion to other measuring systems.
 
 As a result, it is possible to express "4500.0 kilogram times meter per second square" which has 
 the type 
@@ -165,53 +193,42 @@ represents a Newton synonym to $(\isasymreal)newton$.
  The type also expresses the type of the scalar \emph{magnitude} of the 
 measurements, which is in this case a real number. However, magnitude types in HOL can also be 
 integer numbers (\isa{int}), integer numbers representable by 32 bits (\isa{int32}), or, for example,
-a vector in the three-dimensional space  \isa{\isasymreal}$^3$. Thus, our typesystem allows
+a vector in the three-dimensional space  \isa{\isasymreal}$^3$. Thus, our type-system allows
 to express both conceptual entities in physics as well as 
-implementation issues in concrete calculations on a computer.
+implementation issues in concrete physical calculations on a computer.
 
-It is a main objective of this work to support the quantity calculus of ISQ and the resulting 
+As mentioned before,  it is a main objective of this work to support the quantity calculus of ISQ and the resulting 
 equations on derived SI entities (cf. \url{https://www.quora.com/What-are-examples-of-SI-units}),
 both from a type-checking as well as a proof perspective.
-These design objectives are for the case of Isabelle system somewhat contradictory.
-Since the Isabelle type system follows the Curry-style paradigm, which can be 
-characterized by: "be as implicit as possible, inference as automatic as possible", it is not
-possible to do computations on type-terms (in contrast to, for example, Coq). We therefore
-need a more involved construction using Isabelle's type-classes to establish a semantic 
-interpretation on certain classes of types. This paves the way to derive rules that
-establish and exploit type isomorphisms implicitely. For example, the implicit
-type isomorhisms for the dimensions $T^{-2} * T$ and $T^{-1}$ is dealt with appropriate
-rules on terms and a special form of equivalence. 
+Unfortunately, our design objectives are for the case of the Isabelle system somewhat contradictory:
+on the one hand, we want a deep integration into the Isabelle/HOL's type-system,
+on the other, we have to do normal-form calulations on types.
+Isabelle's type system follows the Curry-style paradigm, which rules out the possibility
+of direct calculations on type-terms (in contrast to Coq-like systems). However, our semantic
+interpretation of ISQ and SI allows for the foundation of the equivalence relation $\_\cong_{Q}\_$
+in semantic terms. This paves the way to derived rules that do computations of terms, which
+represent type computations indirectly. This principle is the basis for the tactic support we 
+developed, which allows for the dimensional type checking of key definitions of the SI 
+system such as:
 
-%% TODO bu : revise the rest. No longer accurate.
+\begin{isamarkuptext}%
+\isa{\ \isacommand{theorem}\ metre{\isacharunderscore}definition{\isacharcolon} \newline \ {\isachardoublequoteopen} 
+{\isadigit{1}}\ {\isasymodot}\ metre\ {\isasymcong}\isactrlsub Q\ {\isacharparenleft}\isactrlbold c\ \isactrlbold {\isacharslash}\ {\isacharparenleft}{\isadigit{2}}{\isadigit{9}}{\isadigit{9}}{\isadigit{7}}{\isadigit{9}}{\isadigit{2}}{\isadigit{4}}{\isadigit{5}}{\isadigit{8}}\ {\isasymodot}\ {\isasymone}{\isacharparenright}{\isacharparenright}\isactrlbold {\isasymcdot}second{\isachardoublequoteclose}\ {\isachardoublequoteopen}{\isadigit{1}}\ {\isasymodot}\ metre\ {\isasymcong}\isactrlsub Q\ {\isacharparenleft}{\isadigit{9}}{\isadigit{1}}{\isadigit{9}}{\isadigit{2}}{\isadigit{6}}{\isadigit{3}}{\isadigit{1}}{\isadigit{7}}{\isadigit{7}}{\isadigit{0}}\ {\isacharslash}\ {\isadigit{2}}{\isadigit{9}}{\isadigit{9}}{\isadigit{7}}{\isadigit{9}}{\isadigit{2}}{\isadigit{4}}{\isadigit{5}}{\isadigit{8}}{\isacharparenright}\ {\isasymodot}\ {\isacharparenleft}\isactrlbold c\ \isactrlbold {\isacharslash}\ {\isasymDelta}v\isactrlsub C\isactrlsub s{\isacharparenright}{\isachardoublequoteclose}\ 
+\newline \isacommand{by}\ si{\isacharunderscore}calc{\isacharplus}\ \ \newline \newline
+\isacommand{theorem}\ kilogram{\isacharunderscore}definition{\isacharcolon} \newline \ {\isachardoublequoteopen}{\isacharparenleft}{\isacharparenleft}{\isadigit{1}}\ {\isasymodot}\ kilogram{\isacharparenright}{\isacharcolon}{\isacharcolon}{\isacharprime}a\ kilogram{\isacharparenright}\ {\isasymcong}\isactrlsub Q\ {\isacharparenleft}\isactrlbold h\ \isactrlbold {\isacharslash}\ {\isacharparenleft}{\isadigit{6}}{\isachardot}{\isadigit{6}}{\isadigit{2}}{\isadigit{6}}{\isadigit{0}}{\isadigit{7}}{\isadigit{0}}{\isadigit{1}}{\isadigit{5}}\ {\isasymcdot}\ {\isadigit{1}}{\isacharslash}{\isacharparenleft}{\isadigit{1}}{\isadigit{0}}{\isacharcircum}{\isadigit{3}}{\isadigit{4}}{\isacharparenright}\ {\isasymodot}\ {\isasymone}{\isacharparenright}{\isacharparenright}\isactrlbold {\isasymcdot}metre\isactrlsup {\isacharminus}\isactrlsup {\isasymtwo}\isactrlbold {\isasymcdot}second{\isachardoublequoteclose}\ \newline \isacommand{by}\ si{\isacharunderscore}calc\ \ \ }%
+\end{isamarkuptext}\isamarkuptrue%
 
-Our construction proceeds in three phases:
-\begin{enumerate}%
-\item We construct a type \isa{Dimension} which is basically a "semantic representation" or
-"semantic domain" of all SI dimensions. Since SI-types have an interpretation in this domain,
-it serves to give semantics to type-constructors by operations on this domain, too.
-We construct a multiplicative group on it.
 
-\item From \isa{Dimension} we build a language of type-constructors of \isa{quantity}-types, 
- captured in a type class \isa{dim-types} giving it a pseudo-inductive structure. Types of
- this class are required to have  an interpretation function into \isa{Dimension}'s, which
- allows for establishing equivalences on \isa{dim-types}.
-      
-\item We construct a SI Unit-type as a pair of a polymorphic magnitude and a dimension type.
-  This type will be inhabited by all basic SI units and predicates expressing their relationship.
-\end{enumerate}%
+% \subsubsection{Previous Attempts.} The work of \cite{HayesBrendan95} represents to our knowledge a
+% first attempt to formalize SI units in Z, thus a similar language of HOL. While our typing
+% representation is more rigourous due to the use of type-classes, this works lacks any attempt
+% to support formal and automated deduction on Si unit equivalences.
+%
+% MORE TO COME.
 
-On this basis, an algebra of SI units can be derived; while types can not be "touched" inside
-an Isabelle/HOL logic, it is possible to transform unit types by applying rules of this algebra.
-Tactical support over this algebra is provided enabling the construction of normal forms on 
-both units and their type.  
+\chapter{Preliminaries}
 
-\subsubsection{Previous Attempts.} The work of \cite{HayesBrendan95} represents to our knowledge a
-first attempt to formalize SI units in Z, thus a similar language of HOL. While our typing
-representation is more rigourous due to the use of type-classes, this works lacks any attempt
-to support formal and automated deduction on Si unit equivalences.
-
-MORE TO COME.
-
+\section{More on Integers}
 \input{session}
 
 % optional bibliography

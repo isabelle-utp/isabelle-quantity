@@ -73,7 +73,7 @@ text \<open> The luminous efficacy of monochromatic radiation of frequency \<^co
 abbreviation luminous_efficacy :: "'a[J \<cdot> (L\<^sup>2 \<cdot> L\<^sup>-\<^sup>2) \<cdot> (M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>3)\<^sup>-\<^sup>1,SI]" ("K\<^sub>c\<^sub>d") where
 "luminous_efficacy \<equiv> 683 \<odot> (lumen\<^bold>/watt)"
 
-subsection \<open> Basis Theorems \<close>
+subsection \<open> Checking Foundational Equations of the SI System \<close>
 
 theorem second_definition: 
   "1 \<odot> second \<cong>\<^sub>Q (9192631770 \<odot> \<one>) \<^bold>/ \<Delta>v\<^sub>C\<^sub>s"
@@ -87,6 +87,7 @@ theorem metre_definition:
 theorem kilogram_definition:
   "((1 \<odot> kilogram)::'a kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) \<odot> \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
   by si_calc
+
 
 abbreviation "approx_ice_point \<equiv> 273.15 \<odot> kelvin"
 
