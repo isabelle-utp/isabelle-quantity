@@ -126,19 +126,19 @@ lemma dconvfactor_times:
   by (auto simp add: dconvfactor_def  mult_ac intpow_mult_combine times_DimScheme_def)
                                                                                                                                            
 lift_definition qconv :: "('s\<^sub>1, 's\<^sub>2) Conversion \<Rightarrow> ('a::field_char_0)['d::dim_type, 's\<^sub>1::unit_system] \<Rightarrow> 'a['d, 's\<^sub>2::unit_system]"
-is "\<lambda> c q. \<lparr> mag = of_rat (dconvfactor c (dim q)) * mag q, dim = dim q, sys = unit \<rparr>" by simp
+is "\<lambda> c q. \<lparr> mag = of_rat (dconvfactor c (dim q)) * mag q, dim = dim q, unit_sys = unit \<rparr>" by simp
 
 lemma magQ_qconv: "\<lbrakk>qconv c q\<rbrakk>\<^sub>Q = of_rat (dconvfactor c (dimQ q)) * \<lbrakk>q\<rbrakk>\<^sub>Q"
   by (simp add: si_def, transfer, simp)
 
 lemma qconv_id [simp]: "qconv id\<^sub>C x = x"
-  by (transfer', simp add: Quantity_eq_intro)
+  by (transfer', simp add: Measurement_System_eq_intro)
 
 lemma qconv_comp: "qconv (c\<^sub>1 \<circ>\<^sub>C c\<^sub>2) x = qconv c\<^sub>1 (qconv c\<^sub>2 x)"
   by (transfer, simp add: dconvfactor_compose of_rat_mult)
 
 lemma qconv_convinv [simp]: "qconv (convinv c) (qconv c x) = x"
-  by (transfer, simp add: dconvfactor_convinv mult.assoc[THEN sym] of_rat_mult[THEN sym] Quantity_eq_intro)
+  by (transfer, simp add: dconvfactor_convinv mult.assoc[THEN sym] of_rat_mult[THEN sym] Measurement_System_eq_intro)
 
 lemma qconv_scaleQ [simp]: "qconv c (d \<odot> x) = d \<odot> qconv c x"
   by (transfer, simp)
@@ -150,10 +150,10 @@ lemma qconv_minus [simp]: "qconv c (x - y) = qconv c x - qconv c y"
   by (transfer, auto simp add: plus_Quantity_ext_def mult.commute ring_class.ring_distribs)
 
 lemma qconv_qmult [simp]: "qconv c (x \<^bold>\<cdot> y) = qconv c x \<^bold>\<cdot> qconv c y"
-  by (transfer, simp add: times_Quantity_ext_def dconvfactor_times of_rat_mult)
+  by (transfer, simp add: times_Quantity_ext_def times_Measurement_System_ext_def dconvfactor_times of_rat_mult)
 
 lemma qconv_qinverse [simp]: "qconv c (x\<^sup>-\<^sup>\<one>) = (qconv c x)\<^sup>-\<^sup>\<one>"
-  by (transfer, simp add: inverse_Quantity_ext_def dconvfactor_inverse of_rat_inverse)
+  by (transfer, simp add: inverse_Quantity_ext_def inverse_Measurement_System_ext_def dconvfactor_inverse of_rat_inverse)
 
 lemma qconv_Length [simp]: "qconv c BUNIT(L, _) = LengthF c \<odot> BUNIT(L, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
