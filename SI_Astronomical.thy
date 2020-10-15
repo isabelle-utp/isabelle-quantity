@@ -8,7 +8,7 @@ text \<open> We create a number of astronomical constants and prove relationship
   For this, we use the approximation method that can compute bounds on transcendental functions. \<close>
 
 definition julian_year :: "'a::field[T]" where
-[si_eq]: "julian_year = 365.25 \<odot> day"
+[si_eq]: "julian_year = 365.25 *\<^sub>Q day"
 
 definition light_year :: "'a::field_char_0[L]" where
 "light_year = QCOERCE[L] (\<^bold>c \<^bold>\<cdot> julian_year)"
@@ -26,15 +26,15 @@ lemma light_year_eq [si_eq]: "\<lbrakk>light_year\<rbrakk>\<^sub>Q = \<lbrakk>\<
 text \<open> HOL can characterise \<^const>\<open>pi\<close> exactly and so we also give an exact value for the parsec. \<close>
 
 definition parsec :: "real[L]" where
-[si_eq]: "parsec = 648000 / pi \<odot> astronomical_unit"
+[si_eq]: "parsec = 648000 / pi *\<^sub>Q astronomical_unit"
 
 text \<open> We calculate some conservative bounds on the parsec: it is somewhere between 3.26 and 3.27
   light-years. \<close>
 
-lemma parsec_lb: "3.26 \<odot> light_year < parsec"
+lemma parsec_lb: "3.26 *\<^sub>Q light_year < parsec"
   by (si_simp, approximation 12)
 
-lemma parsec_ub: "parsec < 3.27 \<odot> light_year"
+lemma parsec_ub: "parsec < 3.27 *\<^sub>Q light_year"
   by (si_simp, approximation 12)
 
 text\<open> The full beauty of the approach is perhaps revealed here, with the 

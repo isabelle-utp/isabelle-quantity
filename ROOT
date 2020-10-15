@@ -4,7 +4,7 @@
  *
  * Version         : 1.0
  *
- * Author          : Simon Foster, Burkhart Wolff, 
+ * Author          : Simon Foster, Burkhart Wolff 
  *
  * This file       : Configuration
  *
@@ -43,7 +43,7 @@
  ******************************************************************************)
 (* $Id:$ *)
 
-session "ISQSI" = Main + 
+session "ISQ_SI" = "HOL" + 
   description \<open> SI Unit Support \<close>
   options [document = pdf, document_output = "document/output",
            document_variants="document:outline=/proof,/ML"]
