@@ -66,6 +66,7 @@ translations
 
 typ "real[m\<cdot>s\<^sup>-\<^sup>2]"
 typ "real[m\<cdot>s\<^sup>-\<^sup>2\<cdot>A\<^sup>2]"
+term "5 *\<^sub>Q joule"
 
 subsection \<open> Value Notations \<close>
 
@@ -111,5 +112,9 @@ translations
   "_si_kelvin" <= "_siq_print (CONST kelvin)"
   "_si_mole" <= "_siq_print (CONST mole)"
   "_si_candela" <= "_siq_print (CONST candela)"
+
+term "SI[5, m\<^sup>2]"
+term "SI[22, m\<cdot>s\<^sup>-\<^sup>1]"
+
 
 end
