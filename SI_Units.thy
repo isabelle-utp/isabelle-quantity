@@ -34,7 +34,7 @@ class time_second = unit_system
 
 instance SI :: time_second ..
               
-abbreviation "second   \<equiv> BUNIT(T, 'a::time_second)"
+abbreviation "second  \<equiv> BUNIT(T, 'a::time_second)"
 
 text \<open>Note that as a consequence of our construction, the term \<^term>\<open>metre\<close> is a SI Unit constant of 
 SI-type \<^typ>\<open>'a[L, SI]\<close>, so a unit of dimension \<^typ>\<open>Length\<close> with the magnitude of type \<^typ>\<open>'a\<close>.
@@ -57,8 +57,6 @@ type_synonym 'a ampere   = "'a[Current, SI]"
 type_synonym 'a kelvin   = "'a[Temperature, SI]"
 type_synonym 'a mole     = "'a[Amount, SI]"
 type_synonym 'a candela  = "'a[Intensity, SI]"
-
-
 
 text \<open> We can therefore construct a quantity such as \<^term>\<open>5 :: rat metre\<close>, which unambiguously 
   identifies that the unit of $5$ is metres using the type system. This works because each base

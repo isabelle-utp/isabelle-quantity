@@ -47,8 +47,7 @@
 \author{Simon Foster \and Burkhart Wolff}
 \maketitle
 
-\textbf{ Abstract } 
-
+\chapter*{Abstract}
 The present Isabelle theory builds a formal model for both the \emph{International System of Quantities}
 (ISQ) and the \emph{International System of Units} (SI), which are both fundamental for physics
 and engineering~\cite{bipm-jcgm:2012:VIM}. Both the ISQ and the SI were deeply integrated into 
@@ -69,11 +68,11 @@ others, like the British Imperial System (BIS).
 \chapter{ISQ and SI: An Introduction}
 
 Modern Physics is based on the concept of quantifiable properties of physical phenomena such 
-as mass, length, time, etc. These phenomena, called \emph{quantities}, are linked via an 
+as mass, length, time, current, etc. These phenomena, called \emph{quantities}, are linked via an 
 \emph{algebra of quantities} to derived concepts such as speed, force, and energy. The latter 
 allows for a \emph{dimensional analysis} of physical equations, which had already been the 
-backbone of Newtonian Physics. In parallel, physicians developped an own research field called 
-"metrology" defined as scientific study of the \emph{measurement} of physical quantities.
+backbone of Newtonian Physics. In parallel, physicians developed their own research field called 
+``metrology'' defined as a scientific study of the \emph{measurement} of physical quantities.
 
 
 The relevant international standard for quantities and measurements is distributed by the
@@ -84,22 +83,21 @@ The VIM actually defines two systems: the \emph{International System of Quantiti
 international (d’unit\'es)). Finally, the VIM defines concrete reference measurement procedures 
 as well as a terminology for measurement errors. 
 
-Conceived as a refinement of the ISQ, the SI comprises a coherent system of units of measurement built
- on seven base units, which are the second, metre, kilogram, ampere, kelvin, mole, candela, and a 
-set of twenty prefixes to the unit names and unit symbols that may be used when specifying multiples 
-and fractions of the units. The system also specifies names for 22 derived units, such as lumen and 
-watt, for other common physical quantities. While there is still nowadays a wealth of different 
-measuring systems such as the \emph{British Imperial System} (BIS) and the \emph{United States 
-customary system} (USC), the SI became more or less the de-facto reference behind all these systems.
+Conceived as a refinement of the ISQ, the SI comprises a coherent system of units of measurement built on seven base
+units, which are the second, metre, kilogram, ampere, kelvin, mole, candela, and a set of twenty prefixes to the unit
+names and unit symbols, such as milli- and kilo-, that may be used when specifying multiples and fractions of the
+units. The system also specifies names for 22 derived units, such as lumen and watt, for other common physical
+quantities. While there is still nowadays a wealth of different measuring systems such as the \emph{British Imperial
+  System} (BIS) and the \emph{United States customary system} (USC), the SI is more or less the de-facto reference
+behind all these systems.
 
-The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a 
-deep integration into Isabelle's type system\cite{nipkow.ea:isabelle:2002}. Quantities and units 
-were represented in a way that they have a  \emph{quantity type} as well as \emph{unit type} based 
-on its base vectors and their magnitudes. Since the algebra of quantities induces congruences on 
-quantity and SI types, specific tactic support has been developed to capture these.
-Our construction is validated by a test-set of known equivalences between both quantities and SI units.
-Moreover, the presented theory can be used for type-safe conversions between the SI system and
-others, like the British Imperial System (BIS).
+The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a deep integration into
+Isabelle's type system\cite{nipkow.ea:isabelle:2002}. Quantities and units are represented in a way that they have a
+\emph{quantity type} as well as a \emph{unit type} based on its base vectors and their magnitudes. Since the algebra of
+quantities induces congruences on quantity and SI types, specific tactic support has been developed to capture these.
+Our construction is validated by a test-set of known equivalences between both quantities and SI units.  Moreover, the
+presented theory can be used for type-safe conversions between the SI system and others, like the British Imperial
+System (BIS).
 
 % We would like to stress that it is not only our objective to provide a sound type-system for
 % ISQ and SI; rather, our semantic construction produces an integration of quantities and SI units 
@@ -124,13 +122,13 @@ In the following we describe the overall theory architecture in more detail.
 Our ISQ model provides the following fundamental concepts:
 %
 \begin{enumerate}%
-\item \emph{dimensions} represented by a type \isa{(int, 'd::enum) DimScheme} , i.e. an \isa{'d}-indexed
-      vectorspace of integers representing the exponents of the dimension vector. 
+\item \emph{dimensions} represented by a type \isa{(int, 'd::enum) DimScheme} , i.e. a \isa{'d}-indexed
+      vector space of integers representing the exponents of the dimension vector. 
       \isa{'d} is constrained to be a dimension type later.
 
 
 \item \emph{quantities} represented by type \isa{('a, 'd::enum) Quantity}, which are constructed as 
-      a  vectorspace and a magnitude type \isa{'a}. 
+      a  vector space and a magnitude type \isa{'a}. 
 
 \item{quantity calculus} consisting of \emph{quantity equations} allowing to infer that 
       $\isa{L}\isa{T}^{-1}\isa{T}^{-1}\isa{M} = \isa{M}\isa{L}\isa{T}^{-2} = \isa{F} $ 
