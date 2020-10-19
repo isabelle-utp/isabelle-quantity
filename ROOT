@@ -69,6 +69,7 @@ session "ISQ_SI" = "HOL" +
     SI_Units
     SI_Astronomical
     SI_Accepted
+    SI_Pretty
     BIS			
 
   document_files
