@@ -83,4 +83,6 @@ lemma "metrify ((70::rat) \<odot> mile \<^bold>/ hour) = (704087461 / 22500000) 
 lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) \<odot> centimetre) = 100000 / 9143993 \<odot> yard"
   by simp
 
+
+
 end
