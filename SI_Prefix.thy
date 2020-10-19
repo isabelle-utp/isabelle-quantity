@@ -55,10 +55,10 @@ definition yocto :: "'a" where [si_eq]: "yocto = 1/10^24"
 
 subsection \<open> Examples \<close>
 
-lemma "2.3 \<odot> (centi \<odot> metre)\<^sup>\<three> = 2.3 \<cdot> 1/10^6 \<odot> metre\<^sup>\<three>"
+lemma "2.3 *\<^sub>Q (centi *\<^sub>Q metre)\<^sup>\<three> = 2.3 \<cdot> 1/10^6 *\<^sub>Q metre\<^sup>\<three>"
   by (si_simp)
 
-lemma "1 \<odot> (centi \<odot> metre)\<^sup>-\<^sup>\<one> = 100 \<odot> metre\<^sup>-\<^sup>\<one>"
+lemma "1 *\<^sub>Q (centi *\<^sub>Q metre)\<^sup>-\<^sup>\<one> = 100 *\<^sub>Q metre\<^sup>-\<^sup>\<one>"
   by (si_simp)
 
 subsection \<open> Binary Prefixes \<close>

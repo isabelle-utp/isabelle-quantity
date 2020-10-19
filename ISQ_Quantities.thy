@@ -4,24 +4,15 @@ theory ISQ_Quantities
   imports ISQ_Dimensions
 begin
 
-section \<open> Quantity Semantic Domain \<close>
+subsection \<open> Quantity Semantic Domain \<close>
 
 text \<open> Here, we give a semantic domain for particular values of physical quantities. A quantity 
   is usually expressed as a number and a measurement unit, and the goal is to support this. First,
   though, we give a more general semantic domain where a quantity has a magnitude and a dimension. \<close>
 
-class unit_system = unitary
-
-lemma unit_system_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, unit_system_class)"
-  by (simp add: unit_system_class_def, rule unitary_intro)
-
-
 record ('a, 'd::enum) Quantity =
   mag  :: 'a                    \<comment> \<open> Magnitude of the quantity. \<close>
   dim  :: "(int, 'd) DimScheme" \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
-
-
-
 
 text \<open> The quantity type is parametric as we permit the magnitude to be represented using any kind
   of numeric type, such as \<^typ>\<open>int\<close>, \<^typ>\<open>rat\<close>, or \<^typ>\<open>real\<close>, though we usually minimally expect
@@ -154,7 +145,12 @@ begin
 instance ..
 end
 
-section \<open> Measurement Systems \<close>
+subsection \<open> Measurement Systems \<close>
+
+class unit_system = unitary
+
+lemma unit_system_intro: "(UNIV::'s set) = {a} \<Longrightarrow> OFCLASS('s, unit_system_class)"
+  by (simp add: unit_system_class_def, rule unitary_intro)
 
 record ('a, 'd::enum, 's::unit_system) Measurement_System = "('a, 'd::enum) Quantity" +
   unit_sys  :: 's \<comment> \<open> The system of units being employed \<close>
@@ -255,7 +251,7 @@ begin
 instance ..
 end
 
-section \<open> Dimension Typed Quantities \<close>
+subsection \<open> Dimension Typed Quantities \<close>
 
 text \<open> We can now define the type of quantities with parametrised dimension types. \<close>
 
@@ -379,8 +375,6 @@ text \<open> Analogous to the \<^const>\<open>scaleR\<close> operator for vector
 
 lift_definition scaleQ :: "'a \<Rightarrow> 'a::comm_ring_1['d::dim_type, 's::unit_system] \<Rightarrow> 'a['d, 's]" (infixr "*\<^sub>Q" 63)
   is "\<lambda> r x. \<lparr> mag = r * mag x, dim = QD('d), unit_sys = unit \<rparr>" by simp
-
-notation scaleQ (infixr "\<odot>" 63)
 
 text \<open> Finally, we instantiate the arithmetic types classes where possible. We do not instantiate
   \<^class>\<open>times\<close> because this results in a nonsensical homogeneous product on quantities. \<close>

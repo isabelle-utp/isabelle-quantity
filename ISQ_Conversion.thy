@@ -7,7 +7,8 @@ begin
 subsection \<open> Conversion Schemas \<close>
 
 text \<open>  A conversion schema provides factors for each of the base units for converting between
-  two systems of units. \<close>
+  two systems of units. We currently only support conversion between systems that can meaningfully
+  characterise a subset of the seven SI dimensions. \<close>
 
 record ConvSchema =
   cLengthF      :: rat
@@ -140,7 +141,7 @@ lemma qconv_comp: "qconv (c\<^sub>1 \<circ>\<^sub>C c\<^sub>2) x = qconv c\<^sub
 lemma qconv_convinv [simp]: "qconv (convinv c) (qconv c x) = x"
   by (transfer, simp add: dconvfactor_convinv mult.assoc[THEN sym] of_rat_mult[THEN sym] Measurement_System_eq_intro)
 
-lemma qconv_scaleQ [simp]: "qconv c (d \<odot> x) = d \<odot> qconv c x"
+lemma qconv_scaleQ [simp]: "qconv c (d *\<^sub>Q x) = d *\<^sub>Q qconv c x"
   by (transfer, simp)
 
 lemma qconv_plus [simp]: "qconv c (x + y) = qconv c x + qconv c y"
@@ -155,25 +156,25 @@ lemma qconv_qmult [simp]: "qconv c (x \<^bold>\<cdot> y) = qconv c x \<^bold>\<c
 lemma qconv_qinverse [simp]: "qconv c (x\<^sup>-\<^sup>\<one>) = (qconv c x)\<^sup>-\<^sup>\<one>"
   by (transfer, simp add: inverse_Quantity_ext_def inverse_Measurement_System_ext_def dconvfactor_inverse of_rat_inverse)
 
-lemma qconv_Length [simp]: "qconv c BUNIT(L, _) = LengthF c \<odot> BUNIT(L, _)" 
+lemma qconv_Length [simp]: "qconv c BUNIT(L, _) = LengthF c *\<^sub>Q BUNIT(L, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Mass [simp]: "qconv c BUNIT(M, _) = MassF c \<odot> BUNIT(M, _)" 
+lemma qconv_Mass [simp]: "qconv c BUNIT(M, _) = MassF c *\<^sub>Q BUNIT(M, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Time [simp]: "qconv c BUNIT(T, _) = TimeF c \<odot> BUNIT(T, _)" 
+lemma qconv_Time [simp]: "qconv c BUNIT(T, _) = TimeF c *\<^sub>Q BUNIT(T, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Current [simp]: "qconv c BUNIT(I, _) = CurrentF c \<odot> BUNIT(I, _)" 
+lemma qconv_Current [simp]: "qconv c BUNIT(I, _) = CurrentF c *\<^sub>Q BUNIT(I, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Temperature [simp]: "qconv c BUNIT(\<Theta>, _) = TemperatureF c \<odot> BUNIT(\<Theta>, _)" 
+lemma qconv_Temperature [simp]: "qconv c BUNIT(\<Theta>, _) = TemperatureF c *\<^sub>Q BUNIT(\<Theta>, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Amount [simp]: "qconv c BUNIT(N, _) = AmountF c \<odot> BUNIT(N, _)" 
+lemma qconv_Amount [simp]: "qconv c BUNIT(N, _) = AmountF c *\<^sub>Q BUNIT(N, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
-lemma qconv_Intensity [simp]: "qconv c BUNIT(J, _) = IntensityF c \<odot> BUNIT(J, _)" 
+lemma qconv_Intensity [simp]: "qconv c BUNIT(J, _) = IntensityF c *\<^sub>Q BUNIT(J, _)" 
   by (simp add: dconvfactor_def magQ_qconv si_eq mk_BaseDim_def one_DimScheme_def)
 
 end

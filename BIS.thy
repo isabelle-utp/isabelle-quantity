@@ -27,31 +27,31 @@ text \<open> We chose Rankine rather than Farenheit as this is more compatible w
 
 subsection \<open> Derived Units \<close>
 
-definition [si_eq]: "foot = 1/3 \<odot> yard"
+definition [si_eq]: "foot = 1/3 *\<^sub>Q yard"
 
-definition [si_eq]: "inch = 1/12 \<odot> foot"
+definition [si_eq]: "inch = 1/12 *\<^sub>Q foot"
 
-definition [si_eq]: "furlong = 220 \<odot> yard"
+definition [si_eq]: "furlong = 220 *\<^sub>Q yard"
 
-definition [si_eq]: "mile = 1760 \<odot> yard"
+definition [si_eq]: "mile = 1760 *\<^sub>Q yard"
 
-definition [si_eq]: "acre = 4840 \<odot> yard\<^sup>\<three>"
+definition [si_eq]: "acre = 4840 *\<^sub>Q yard\<^sup>\<three>"
 
-definition [si_eq]: "ounce = 1/12 \<odot> pound"
+definition [si_eq]: "ounce = 1/12 *\<^sub>Q pound"
 
-definition [si_eq]: "gallon = 277.421 \<odot> inch\<^sup>\<three>"
+definition [si_eq]: "gallon = 277.421 *\<^sub>Q inch\<^sup>\<three>"
 
-definition [si_eq]: "quart = 1/4 \<odot> gallon"
+definition [si_eq]: "quart = 1/4 *\<^sub>Q gallon"
 
-definition [si_eq]: "pint = 1/8 \<odot> gallon"
+definition [si_eq]: "pint = 1/8 *\<^sub>Q gallon"
 
-definition [si_eq]: "peck = 2 \<odot> gallon"
+definition [si_eq]: "peck = 2 *\<^sub>Q gallon"
 
-definition [si_eq]: "bushel = 8 \<odot> gallon"
+definition [si_eq]: "bushel = 8 *\<^sub>Q gallon"
 
-definition [si_eq]: "minute = 60 \<odot> second"
+definition [si_eq]: "minute = 60 *\<^sub>Q second"
 
-definition [si_eq]: "hour = 60 \<odot> minute"
+definition [si_eq]: "hour = 60 *\<^sub>Q minute"
 
 subsection \<open> Conversion to SI \<close>
 
@@ -74,13 +74,13 @@ lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993"
 
 subsection \<open> Conversion Examples \<close>
 
-lemma "metrify (foot :: rat[L, BIS]) = 0.9143993 / 3 \<odot> metre"
+lemma "metrify (foot :: rat[L, BIS]) = 0.9143993 / 3 *\<^sub>Q metre"
   by (simp add: foot_def)
 
-lemma "metrify ((70::rat) \<odot> mile \<^bold>/ hour) = (704087461 / 22500000) \<odot> (metre \<^bold>/ second)"
+lemma "metrify ((70::rat) *\<^sub>Q mile \<^bold>/ hour) = (704087461 / 22500000) *\<^sub>Q (metre \<^bold>/ second)"
   by (si_simp)
 
-lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) \<odot> centimetre) = 100000 / 9143993 \<odot> yard"
+lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) *\<^sub>Q centimetre) = 100000 / 9143993 *\<^sub>Q yard"
   by simp
 
 

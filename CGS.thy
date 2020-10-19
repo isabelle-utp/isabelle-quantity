@@ -36,7 +36,7 @@ lemma CGS_SI_simps [simp]: "LengthF (convschema (a::CGS itself)) = 0.01" "MassF 
 
 subsection \<open> Conversion Examples \<close>
 
-lemma "metrify ((100::rat) \<odot> centimetre) = 1 \<odot> metre"
+lemma "metrify ((100::rat) *\<^sub>Q centimetre) = 1 *\<^sub>Q metre"
   by (si_simp)
 
 end

@@ -6,31 +6,31 @@ begin
 
 subsection \<open> Quantity Scale \<close>
 
-lemma scaleQ_add_right: "a \<odot> x + y = (a \<odot> x) + (a \<odot> y)"
+lemma scaleQ_add_right: "a *\<^sub>Q x + y = (a *\<^sub>Q x) + (a *\<^sub>Q y)"
   by (si_simp add: distrib_left)
 
-lemma scaleQ_add_left: "a + b \<odot> x = (a \<odot> x) + (b \<odot> x)"
+lemma scaleQ_add_left: "a + b *\<^sub>Q x = (a *\<^sub>Q x) + (b *\<^sub>Q x)"
   by (si_simp add: distrib_right)
 
-lemma scaleQ_scaleQ [simp]: "a \<odot> b \<odot> x = a \<cdot> b \<odot> x"
+lemma scaleQ_scaleQ [simp]: "a *\<^sub>Q b *\<^sub>Q x = a \<cdot> b *\<^sub>Q x"
   by si_simp
 
-lemma scaleQ_one [simp]: "1 \<odot> x = x"
+lemma scaleQ_one [simp]: "1 *\<^sub>Q x = x"
   by si_simp
 
-lemma scaleQ_zero [simp]: "0 \<odot> x = 0"
+lemma scaleQ_zero [simp]: "0 *\<^sub>Q x = 0"
   by si_simp
 
-lemma scaleQ_inv: "-a \<odot> x = a \<odot> -x"
+lemma scaleQ_inv: "-a *\<^sub>Q x = a *\<^sub>Q -x"
   by si_calc
 
-lemma scaleQ_as_qprod: "a \<odot> x \<cong>\<^sub>Q (a \<odot> \<one>) \<^bold>\<cdot> x"
+lemma scaleQ_as_qprod: "a *\<^sub>Q x \<cong>\<^sub>Q (a *\<^sub>Q \<one>) \<^bold>\<cdot> x"
   by si_simp
 
-lemma mult_scaleQ_left [simp]: "(a \<odot> x) \<^bold>\<cdot> y = a \<odot> x \<^bold>\<cdot> y"
+lemma mult_scaleQ_left [simp]: "(a *\<^sub>Q x) \<^bold>\<cdot> y = a *\<^sub>Q x \<^bold>\<cdot> y"
   by si_simp
 
-lemma mult_scaleQ_right [simp]: "x \<^bold>\<cdot> (a \<odot> y) = a \<odot> x \<^bold>\<cdot> y"
+lemma mult_scaleQ_right [simp]: "x \<^bold>\<cdot> (a *\<^sub>Q y) = a *\<^sub>Q x \<^bold>\<cdot> y"
   by si_simp
 
 subsection \<open> Field Laws \<close>
@@ -67,7 +67,7 @@ lemma qinverse_weak_cong:
 
 lemma scaleQ_cong:
   assumes "y \<cong>\<^sub>Q z"
-  shows "x \<odot> y \<cong>\<^sub>Q x \<odot> z"
+  shows "x *\<^sub>Q y \<cong>\<^sub>Q x *\<^sub>Q z"
   using assms by si_calc
 
 lemma qinverse_qinverse: "x\<^sup>-\<^sup>\<one>\<^sup>-\<^sup>\<one> \<cong>\<^sub>Q x"
