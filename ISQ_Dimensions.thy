@@ -468,4 +468,54 @@ type_synonym Charge = "I\<cdot>T"
 type_synonym PotentialDifference = "L\<^sup>2\<cdot>M\<cdot>T\<^sup>-\<^sup>3\<cdot>I\<^sup>-\<^sup>1"
 type_synonym Capacitance = "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2"
 
+subsection \<open> ML Functions \<close>
+
+text \<open> We define ML functions for converting a dimension to an integer vector, and vice-versa.
+  These are useful for normalising dimension types. \<close>
+
+ML \<open> 
+signature DIMENSION_TYPE = 
+sig
+  val dim_to_typ: int list -> typ
+  val typ_to_dim: typ -> int list
+  val normalise: typ -> typ
+end
+
+structure Dimension_Type : DIMENSION_TYPE =
+struct
+  
+  val dims = [@{typ L}, @{typ M}, @{typ T}, @{typ I}, @{typ \<Theta>}, @{typ N}, @{typ J}];
+
+  fun typ_to_dim (Type (@{type_name Length}, [])) = [1, 0, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Mass}, []))   = [0, 1, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Time}, []))   = [0, 0, 1, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Current}, []))   = [0, 0, 0, 1, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Temperature}, []))   = [0, 0, 0, 0, 1, 0, 0] |
+      typ_to_dim (Type (@{type_name Amount}, []))   = [0, 0, 0, 0, 0, 1, 0] |
+      typ_to_dim (Type (@{type_name Intensity}, []))   = [0, 0, 0, 0, 0, 0, 1] |
+      typ_to_dim (Type (@{type_name NoDimension}, []))   = [0, 0, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name DimInv}, [x])) = map (fn x => 0 - x) (typ_to_dim x) |
+      typ_to_dim (Type (@{type_name DimTimes}, [x, y])) 
+         = map (fn (x, y) => x + y) (ListPair.zip (typ_to_dim x, typ_to_dim y)) |
+      typ_to_dim _ = raise Match;
+
+  fun DimPow 0 _ = Type (@{type_name NoDimension}, []) |
+      DimPow 1 t = t |
+      DimPow n t = (if (n > 0) then Type (@{type_name DimTimes}, [DimPow (n - 1) t, t]) 
+                               else Type (@{type_name DimInv}, [DimPow (0 - n) t]));
+
+  fun dim_to_typ ds = 
+    let val dts = map (fn (n, d) => DimPow n d) (filter (fn (n, _) => n <> 0) (ListPair.zip (ds, dims)))
+    in if (dts = []) then @{typ NoDimension} else
+          foldl1 (fn (x, y) => Type (@{type_name DimTimes}, [x, y])) dts 
+    end;
+
+  val normalise = dim_to_typ o typ_to_dim;
+
+end;
+
+Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+\<close>
+
 end
