@@ -49,16 +49,15 @@
 \maketitle
 
 \chapter*{Abstract}
-The present Isabelle theory builds a formal model for both the \emph{International System of Quantities}
-(ISQ) and the \emph{International System of Units} (SI), which are both fundamental for physics
-and engineering~\cite{bipm-jcgm:2012:VIM}. Both the ISQ and the SI are deeply integrated into 
-Isabelle's type system. Quantities and units are represented in a way that 
-they have a \emph{quantity type} as well as \emph{unit type} based on its base vectors and their 
-magnitudes. Since the underlying ``algebra of quantities'' from~\cite{bipm-jcgm:2012:VIM} induces 
-congruences on  quantity and SI types, specific tactic support has been developed to capture these.
-Our construction is validated by a test-set of known equivalences between both quantities and SI units.
-Moreover, the presented theory can be used for type-safe conversions between the SI system and
-others, like the British Imperial System (BIS).
+The present Isabelle theory builds a formal model for both the \emph{International System of Quantities} (ISQ) and the
+\emph{International System of Units} (SI), which are both fundamental for physics and
+engineering~\cite{bipm-jcgm:2012:VIM}. Both the ISQ and the SI are deeply integrated into Isabelle's type
+system. Quantities are parameterised by \emph{dimension types}, which correspond to base vectors, and thus only
+quantities of the same dimension can be equated. Since the underlying ``algebra of quantities''
+from~\cite{bipm-jcgm:2012:VIM} induces congruences on quantity and SI types, specific tactic support is developed
+to capture these. Our construction is validated by a test-set of known equivalences between both quantities and SI
+units. Moreover, the presented theory can be used for type-safe conversions between the SI system and others, like the
+British Imperial System (BIS).
 
 \tableofcontents
 
