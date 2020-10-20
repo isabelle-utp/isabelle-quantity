@@ -1,14 +1,14 @@
 (*****************************************************************************
  *
- * Project         : Support for physical quantities and SI Units in Isabelle/HOL
+ * Project   : A Sound Type System for Physical Quantities, Units, and Measurements
  *
- * Version         : 1.0
+ * Version   : 1.0
  *
- * Author          : Simon Foster, Burkhart Wolff 
+ * Author    : Simon Foster, Burkhart Wolff 
  *
- * This file       : Configuration
+ * This file : Configuration
  *
- * Copyright (c) 2020 University of York, GB, Université Paris-Saclay, France
+ * Copyright (c) 2020 University of York, UK, Université Paris-Saclay, France
  *
  *
  * All rights reserved.
@@ -43,8 +43,8 @@
  ******************************************************************************)
 (* $Id:$ *)
 
-session "ISQ_SI" = "HOL" + 
-  description \<open> SI Unit Support \<close>
+session "Physical_Quantities" = "HOL" + 
+  description \<open> Physical Quantities, Units, and Measurements \<close>
   options [document = pdf, document_output = "document/output",
            document_variants="document:outline=/proof,/ML"]
   sessions  

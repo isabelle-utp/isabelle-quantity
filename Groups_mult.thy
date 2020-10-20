@@ -1,8 +1,11 @@
-chapter \<open> Multiplicative Groups \<close>
+section \<open> Multiplication Groups \<close>
 
 theory Groups_mult
   imports Main
 begin
+
+text \<open> The HOL standard library only has groups based on addition. Here, we build one based on
+  multiplication. \<close>
 
 notation times (infixl "\<cdot>" 70)
 

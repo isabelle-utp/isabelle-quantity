@@ -11,8 +11,8 @@ text \<open> Here, we give a semantic domain for particular values of physical q
   though, we give a more general semantic domain where a quantity has a magnitude and a dimension. \<close>
 
 record ('a, 'd::enum) Quantity =
-  mag  :: 'a                    \<comment> \<open> Magnitude of the quantity. \<close>
-  dim  :: "(int, 'd) DimScheme" \<comment> \<open> Dimension of the quantity -- denote the kind of quantity. \<close>
+  mag  :: 'a                 \<comment> \<open> Magnitude of the quantity. \<close>
+  dim  :: "(int, 'd) dimvec" \<comment> \<open> Dimension of the quantity -- denotes the kind of quantity. \<close>
 
 text \<open> The quantity type is parametric as we permit the magnitude to be represented using any kind
   of numeric type, such as \<^typ>\<open>int\<close>, \<^typ>\<open>rat\<close>, or \<^typ>\<open>real\<close>, though we usually minimally expect

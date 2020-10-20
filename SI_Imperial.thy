@@ -1,4 +1,4 @@
-section \<open> Imperial Units via SI-Units\<close>
+section \<open> Imperial Units via SI Units \<close>
 
 theory SI_Imperial
   imports SI_Accepted
@@ -34,7 +34,7 @@ lemma mile_alt_def: "mile = 1609.344 *\<^sub>Q metre"
 definition nautical_mile :: "'a[L]" where
 [si_eq]: "nautical_mile = 1852 *\<^sub>Q metre"
 
-subsection \<open> Units of mass \<close>
+subsection \<open> Units of Mass \<close>
 
 text \<open> The units of mass are defined in terms of the international yard, as standardised in 1959. \<close>
 
@@ -47,7 +47,7 @@ definition ounce :: "'a[M]" where
 definition stone :: "'a[M]" where
 [si_eq]: "stone = 14 *\<^sub>Q pound"
 
-subsection \<open> Other units \<close>
+subsection \<open> Other Units \<close>
 
 definition knot :: "'a[L \<cdot> T\<^sup>-\<^sup>1]" where
 [si_eq]: "knot = 1 *\<^sub>Q (nautical_mile \<^bold>/ hour)"

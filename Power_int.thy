@@ -1,4 +1,4 @@
-subsection \<open> Integer Powers \<close>
+section \<open> Integer Powers \<close>
 
 theory Power_int
   imports "HOL.Real"
