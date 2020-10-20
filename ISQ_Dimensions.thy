@@ -61,14 +61,137 @@ end
 instance unit :: ab_group_mult
   by (intro_classes, simp_all)
 
-subsection \<open> Dimensions Semantic Domain \<close>
+subsection \<open> Dimension Vectors \<close>
 
 text \<open> Quantity dimensions are used to distinguish quantities of different kinds. Only quantities
   of the same kind can be compared and combined: it is a mistake to add a length to a mass, for
-  example. Dimensions are expressed in terms of seven base quantities, which can be combined to form 
-  derived quantities. Consequently, a dimension associates with each of the seven base quantities an 
-  integer that denotes the power to which it is raised. We use a record to represent this 7-tuple, 
-  to enable code generation and thus efficient proof. \<close>
+  example. Dimensions are often expressed in terms of seven base quantities, which can be combined 
+  to form derived quantities. Consequently, a dimension associates with each of the base quantities 
+  an integer that denotes the power to which it is raised. We use a special vector type to represent
+  dimensions, and then specialise this to the seven major dimensions. \<close>
+
+typedef ('n, 'd) dimvec = "UNIV :: ('d::enum \<Rightarrow> 'n) set"
+  morphisms dim_nth dim_lambda ..
+
+declare dim_lambda_inject [simplified, simp]
+declare dim_nth_inverse [simp]
+declare dim_lambda_inverse [simplified, simp]
+
+instantiation dimvec :: (zero, enum) "one"
+begin
+definition one_dimvec :: "('a, 'b) dimvec" where "one_dimvec = dim_lambda (\<lambda> i. 0)"
+instance ..
+end
+
+instantiation dimvec :: (plus, enum) times
+begin
+definition times_dimvec :: "('a, 'b) dimvec \<Rightarrow> ('a, 'b) dimvec \<Rightarrow> ('a, 'b) dimvec" where
+"times_dimvec x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
+instance ..
+end
+
+instance dimvec :: (comm_monoid_add, enum) comm_monoid_mult
+  by ((intro_classes; simp add: times_dimvec_def one_dimvec_def fun_eq_iff add.assoc), simp add: add.commute)
+  
+text \<open> We also define the inverse and division operations, and an abelian group, which will allow
+  us to perform dimensional analysis. \<close>
+
+instantiation dimvec :: ("{plus,uminus}", enum) inverse
+begin
+definition inverse_dimvec :: "('a, 'b) dimvec \<Rightarrow> ('a, 'b) dimvec" where
+"inverse_dimvec x = dim_lambda (\<lambda> i. - dim_nth x i)"
+
+definition divide_dimvec :: "('a, 'b) dimvec \<Rightarrow> ('a, 'b) dimvec \<Rightarrow> ('a, 'b) dimvec" where
+[code_unfold]: "divide_dimvec x y = x * (inverse y)"
+
+  instance ..
+end
+
+instance dimvec :: (ab_group_add, enum) ab_group_mult
+  by (intro_classes, simp_all add: inverse_dimvec_def one_dimvec_def times_dimvec_def divide_dimvec_def)
+
+subsection \<open> Code Generation \<close>
+
+text \<open> Dimension vectors can be represented using lists, which enables code generation and thus
+  efficient proof. \<close>
+
+definition mk_dimvec :: "'n list \<Rightarrow> ('n::ring_1, 'd::enum) dimvec" 
+  where "mk_dimvec ds = (if (length ds = CARD('d)) then dim_lambda (\<lambda> d. ds ! enum_ind d) else 1)"
+
+code_datatype mk_dimvec
+
+lemma mk_dimvec_inj: "inj_on (mk_dimvec :: 'n list \<Rightarrow> ('n::ring_1, 'd::enum) dimvec) {xs. length xs = CARD('d)}"
+proof (rule inj_onI, safe)
+  fix x y :: "'n list"
+  assume a: "(mk_dimvec x :: ('n, 'd) dimvec) = mk_dimvec y" "length x = CARD('d)" "length y = CARD('d)"
+  have "\<And>i. i < length x \<Longrightarrow> x ! i = y ! i"
+  proof -
+    fix i
+    assume "i < length x"
+    with a have "enum_ind (ENUM('d) ! i) = i"
+      by (simp)
+    with a show "x ! i = y ! i"
+      by (auto simp add: mk_dimvec_def fun_eq_iff, metis)
+  qed
+
+  then show "x = y"
+    by (metis a(2) a(3) nth_equalityI)
+qed
+
+lemma mk_dimvec_eq_iff [simp]: 
+  assumes "length x = CARD('d)" "length y = CARD('d)"
+  shows "((mk_dimvec x :: ('n::ring_1, 'd::enum) dimvec) = mk_dimvec y) \<longleftrightarrow> (x = y)"
+  by (rule inj_on_eq_iff[OF mk_dimvec_inj], simp_all add: assms)
+
+lemma one_mk_dimvec [code, si_def]: "(1::('n::ring_1, 'a::enum) dimvec) = mk_dimvec (replicate CARD('a) 0)"
+  by (auto simp add: mk_dimvec_def one_dimvec_def)
+
+lemma times_mk_dimvec [code, si_def]:
+  "(mk_dimvec xs * mk_dimvec ys :: ('n::ring_1, 'a::enum) dimvec) = 
+  (if (length xs = CARD('a) \<and> length ys = CARD('a))
+    then mk_dimvec (map (\<lambda> (x, y). x + y) (zip xs ys))
+    else if length xs = CARD('a) then mk_dimvec xs else mk_dimvec ys)"
+  by (auto simp add: times_dimvec_def mk_dimvec_def fun_eq_iff one_dimvec_def)
+
+lemma power_mk_dimvec [si_def]:
+  "(power (mk_dimvec xs) n :: ('n::ring_1, 'a::enum) dimvec) = 
+    (if (length xs = CARD('a)) then mk_dimvec (map ((*) (of_nat n)) xs) else mk_dimvec xs)"
+  by (induct n, simp add: one_dimvec_def mk_dimvec_def)
+     (auto simp add: times_mk_dimvec zip_map_map[where f="id", simplified] comp_def split_beta' zip_same_conv_map distrib_right mult.commute)
+
+lemma inverse_mk_dimvec [code, si_def]:
+  "(inverse (mk_dimvec xs) :: ('n::ring_1, 'a::enum) dimvec) = 
+   (if (length xs = CARD('a)) then mk_dimvec (map uminus xs) else 1)"
+  by (auto simp add: inverse_dimvec_def one_dimvec_def mk_dimvec_def fun_eq_iff)  
+
+lemma divide_mk_dimvec [code, si_def]:
+  "(mk_dimvec xs / mk_dimvec ys :: ('n::ring_1, 'a::enum) dimvec) = 
+  (if (length xs = CARD('a) \<and> length ys = CARD('a))
+    then mk_dimvec (map (\<lambda> (x, y). x - y) (zip xs ys))
+    else if length ys = CARD('a) then mk_dimvec (map uminus ys) else mk_dimvec xs)"
+  by (auto simp add: divide_dimvec_def inverse_mk_dimvec times_mk_dimvec zip_map_map[where f="id", simplified] comp_def split_beta')
+
+text \<open> A base dimension is a dimension where precisely one component has power 1: it is the 
+  dimension of a base quantity. Here we define the seven base dimensions. \<close>
+
+definition mk_BaseDim :: "'d::enum \<Rightarrow> (int, 'd) dimvec" where
+"mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+
+lemma mk_BaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> mk_BaseDim x \<noteq> mk_BaseDim y"
+  by (auto simp add: mk_BaseDim_def fun_eq_iff)
+
+lemma mk_BaseDim_code [code]: "mk_BaseDim (d::'d::enum) = mk_dimvec (list_update (replicate CARD('d) 0) (enum_ind d) 1)"
+  by (auto simp add: mk_BaseDim_def mk_dimvec_def fun_eq_iff)
+
+definition is_BaseDim :: "(int, 'd::enum) dimvec \<Rightarrow> bool" 
+  where "is_BaseDim x \<equiv> (\<exists> i. x = dim_lambda ((\<lambda> x. 0)(i := 1)))"
+
+lemma is_BaseDim_mk [simp]: "is_BaseDim (mk_BaseDim x)"
+  by (auto simp add: mk_BaseDim_def is_BaseDim_def fun_eq_iff)
+
+subsection \<open> Dimension Semantic Domain \<close>
+
+text \<open> We next specialise dimension vectors to the usual seven place vector. \<close>
 
 datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensity
 
@@ -99,121 +222,7 @@ lemma sdim_enum [simp]:
   "enum_ind Temperature = 4" "enum_ind Amount = 5" "enum_ind Intensity = 6"
   by (simp_all add: enum_ind_def enum_sdim_def)
 
-typedef ('n, 'd) DimScheme = "UNIV :: ('d::enum \<Rightarrow> 'n) set"
-  morphisms dim_nth dim_lambda ..
-
-declare dim_lambda_inject [simplified, simp]
-declare dim_nth_inverse [simp]
-declare dim_lambda_inverse [simplified, simp]
-
-instantiation DimScheme :: (zero, enum) "one"
-begin
-definition one_DimScheme :: "('a, 'b) DimScheme" where "one_DimScheme = dim_lambda (\<lambda> i. 0)"
-instance ..
-end
-
-type_synonym Dimension = "(int, sdim) DimScheme"
-
-definition MkDimScheme :: "'n list \<Rightarrow> ('n::ring_1, 'd::enum) DimScheme" 
-  where "MkDimScheme ds = (if (length ds = CARD('d)) then dim_lambda (\<lambda> d. ds ! enum_ind d) else 1)"
-
-code_datatype MkDimScheme
-
-lemma MkDimSchema_inj: "inj_on (MkDimScheme :: 'n list \<Rightarrow> ('n::ring_1, 'd::enum) DimScheme) {xs. length xs = CARD('d)}"
-proof (rule inj_onI, safe)
-  fix x y :: "'n list"
-  assume a: "(MkDimScheme x :: ('n, 'd) DimScheme) = MkDimScheme y" "length x = CARD('d)" "length y = CARD('d)"
-  have "\<And>i. i < length x \<Longrightarrow> x ! i = y ! i"
-  proof -
-    fix i
-    assume "i < length x"
-    with a have "enum_ind (ENUM('d) ! i) = i"
-      by (simp)
-    with a show "x ! i = y ! i"
-      by (auto simp add: MkDimScheme_def fun_eq_iff, metis)
-  qed
-
-  then show "x = y"
-    by (metis a(2) a(3) nth_equalityI)
-qed
-
-lemma MkDimSchema_eq_iff [simp]: 
-  assumes "length x = CARD('d)" "length y = CARD('d)"
-  shows "((MkDimScheme x :: ('n::ring_1, 'd::enum) DimScheme) = MkDimScheme y) \<longleftrightarrow> (x = y)"
-  by (rule inj_on_eq_iff[OF MkDimSchema_inj], simp_all add: assms)
-
-lemma one_MkDimScheme [code, si_def]: "(1::('n::ring_1, 'a::enum) DimScheme) = MkDimScheme (replicate CARD('a) 0)"
-  by (auto simp add: MkDimScheme_def one_DimScheme_def)
-
-instantiation DimScheme :: (plus, enum) times
-begin
-definition times_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-"times_DimScheme x y = dim_lambda (\<lambda> i. dim_nth x i + dim_nth y i)"
-instance ..
-end
-
-lemma times_MkDimScheme [code, si_def]:
-  "(MkDimScheme xs * MkDimScheme ys :: ('n::ring_1, 'a::enum) DimScheme) = 
-  (if (length xs = CARD('a) \<and> length ys = CARD('a))
-    then MkDimScheme (map (\<lambda> (x, y). x + y) (zip xs ys))
-    else if length xs = CARD('a) then MkDimScheme xs else MkDimScheme ys)"
-  by (auto simp add: times_DimScheme_def MkDimScheme_def fun_eq_iff one_DimScheme_def)
-
-instance DimScheme :: (comm_monoid_add, enum) comm_monoid_mult
-  by ((intro_classes; simp add: times_DimScheme_def one_DimScheme_def fun_eq_iff add.assoc), simp add: add.commute)
-
-lemma power_MkDimScheme [si_def]:
-  "(power (MkDimScheme xs) n :: ('n::ring_1, 'a::enum) DimScheme) = 
-    (if (length xs = CARD('a)) then MkDimScheme (map ((*) (of_nat n)) xs) else MkDimScheme xs)"
-  by (induct n, simp add: one_DimScheme_def MkDimScheme_def)
-     (auto simp add: times_MkDimScheme zip_map_map[where f="id", simplified] comp_def split_beta' zip_same_conv_map distrib_right mult.commute)
-  
-text \<open> We also define the inverse and division operations, and an abelian group, which will allow
-  us to perform dimensional analysis. \<close>
-
-instantiation DimScheme :: ("{plus,uminus}", enum) inverse
-begin
-definition inverse_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-"inverse_DimScheme x = dim_lambda (\<lambda> i. - dim_nth x i)"
-
-definition divide_DimScheme :: "('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme \<Rightarrow> ('a, 'b) DimScheme" where
-[code_unfold]: "divide_DimScheme x y = x * (inverse y)"
-
-  instance ..
-end
-
-lemma inverse_MkDimScheme [code, si_def]:
-  "(inverse (MkDimScheme xs) :: ('n::ring_1, 'a::enum) DimScheme) = 
-   (if (length xs = CARD('a)) then MkDimScheme (map uminus xs) else 1)"
-  by (auto simp add: inverse_DimScheme_def one_DimScheme_def MkDimScheme_def fun_eq_iff)  
-
-lemma divide_MkDimScheme [code, si_def]:
-  "(MkDimScheme xs / MkDimScheme ys :: ('n::ring_1, 'a::enum) DimScheme) = 
-  (if (length xs = CARD('a) \<and> length ys = CARD('a))
-    then MkDimScheme (map (\<lambda> (x, y). x - y) (zip xs ys))
-    else if length ys = CARD('a) then MkDimScheme (map uminus ys) else MkDimScheme xs)"
-  by (auto simp add: divide_DimScheme_def inverse_MkDimScheme times_MkDimScheme zip_map_map[where f="id", simplified] comp_def split_beta')
-
-instance DimScheme :: (ab_group_add, enum) ab_group_mult
-  by (intro_classes, simp_all add: inverse_DimScheme_def one_DimScheme_def times_DimScheme_def divide_DimScheme_def)
-
-text \<open> A base dimension is a dimension where precisely one component has power 1: it is the 
-  dimension of a base quantity. Here we define the seven base dimensions. \<close>
-
-definition mk_BaseDim :: "'d::enum \<Rightarrow> (int, 'd) DimScheme" where
-"mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
-
-lemma mk_BaseDim_neq [simp]: "x \<noteq> y \<Longrightarrow> mk_BaseDim x \<noteq> mk_BaseDim y"
-  by (auto simp add: mk_BaseDim_def fun_eq_iff)
-
-lemma mk_BaseDim_code [code]: "mk_BaseDim (d::'d::enum) = MkDimScheme (list_update (replicate CARD('d) 0) (enum_ind d) 1)"
-  by (auto simp add: mk_BaseDim_def MkDimScheme_def fun_eq_iff)
-
-definition is_BaseDim :: "(int, 'd::enum) DimScheme \<Rightarrow> bool" 
-  where "is_BaseDim x \<equiv> (\<exists> i. x = dim_lambda ((\<lambda> x. 0)(i := 1)))"
-
-lemma is_BaseDim_mk [simp]: "is_BaseDim (mk_BaseDim x)"
-  by (auto simp add: mk_BaseDim_def is_BaseDim_def fun_eq_iff)
+type_synonym Dimension = "(int, sdim) dimvec"
 
 abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
 abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
@@ -225,14 +234,14 @@ abbreviation IntensityBD   ("\<^bold>J") where "\<^bold>J \<equiv> mk_BaseDim In
 
 abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
 
-lemma BD_MkDimScheme [si_def]: 
-  "\<^bold>L = MkDimScheme [1, 0, 0, 0, 0, 0, 0]"
-  "\<^bold>M = MkDimScheme [0, 1, 0, 0, 0, 0, 0]"
-  "\<^bold>T = MkDimScheme [0, 0, 1, 0, 0, 0, 0]"
-  "\<^bold>I = MkDimScheme [0, 0, 0, 1, 0, 0, 0]"
-  "\<^bold>\<Theta> = MkDimScheme [0, 0, 0, 0, 1, 0, 0]"
-  "\<^bold>N = MkDimScheme [0, 0, 0, 0, 0, 1, 0]"
-  "\<^bold>J = MkDimScheme [0, 0, 0, 0, 0, 0, 1]"
+lemma BD_mk_dimvec [si_def]: 
+  "\<^bold>L = mk_dimvec [1, 0, 0, 0, 0, 0, 0]"
+  "\<^bold>M = mk_dimvec [0, 1, 0, 0, 0, 0, 0]"
+  "\<^bold>T = mk_dimvec [0, 0, 1, 0, 0, 0, 0]"
+  "\<^bold>I = mk_dimvec [0, 0, 0, 1, 0, 0, 0]"
+  "\<^bold>\<Theta> = mk_dimvec [0, 0, 0, 0, 1, 0, 0]"
+  "\<^bold>N = mk_dimvec [0, 0, 0, 0, 0, 1, 0]"
+  "\<^bold>J = mk_dimvec [0, 0, 0, 0, 0, 0, 1]"
   by (simp_all add: mk_BaseDim_code eval_nat_numeral)
 
 text \<open> The following lemma confirms that there are indeed seven unique base dimensions. \<close>
@@ -248,10 +257,10 @@ term "\<^bold>M\<cdot>\<^bold>L\<^sup>-\<^sup>3"
 
 value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
 
-lemma "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = MkDimScheme [1, 1, - 2, 0, 0, 0, 0]"
+lemma "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = mk_dimvec [1, 1, - 2, 0, 0, 0, 0]"
   by (simp add: si_def)
 
-subsection \<open> Dimensions Type Expressions \<close>
+subsection \<open> Dimension Type Expressions \<close>
 
 subsubsection \<open> Classification \<close>
 
@@ -458,5 +467,55 @@ type_synonym Pressure = "L\<^sup>-\<^sup>1\<cdot>M\<cdot>T\<^sup>-\<^sup>2"
 type_synonym Charge = "I\<cdot>T"
 type_synonym PotentialDifference = "L\<^sup>2\<cdot>M\<cdot>T\<^sup>-\<^sup>3\<cdot>I\<^sup>-\<^sup>1"
 type_synonym Capacitance = "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2"
+
+subsection \<open> ML Functions \<close>
+
+text \<open> We define ML functions for converting a dimension to an integer vector, and vice-versa.
+  These are useful for normalising dimension types. \<close>
+
+ML \<open> 
+signature DIMENSION_TYPE = 
+sig
+  val dim_to_typ: int list -> typ
+  val typ_to_dim: typ -> int list
+  val normalise: typ -> typ
+end
+
+structure Dimension_Type : DIMENSION_TYPE =
+struct
+  
+  val dims = [@{typ L}, @{typ M}, @{typ T}, @{typ I}, @{typ \<Theta>}, @{typ N}, @{typ J}];
+
+  fun typ_to_dim (Type (@{type_name Length}, [])) = [1, 0, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Mass}, []))   = [0, 1, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Time}, []))   = [0, 0, 1, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Current}, []))   = [0, 0, 0, 1, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Temperature}, []))   = [0, 0, 0, 0, 1, 0, 0] |
+      typ_to_dim (Type (@{type_name Amount}, []))   = [0, 0, 0, 0, 0, 1, 0] |
+      typ_to_dim (Type (@{type_name Intensity}, []))   = [0, 0, 0, 0, 0, 0, 1] |
+      typ_to_dim (Type (@{type_name NoDimension}, []))   = [0, 0, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name DimInv}, [x])) = map (fn x => 0 - x) (typ_to_dim x) |
+      typ_to_dim (Type (@{type_name DimTimes}, [x, y])) 
+         = map (fn (x, y) => x + y) (ListPair.zip (typ_to_dim x, typ_to_dim y)) |
+      typ_to_dim _ = raise Match;
+
+  fun DimPow 0 _ = Type (@{type_name NoDimension}, []) |
+      DimPow 1 t = t |
+      DimPow n t = (if (n > 0) then Type (@{type_name DimTimes}, [DimPow (n - 1) t, t]) 
+                               else Type (@{type_name DimInv}, [DimPow (0 - n) t]));
+
+  fun dim_to_typ ds = 
+    let val dts = map (fn (n, d) => DimPow n d) (filter (fn (n, _) => n <> 0) (ListPair.zip (ds, dims)))
+    in if (dts = []) then @{typ NoDimension} else
+          foldl1 (fn (x, y) => Type (@{type_name DimTimes}, [x, y])) dts 
+    end;
+
+  val normalise = dim_to_typ o typ_to_dim;
+
+end;
+
+Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+\<close>
 
 end

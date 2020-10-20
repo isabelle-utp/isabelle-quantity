@@ -6,7 +6,7 @@ theory SI_Units
   imports ISQ
 begin
 
-text \<open> An SI unit is simply a particular kind of quantity. \<close>
+text \<open> An SI unit is simply a particular kind of quantity with an SI tag. \<close>
 
 typedef SI = "UNIV :: unit set" by simp
 

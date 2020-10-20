@@ -1,3 +1,5 @@
+section \<open> Parsing and Pretty Printing of SI Units \<close>
+
 theory SI_Pretty
   imports SI
 begin
@@ -116,6 +118,5 @@ translations
 term "SI[5, m\<^sup>2]"
 term "SI[5.3::rat, m\<^sup>2]"
 term "SI[22, m\<cdot>s\<^sup>-\<^sup>1]"
-
 
 end

@@ -6,8 +6,8 @@ begin
 
 subsection \<open> First Index Function \<close>
 
-text \<open> The following function extracts the index of the first element in a list, assuming it is
-  indeed an element. \<close>
+text \<open> The following function extracts the index of the first occurrence of an element in a list, 
+  assuming it is indeed an element. \<close>
 
 fun first_ind :: "'a list \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> nat" where
 "first_ind [] y i = undefined" |
@@ -20,15 +20,15 @@ lemma first_ind_length:
 lemma nth_first_ind:
   "\<lbrakk> distinct xs; x \<in> set(xs) \<rbrakk> \<Longrightarrow> xs ! (first_ind xs x i - i) = x"
   apply (induct xs arbitrary: i)
-  apply (auto)
+   apply (auto)
   apply (metis One_nat_def add.right_neutral add_Suc_right add_diff_cancel_left' diff_diff_left empty_iff first_ind.simps(2) list.set(1) nat.simps(3) neq_Nil_conv nth_Cons' zero_diff)
   done
 
 lemma first_ind_nth:
   "\<lbrakk> distinct xs; i < length xs \<rbrakk> \<Longrightarrow> first_ind xs (xs ! i) j = i + j"
   apply (induct xs arbitrary: i j)
-  apply (auto)
-  apply (metis less_Suc_eq_le nth_equal_first_eq)
+   apply (auto)
+   apply (metis less_Suc_eq_le nth_equal_first_eq)
   using less_Suc_eq_0_disj apply auto
   done
 
