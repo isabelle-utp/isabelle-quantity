@@ -114,6 +114,7 @@ translations
   "_si_candela" <= "_siq_print (CONST candela)"
 
 term "SI[5, m\<^sup>2]"
+term "SI[5.3::rat, m\<^sup>2]"
 term "SI[22, m\<cdot>s\<^sup>-\<^sup>1]"
 
 
