@@ -75,10 +75,10 @@ backbone of Newtonian Physics. In parallel, physicians developed their own resea
 ``metrology'' defined as a scientific study of the \emph{measurement} of physical quantities.
 
 The relevant international standard for quantities and measurements is distributed by the \emph{Bureau International des
-  Poids et des Mesures} (BIPM), which also provides the \emph{Vocabulaire International de M\`etrologie}
+  Poids et des Mesures} (BIPM), which also provides the \emph{Vocabulaire International de M\'etrologie}
 (VIM)~\cite{bipm-jcgm:2012:VIM}.  The VIM actually defines two systems: the \emph{International System of Quantities}
 (ISQ) and the \emph{International System of Units} (SI, abbreviated from the French Syst\`eme international
-(d’unit\'es)). The latter is also documented in the \emph{SI Brochure}~\cite{SI-Brochure}, a standard that is updated
+(d’unit\'es)). The latter is also commented in the \emph{SI Brochure}~\cite{SI-Brochure}, a standard that is updated
 periodically, most recently in 2019. Finally, the VIM defines concrete reference measurement procedures as well as a
 terminology for measurement errors.
 
@@ -97,25 +97,6 @@ quantities induces congruences on quantity and SI types, specific tactic support
 Our construction is validated by a test-set of known equivalences between both quantities and SI units.  Moreover, the
 presented theory can be used for type-safe conversions between the SI system and others, like the British Imperial
 System (BIS).
-
-% We would like to stress that it is not only our objective to provide a sound type-system for
-% ISQ and SI; rather, our semantic construction produces an integration of quantities and SI units 
-% \emph{as types} inside the Hindley-Milner style type system of
-%  Isabelle/HOL\cite{nipkow.ea:isabelle:2002}. The objective of our construction is to
-% reflect the types of the magnitudes as well as their dimensions in order to allow type-safe 
-% calculations on SI units and their conversion to other measuring systems.
-
-% The International System of Units (SI, abbreviated from the French
-% Système International (d'unités)) is the modern form of the metric
-% system and is the most widely used system of measurement. It comprises
-% a coherent system of units of measurement built on seven base units,
-% which are the second, metre, kilogram, ampere, kelvin, mole, candela,
-% and a set of twenty prefixes to the unit names and unit symbols that
-% may be used when specifying multiples and fractions of the units.
-% The system also specifies names for 22 derived units, such as lumen and
-% watt, for other common physical quantities.
-% 
-% (cited from \url{https://en.wikipedia.org/wiki/International_System_of_Units}).
 
 In the following we describe the overall theory architecture in more detail.
 Our ISQ model provides the following fundamental concepts:
@@ -178,7 +159,7 @@ concepts:
 
 As a result, it is possible to express ``4500.0 kilogram times metre per second squared'' which has the type
 \isa{{\isasymreal}\ {\isacharbrackleft}M\ \isactrlsup {\isachardot}\ L\ \isactrlsup {\isachardot}\ T\isactrlsup
-  {\isacharminus}\isactrlsup {\isadigit{3}} \isactrlsup {\isachardot}\, SI{\isacharbrackright}}.  This type means that
+  {\isacharminus}\isactrlsup {\isadigit{3}}, SI{\isacharbrackright}}.  This type means that
 the magnitude $4500$ of the dimension $M \cdot L \cdot T^{- 3}$ is a quantity intended to be measured in the SI-system,
 which means that it actually represents a force measured in Newtons.
 % For short, the above expression gets thy type $(\isasymreal)newton$.  
