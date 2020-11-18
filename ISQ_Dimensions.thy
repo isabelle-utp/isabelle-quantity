@@ -458,7 +458,8 @@ subsubsection \<open> Derived Dimension Types \<close>
 
 type_synonym Area = "L\<^sup>2"
 type_synonym Volume = "L\<^sup>3"
-type_synonym Acceleration = "L\<cdot>T\<^sup>-\<^sup>1"
+type_synonym Velocity = "L\<cdot>T\<^sup>-\<^sup>1"
+type_synonym Acceleration = "L\<cdot>T\<^sup>-\<^sup>2"
 type_synonym Frequency = "T\<^sup>-\<^sup>1"
 type_synonym Energy = "L\<^sup>2\<cdot>M\<cdot>T\<^sup>-\<^sup>2"
 type_synonym Power = "L\<^sup>2\<cdot>M\<cdot>T\<^sup>-\<^sup>3"
