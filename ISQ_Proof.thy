@@ -92,6 +92,12 @@ lemma magQ_coerce [si_eq]:
   shows "\<lbrakk>coerceQuantT t q\<rbrakk>\<^sub>Q = \<lbrakk>q\<rbrakk>\<^sub>Q"
   by (simp add: coerceQuantT_def magQ_def assms, metis assms qequiv.rep_eq updown_eq_iff)
 
+lemma magQ_dnorm [si_eq]:
+  fixes x :: "('a::zero)['d\<^sub>1::dim_type, 's::unit_system]"
+  shows "\<lbrakk>dnorm x :: 'a['d\<^sub>2::dim_type, 's]\<rbrakk>\<^sub>Q 
+          = (if (QD('d\<^sub>1) = QD('d\<^sub>2)) then \<lbrakk>x\<rbrakk>\<^sub>Q else 0)"
+  by (simp add: dnorm_def magQ_def, metis fromQ magQ_def magQ_zero toQ_inverse)
+
 lemma dimQ [simp]: "dimQ(x :: 'a['d::dim_type, 's::unit_system]) = QD('d)"
   by (simp add: dimQ_def, transfer, simp)
 

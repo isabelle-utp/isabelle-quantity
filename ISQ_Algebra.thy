@@ -102,16 +102,21 @@ qed
 
 (* TODO: Add a more complete set of normalisation rules *)
 
-lemma dnorm_simp_1 [simp]: "y \<noteq> 0 \<Longrightarrow> dnorm (x \<^bold>\<cdot> y\<^sup>-\<^sup>\<one> \<^bold>\<cdot> y) = x"
-  apply (rule dnorm_eq_if_equiv)
-  apply (si_simp)
-  apply (metis divide_dimvec_def mult.assoc mult_distrib_inverse')
-  done
+lemma dnorm_one_mult [simp]: 
+  "dnorm(y) = \<one> \<Longrightarrow> dnorm (x \<^bold>\<cdot> y) = x"
+  "dnorm(x) = \<one> \<Longrightarrow> dnorm (x \<^bold>\<cdot> y) = y"
+  by (si_simp, auto; metis mult.comm_neutral mult.left_neutral zero_neq_one)+
 
-lemma "x \<noteq> 0 \<Longrightarrow> dnorm (x\<^sup>-\<^sup>\<one> \<^bold>\<cdot> x) = \<one>"
-  oops
+lemma dnorm_inv_mult [simp]: 
+  "x \<noteq> 0 \<Longrightarrow> dnorm (x\<^sup>-\<^sup>\<one> \<^bold>\<cdot> x) = \<one>"
+  "x \<noteq> 0 \<Longrightarrow> dnorm (x \<^bold>\<cdot> x\<^sup>-\<^sup>\<one>) = \<one>"
+  by (si_simp+)
 
-lemma "dnorm(y) = \<one> \<Longrightarrow> dnorm (x \<^bold>\<cdot> y) = x"
-  oops
+lemma dnorm_inv_simps [simp]:
+  assumes "y \<noteq> 0"
+  shows "dnorm (x \<^bold>\<cdot> y\<^sup>-\<^sup>\<one> \<^bold>\<cdot> y) = x" "dnorm (x \<^bold>\<cdot> y \<^bold>\<cdot> y\<^sup>-\<^sup>\<one>) = x"
+  using assms
+  by (rule_tac dnorm_eq_if_equiv, si_simp
+     ,metis divide_dimvec_def mult.assoc mult_distrib_inverse')+
 
 end
