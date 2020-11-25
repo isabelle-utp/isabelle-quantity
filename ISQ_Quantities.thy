@@ -270,6 +270,9 @@ text \<open> A dimension typed quantity is parameterised by two types: \<^typ>\<
   Intuitively, the formula \<^term>\<open>x :: 'n['d, 's]\<close> can be read as ``$x$ is a quantity of \<^typ>\<open>'d\<close>'',
   for example it might be a quantity of length, or a quantity of mass. \<close>
 
+abbreviation (input) qdim :: "'a['d::dim_type, 's::unit_system] \<Rightarrow> Dimension" where
+"qdim q \<equiv> QD('d)"
+
 text \<open> Since quantities can have dimension type expressions that are distinct, but denote the same
   dimension, it is necessary to define the following function for coercion between two dimension
   expressions. This requires that the underlying dimensions are the same. \<close>
@@ -511,5 +514,48 @@ text \<open> Quantities form a real normed vector space. \<close>
 
 instance QuantT :: (real_normed_vector,dim_type,unit_system) real_normed_vector
   by (intro_classes; transfer, auto simp add: eq_unit norm_triangle_ineq)
+
+subsection \<open> Normalisation \<close>
+
+text \<open> The following constant represents a request to normalise the dimension type 
+  of a quantity. The target type is populated using Isabelle's check mechanism. \<close>
+
+definition dnorm :: "('a::zero)['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> 'a['d\<^sub>2::dim_type, 's]" where
+"dnorm x = (if QD('d\<^sub>1) = QD('d\<^sub>2) then toQ (fromQ x) else 0)"
+
+lemma dnorm_self_equiv:
+  fixes x :: "('a::zero)['d\<^sub>1::dim_type, 's::unit_system]"
+  assumes "QD('d\<^sub>1) = QD('d\<^sub>2::dim_type)"
+  shows "(dnorm x :: 'a['d\<^sub>2, 's]) \<cong>\<^sub>Q x"
+  unfolding dnorm_def using assms qequiv_sym updown_eq_iff by auto
+
+lemma dnorm_eq_if_equiv:
+  assumes "x \<cong>\<^sub>Q y"
+  shows "dnorm x = y"
+  by (metis (mono_tags, lifting) assms dnorm_def fromQ_inverse qeq qequiv.rep_eq)
+
+text \<open> The following ML code use the check mechanism to determine the normalised dimension
+  of a given quantity when a @{const dnorm} constant is found. The dimension must be concrete,
+  that is, not containing any type variables. If the dimension type is not of the required
+  form, no normalisation is performed. \<close>
+
+ML \<open>
+structure CheckQuant =
+struct
+fun check_quant (trm as Const (@{const_name dnorm}, ty) $ q)
+  = (case (fst (dest_funT ty)) of 
+      Type (@{type_name QuantT}, [n, d, s]) 
+        => Const (@{const_name dnorm}
+                 , Type (@{type_name QuantT}, [n, d, s]) 
+                   --> Type (@{type_name QuantT}, [n, Dimension_Type.normalise d, s])
+                 ) $ q
+    | _ => trm) |
+  check_quant trm = trm
+end
+
+(* Insert the check_quant check into the syntax phases pipeline *)
+
+val _ = Context.>> (Syntax_Phases.term_check 0 "dim_norm" (fn _ => map CheckQuant.check_quant))
+\<close>
 
 end

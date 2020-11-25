@@ -500,6 +500,10 @@ struct
          = map (fn (x, y) => x + y) (ListPair.zip (typ_to_dim x, typ_to_dim y)) |
       typ_to_dim _ = raise Match;
 
+  fun is_dim_type (Type (@{type_name DimInv}, [x])) = is_dim_type x 
+    | is_dim_type (Type (@{type_name DimTimes}, [x, y])) = is_dim_type x andalso is_dim_type y
+    | is_dim_type t = member (op =) dims t;
+
   fun DimPow 0 _ = Type (@{type_name NoDimension}, []) |
       DimPow 1 t = t |
       DimPow n t = (if (n > 0) then Type (@{type_name DimTimes}, [DimPow (n - 1) t, t]) 
@@ -511,12 +515,14 @@ struct
           foldl1 (fn (x, y) => Type (@{type_name DimTimes}, [x, y])) dts 
     end;
 
-  val normalise = dim_to_typ o typ_to_dim;
+  fun normalise t = 
+    if (is_dim_type t) then dim_to_typ (typ_to_dim t) else t;
 
 end;
 
 Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
 Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.normalise @{typ nat}
 \<close>
 
 end

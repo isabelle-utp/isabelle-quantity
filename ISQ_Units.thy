@@ -9,7 +9,7 @@ text \<open> Parallel to the base quantities, there are base units. In the imple
   and a magnitude of \<^term>\<open>1\<close>. Consequently, a base unit corresponds to a unit in the algebraic
   sense. \<close>
 
-lift_definition is_base_unit :: "'a::one['d::dim_type, 's::unit_system] \<Rightarrow> bool" 
+lift_definition is_base_unit :: "'a::zero_neq_one['d::dim_type, 's::unit_system] \<Rightarrow> bool" 
   is "\<lambda> x. mag x = 1 \<and> is_BaseDim (dim x)" . 
 
 definition mk_base_unit :: "'u itself \<Rightarrow> 's itself \<Rightarrow> ('a::one)['u::basedim_type, 's::unit_system]" 
@@ -23,5 +23,11 @@ lemma mk_base_unit: "is_base_unit (mk_base_unit a s)"
 
 lemma magQ_mk [si_eq]: "\<lbrakk>BUNIT('u::basedim_type, 's::unit_system)\<rbrakk>\<^sub>Q = 1"
   by (simp add: mk_base_unit_def magQ_def si_eq, transfer, simp)
+
+lemma base_unit_is_one: "is_base_unit x \<Longrightarrow> x = 1"
+  by (metis is_base_unit.rep_eq magQ_def magQ_one quant_eqI)
+
+lemma base_unit_not_zero [simp]: "is_base_unit x \<Longrightarrow> x \<noteq> 0"
+  by (metis is_base_unit.rep_eq magQ_def magQ_zero zero_neq_one)
 
 end

@@ -85,4 +85,33 @@ lemma qinverse_qdivide: "(x \<^bold>/ y)\<^sup>-\<^sup>\<one> \<cong>\<^sub>Q y 
 lemma qtimes_cancel: "x \<noteq> 0 \<Longrightarrow> x \<^bold>/ x \<cong>\<^sub>Q \<one>"
   by si_calc
 
+subsection \<open> Normalisation Laws \<close>
+
+lemma dnorm_scaleQ [simp]: 
+  fixes q :: "('a::comm_ring_1)['d\<^sub>1::dim_type, 's::unit_system]"
+  shows "dnorm (x *\<^sub>Q q) = x *\<^sub>Q (dnorm q :: 'a['d\<^sub>2::dim_type, 's])"
+proof (cases "QD('d\<^sub>1) = QD('d\<^sub>2)")
+case True
+  then show ?thesis 
+    by (si_simp add: dnorm_def, metis magQ_scaleQ quant_equiv_iff updown_eq_iff)
+next
+case False
+  then show ?thesis
+    by (metis dnorm_def mult_zero_right scaleQ_scaleQ scaleQ_zero) 
+qed
+
+(* TODO: Add a more complete set of normalisation rules *)
+
+lemma dnorm_simp_1 [simp]: "y \<noteq> 0 \<Longrightarrow> dnorm (x \<^bold>\<cdot> y\<^sup>-\<^sup>\<one> \<^bold>\<cdot> y) = x"
+  apply (rule dnorm_eq_if_equiv)
+  apply (si_simp)
+  apply (metis divide_dimvec_def mult.assoc mult_distrib_inverse')
+  done
+
+lemma "x \<noteq> 0 \<Longrightarrow> dnorm (x\<^sup>-\<^sup>\<one> \<^bold>\<cdot> x) = \<one>"
+  oops
+
+lemma "dnorm(y) = \<one> \<Longrightarrow> dnorm (x \<^bold>\<cdot> y) = x"
+  oops
+
 end

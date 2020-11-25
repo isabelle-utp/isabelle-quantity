@@ -42,7 +42,7 @@ A magnitude instantiation can be, e.g., an integer, a rational number, a real nu
 type \<^typ>\<open>real\<^sup>3\<close>. Note than when considering vectors, dimensions refer to the \<^emph>\<open>norm\<close> of the vector,
 not to its components. \<close>
 
-lemma BaseUnits: 
+lemma SI_BaseUnits [simp]: 
   "is_base_unit metre" "is_base_unit second" "is_base_unit kilogram" "is_base_unit ampere"
   "is_base_unit kelvin" "is_base_unit mole" "is_base_unit candela"
   by (simp_all add: mk_base_unit)
@@ -66,6 +66,9 @@ subsection \<open> Example Unit Equations \<close>
 
 lemma "(metre \<^bold>\<cdot> second\<^sup>-\<^sup>\<one>) \<^bold>\<cdot> second \<cong>\<^sub>Q metre"
   by (si_calc)
+
+lemma "dnorm (((5::real) *\<^sub>Q (metre \<^bold>/ second)) \<^bold>\<cdot> (10 *\<^sub>Q second)) = 50 *\<^sub>Q metre"
+  by simp
 
 subsection \<open> Metrification \<close>
 

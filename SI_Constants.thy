@@ -88,7 +88,6 @@ theorem kilogram_definition:
   "((1 *\<^sub>Q kilogram)::'a kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
   by si_calc
 
-
 abbreviation "approx_ice_point \<equiv> 273.15 *\<^sub>Q kelvin"
 
 default_sort type
