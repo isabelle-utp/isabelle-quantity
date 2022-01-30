@@ -1,0 +1,20 @@
+session "2022-ITP-TQM" = "Isabelle_DOF" +
+  options [document = pdf, document_output = "output"]
+  sessions
+    "Physical_Quantities"
+  theories
+    "paper"
+  document_files
+    "isadof.cfg"
+    "root.bib"
+    "preamble.tex"
+    "build"
+    "figures/Req-Appl-ex.png"
+    "figures/formal-development.png"
+    "figures/Req-Def-ex.png"
+    "figures/odometer.jpeg"
+    "figures/cicm2018-combined.png"
+    "figures/three-phase-odo.pdf"
+    "figures/df-numerics-encshaft.png"
+    "figures/wheel-df.png"
+    "lstisadof.sty"
