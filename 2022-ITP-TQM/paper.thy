@@ -1,6 +1,6 @@
 (*<*)
 theory "paper"
-  imports "Physical_Quantities.SI_pretty" 
+  imports "Physical_Quantities.SI_Pretty" 
           
           "Isabelle_DOF.scholarly_paper"
           
