@@ -132,7 +132,8 @@ Our ISQ model provides the following fundamental concepts:
  
 \<^enum>  \<^emph>\<open>derived dimensions\<close> types such as \<^emph>\<open>volume\<close>  \<^typ>\<open>L\<^sup>3\<close> or energy 
    \<^typ>\<open>M\<cdot>L\<^sup>2\<cdot>T\<^sup>-\<^sup>2\<close> corresponding to \<^emph>\<open>derived quantities\<close>.
-
+\<close>
+text\<open>
 Then, through a fresh type-constructor  \<^typ>\<open>SI\<close>, the abstract measurement systems are instantiated 
 to the SI system --- the \<^emph>\<open>British Imperial System\<close> (BIS) is constructed analogously.  
 Technically, \<^typ>\<open>SI\<close> is a tag-type that represents the fact that the magnitude of a quantity is 
@@ -155,7 +156,9 @@ concepts:
   \<^term>\<open>giga\<close> (\<open>=10\<^sup>9\<close>), \<^term>\<open>kilo\<close> (\<open>=10\<^sup>3\<close>),  \<^term>\<open>milli\<close> (\<open>=10\<^sup>-\<^sup>3\<close>), etc.; and a set of
 \<^enum> \<^emph>\<open>unit equations\<close> and conversion equations such as \<open>J = kg m\<^sup>2 / s\<^sup>2\<close> or 
   \<open>1 km/h = 1/3.6 m/s\<close>.
+\<close>
 
+text\<open>
 As a result, it is possible to express ``4500.0 kilogram times metre per second squared'' 
 which has the type \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close>.  
 This type means that the magnitude \<open>4500.0\<close> of the dimension  \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> is a 
@@ -184,19 +187,37 @@ in semantic terms. This means that we can relate quantities with syntactically d
 types, yet with same dimension semantics. This paves the way for derived rules that do computations 
 of terms, which represent type computations indirectly. This principle is the basis for the tactic 
 support, which allows for the dimensional type checking of key definitions of the SI system. Some 
-examples are given below.
+examples are given below.\<^vs>\<open>0.3cm\<close>
 
 \<^theory_text>\<open>theorem metre_definition\<close>
 \<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
 \<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
-
+\<close>
+text\<open>
 These equations are both adapted from the SI Brochure, and give the concrete definitions for the 
 metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
 (Planck constant). They are both prove using the tactic \<^theory_text>\<open>si-calc\<close>.
 \<close>
 
+section*[bgr::background,main_author="Some(@{author ''bu''})"] 
+ \<open>Introduction to some Advanced Isabelle Specification Constructs \<close>
 
-section\<open> Related Work and Conclusion\<close>
+section*[pas::technical,main_author="Some(@{author ''bu''})"] 
+\<open>Preliminary Algebraic Structures\<close>
+
+section*[dom::technical,main_author="Some(@{author ''bu''})"] 
+\<open>The Domain: ISQ Dimensions, ISQ Units\<close>
+
+section*[types::technical,main_author="Some(@{author ''bu''})"] 
+\<open>ISQ Types, SI Types\<close>
+
+section*[cong::technical,main_author="Some(@{author ''bu''})"] 
+\<open>Computing the 'Algebra of Dimensions'\<close>
+
+section*[expls::example,main_author="Some(@{author ''bu''})"] 
+\<open>Consequences and Examples\<close>
+
+section\<open>Related Work and Conclusion\<close>
 text\<open>
 
 This work has drawn inspiration from some previous formalisations of the ISQ and SI, notably Hayes 
