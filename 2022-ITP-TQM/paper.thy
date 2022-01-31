@@ -1,6 +1,7 @@
 (*<*)
 theory "paper"
-  imports "Physical_Quantities.SI"
+  imports "Physical_Quantities.SI_pretty" 
+          
           "Isabelle_DOF.scholarly_paper"
           
           
@@ -141,73 +142,68 @@ according to the SI standard and gas type \<^typ>\<open>int[L,SI]\<close> . At t
 for example, to add to one foot,  in the sense of the BIS, to one metre in the SI without creating 
 a type-inconsistency.
 
-\<close>
 
-(*
-text\<open>
-
-The theory of the SI is created by specialising the \isa{Measurement\_System}-type with the 
+The theory of the SI is created by specialising the \<open>Measurement_System\<close>-type with the 
 SI-tag-type and adding new infrastructure. The SI theory provides the following fundamental 
 concepts:
-\begin{enumerate}%
-\item measuring units and types corresponding to the ISQ base quantities sich
-      as \emph{metre}, \emph{kilogram}, \emph{second}, \emph{ampere}, \emph{kelvin}, \emph{mole} and
-      \emph{candela} (together with procedures how to measure a metre, for example, which are
-      defined in accompanying standards);
-\item a standardised set of symbols for units such as $m$, $kg$, $s$, $A$, $K$, $mol$, and $cd$;
-\item a standardised set of symbols of SI prefixes for multiples of SI units, such as 
-      $giga$ ($=10^9$), $kilo$ ($=10^3$), $milli$ ($=10^-3$), etc.; and a set of
-\item \emph{unit equations} and conversion equations such as $J = kg\,m^2/s^2$ or $1 km/h = 1/3.6\,m/s$.
-\end{enumerate}
+\<^enum> measuring units and types corresponding to the ISQ base quantities such
+  as \<^emph>\<open>metre\<close>, \<^emph>\<open>kilogram\<close>, \<^emph>\<open>second\<close>, \<^emph>\<open>ampere\<close>, \<^emph>\<open>kelvin\<close>, \<^emph>\<open>mole\<close> and
+  \<^emph>\<open>candela\<close> (together with procedures how to measure a metre, for example, which are
+  defined in accompanying standards);
+\<^enum> a standardised set of symbols for units such as \<open>m\<close>, \<open>kg\<close>, \<open>s\<close>, \<open>A\<close>, \<open>K\<close>,  \<open>mol\<close>, and  \<open>cd\<close>;
+\<^enum> a standardised set of symbols of SI prefixes for multiples of SI units, such as 
+  \<^term>\<open>giga\<close> (\<open>=10\<^sup>9\<close>), \<^term>\<open>kilo\<close> (\<open>=10\<^sup>3\<close>),  \<^term>\<open>milli\<close> (\<open>=10\<^sup>-\<^sup>3\<close>), etc.; and a set of
+\<^enum> \<^emph>\<open>unit equations\<close> and conversion equations such as \<open>J = kg m\<^sup>2 / s\<^sup>2\<close> or 
+  \<open>1 km/h = 1/3.6 m/s\<close>.
 
-As a result, it is possible to express ``4500.0 kilogram times metre per second squared'' which has the type
-\isa{{\isasymreal}\ {\isacharbrackleft}M\ \isactrlsup {\isachardot}\ L\ \isactrlsup {\isachardot}\ T\isactrlsup
-  {\isacharminus}\isactrlsup {\isadigit{3}} \isactrlsup {\isachardot}\, SI{\isacharbrackright}}.  This type means that
-the magnitude $4500$ of the dimension $M \cdot L \cdot T^{- 3}$ is a quantity intended to be measured in the SI-system,
-which means that it actually represents a force measured in Newtons.
-% For short, the above expression gets thy type $(\isasymreal)newton$.  
-In the example, the \emph{magnitude} type of the measurement unit is the real numbers ($\isasymreal$).  In general,
-however, magnitude types can be arbitrary types from the HOL library, so for example integer numbers (\isa{int}),
-integer numbers representable by 32 bits (\isa{int32}), IEEE-754 floating-point numbers (\isa{float}), or, a vector in
-the three-dimensional space \isa{\isasymreal}$^3$. Thus, our type-system allows to capture both conceptual entities in
+As a result, it is possible to express ``4500.0 kilogram times metre per second squared'' 
+which has the type \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close>.  
+This type means that the magnitude \<open>4500.0\<close> of the dimension  \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> is a 
+quantity intended to be measured in the SI-system, which means that it actually represents a 
+force measured in Newtons.
+Via a type synonym, the above type expression gets thy type \<^typ>\<open>real newton\<close>.  
+In the example, the \<^emph>\<open>magnitude\<close> type of the measurement unit is the real numbers (typ>\<open>real\<close>).  
+In general, however, magnitude types can be arbitrary types from the HOL library, so for 
+example integer numbers \<^typ>\<open>int\<close>, integer numbers representable by 32 bits (\<open>32word\<close>), 
+IEEE-754 floating-point numbers \<open>float\<close>, or, a vector in the three-dimensional space 
+\<^typ>\<open>real\<^sup>3\<close>. Thus, our type-system allows to capture both conceptual entities in
 physics as well as implementation issues in concrete physical calculations on a computer.
 
-As mentioned before, it is a main objective of this work to support the quantity calculus of ISQ and the resulting
-equations on derived SI entities (cf. \cite{SI-Brochure}), both from a type checking as well as a proof-checking
-perspective. Our design objectives are not easily reconciled, however, and so some substantial theory engineering is
-required. On the one hand, we want a deep integration of dimensions and units into the Isabelle type system. On the
-other, we need to do normal-form calculations on types, so that, for example, the units $m$ and $ms^{-1}s$ can be
-equated.
+As mentioned before, it is a main objective of this work to support the quantity calculus of 
+ISQ and the resulting equations on derived SI entities (cf. @{cite "SI-Brochure"}), both from 
+a type checking as well as a proof-checking perspective. Our design objectives are not easily 
+reconciled, however, and so some substantial theory engineering is required. On the one hand, 
+we want a deep integration of dimensions and units into the Isabelle type system. On the
+other, we need to do normal-form calculations on types, so that, for example, the units 
+\<^typ>\<open>'a[s \<cdot> m \<cdot> s\<^sup>-\<^sup>2]\<close> and \<^typ>\<open>'a[m \<cdot> s\<^sup>-\<^sup>1]\<close> can be equated.
 
-Isabelle's type system follows the Curry-style paradigm, which rules out the possibility of direct calculations on
-type-terms (in contrast to Coq-like systems). However, our semantic interpretation of ISQ and SI allows for the
-foundation of the heterogeneous equivalence relation $\cong_{Q}$ in semantic terms. This means that we can relate
-quantities with syntactically different dimension types, yet with same dimension semantics. This paves the way for
-derived rules that do computations of terms, which represent type computations indirectly. This principle is the basis
-for the tactic support, which allows for the dimensional type checking of key definitions of the SI system. Some
+Isabelle's type system follows the Curry-style paradigm, which rules out the possibility of direct 
+calculations on type-terms (in contrast to Coq-like systems). However, our semantic interpretation 
+of ISQ and SI allows for the foundation of the heterogeneous equivalence relation \<open>\<cong>\<^sub>Q\<close> 
+in semantic terms. This means that we can relate quantities with syntactically different dimension 
+types, yet with same dimension semantics. This paves the way for derived rules that do computations 
+of terms, which represent type computations indirectly. This principle is the basis for the tactic 
+support, which allows for the dimensional type checking of key definitions of the SI system. Some 
 examples are given below.
 
-\begin{isamarkuptext}%
-\isa{\isacommand{theorem}\ metre{\isacharunderscore}definition{\isacharcolon} \newline \ {\isachardoublequoteopen} 
-{\isadigit{1}}\ {\isacharasterisk}\isactrlsub Q\ metre\ {\isasymcong}\isactrlsub Q  \ {\isacharparenleft}\isactrlbold c\ \isactrlbold {\isacharslash}\ {\isacharparenleft}{\isadigit{2}}{\isadigit{9}}{\isadigit{9}}{\isadigit{7}}{\isadigit{9}}{\isadigit{2}}{\isadigit{4}}{\isadigit{5}}{\isadigit{8}}\ {\isacharasterisk}\isactrlsub Q\ {\isasymone}{\isacharparenright}{\isacharparenright}\isactrlbold {\isasymcdot}second{\isachardoublequoteclose}\ {\isachardoublequoteopen}
-\newline \isacommand{by}\ si{\isacharunderscore}calc\ \ \newline \newline
-\isacommand{theorem}\ kilogram{\isacharunderscore}definition{\isacharcolon} \newline \ {\isachardoublequoteopen}{\isadigit{1}}\ {\isacharasterisk}\isactrlsub Q\ kilogram\ {\isasymcong}\isactrlsub Q\ {\isacharparenleft}\isactrlbold h\ \isactrlbold {\isacharslash}\ {\isacharparenleft}{\isadigit{6}}{\isachardot}{\isadigit{6}}{\isadigit{2}}{\isadigit{6}}{\isadigit{0}}{\isadigit{7}}{\isadigit{0}}{\isadigit{1}}{\isadigit{5}}\ {\isasymcdot}\ {\isadigit{1}}{\isacharslash}{\isacharparenleft}{\isadigit{1}}{\isadigit{0}}{\isacharcircum}{\isadigit{3}}{\isadigit{4}}{\isacharparenright}\ {\isacharasterisk}\isactrlsub Q\ {\isasymone}{\isacharparenright}{\isacharparenright}\isactrlbold {\isasymcdot}metre\isactrlsup {\isacharminus}\isactrlsup {\isasymtwo}\isactrlbold {\isasymcdot}second{\isachardoublequoteclose}\ \newline \isacommand{by}\ si{\isacharunderscore}calc\ \ \ }%
-\end{isamarkuptext}\isamarkuptrue%
+\<^theory_text>\<open>theorem metre_definition\<close>
+\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
+\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
 
-These equations are both adapted from the SI Brochure, and give the concrete definitions for the metre and kilogram in
-terms of the physical constants \textbf{c} (speed of light) and \textbf{h} (Planck constant). They are both proved
-using the tactic \textit{si-calc}.
-
-This work has drawn inspiration from some previous formalisations of the ISQ and SI, notably Hayes and Mahoney's
-formalisation in Z~\cite{HayesBrendan95} and Aragon's algebraic structure for physical
-quantities~\cite{Aragon2004-SI}. To the best of our knowledge, our mechanisation represents the most comprehensive
-account of ISQ and SI in a theory prover.
-
+These equations are both adapted from the SI Brochure, and give the concrete definitions for the 
+metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
+(Planck constant). They are both prove using the tactic \<^theory_text>\<open>si-calc\<close>.
 \<close>
 
-*)
 
 section\<open> Related Work and Conclusion\<close>
+text\<open>
+
+This work has drawn inspiration from some previous formalisations of the ISQ and SI, notably Hayes 
+and Mahoney's formalisation in Z@{cite "HayesBrendan95"} and Aragon's algebraic structure for physical
+quantities@{cite "Aragon2004-SI"}. To the best of our knowledge, our mechanisation represents the 
+most comprehensive account of ISQ and SI in a theory prover.
+\<close>
 
 text\<open>\pagebreak\<close>
 
