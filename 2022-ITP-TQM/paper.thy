@@ -133,13 +133,13 @@ in the SI-system, which means that it actually represents a force measured in Ne
 Via a type synonym, the above type expression gets the type \<^typ>\<open>\<real> newton\<close>.  
 
 In the example, the \<^emph>\<open>magnitude\<close> type part of this type is the real numbers \<^typ>\<open>\<real>\<close>.  
-In general, however, magnitude types can be arbitrary HOL types in HOL.
+In general, however, magnitude types can be more general.
 If the term above is presented slightly differently as ``4500 kilogram times metre 
 per second squared'', the inferred type will be \<^typ>\<open>'\<alpha>::numeral[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> where
-\<^typ>\<open>'\<alpha>::numeral\<close> is a magnitude belonging to the type-class numeral, to which also
-types like \<^typ>\<open>\<nat>\<close>, \<^typ>\<open>\<int>\<close>, \<open>float\<close>, integer numbers representable by 32 bits (\<open>32word\<close>), 
-IEEE-754 floating-point numbers \<open>float\<close>, or, a vector in the three-dimensional space 
-\<^typ>\<open>\<real>\<^sup>3\<close> belong. Thus, our type-system allows to capture both conceptual entities in
+\<^typ>\<open>'\<alpha>::numeral\<close> is a magnitude belonging to the type-class numeral. 
+This class comprises  types like \<^typ>\<open>\<nat>\<close>, \<^typ>\<open>\<int>\<close>, 32 bit integers (\<open>32word\<close>), 
+IEEE-754 floating-point numbers, as well as vectors belonging to the three-dimensional space 
+\<^typ>\<open>\<real>\<^sup>3\<close>, etc. Thus, our type-system allows to capture both conceptual entities in
 physics as well as implementation issues in concrete physical calculations on a computer.
 
 As mentioned before, it is a main objective of this work to support the quantity calculus of 
@@ -152,10 +152,9 @@ other, we need to do normal-form calculations on types, so that, for example, th
 \<close>
 
 text\<open>
-
 Isabelle's type system follows the Curry-style paradigm, which rules out the possibility of direct 
 calculations on type-terms (in contrast to Coq-like systems). However, our semantic interpretation 
-of ISQ and SI allows for the foundation of the heterogeneous equivalence relation \<open>\<cong>\<^sub>Q\<close> 
+of ISQ and SI requires the foundation of the heterogeneous equivalence relation \<open>\<cong>\<^sub>Q\<close> 
 in semantic terms. This means that we can relate quantities with syntactically different dimension 
 types, yet with same dimension semantics. This paves the way for derived rules that do computations 
 of terms, which represent type computations indirectly. This principle is the basis for the tactic 
@@ -168,7 +167,7 @@ give the concrete definitions for the metre and the kilogram can be presented as
 \<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
 \<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
 
-\<^theory_text>\<open>theorem kilogram_definition\<close>
+\<^noindent>\<^theory_text>\<open>theorem kilogram_definition\<close>
 \<^item> \<^term>\<open>((1 *\<^sub>Q kilogram)::('\<alpha>::field_char_0) kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second\<close> 
 \<close>
 
@@ -187,8 +186,8 @@ Our ISQ model provides the following fundamental concepts:
   vector space of integers representing the exponents of the dimension vector. 
   \<^typ>\<open>'d\<close> is constrained to be a dimension type later.
 
-\<^enum> \<^emph>\<open>quantities\<close> represented by type \<^typ>\<open>('a, 'd::enum) Quantity\<close>, which are constructed as 
-  a  vector space and a magnitude type \<^typ>\<open>'a\<close>. 
+\<^enum> \<^emph>\<open>quantities\<close> represented by type \<^typ>\<open>('\<alpha>, 'd::enum) Quantity\<close>, which are constructed as 
+  a  vector space and a magnitude type \<^typ>\<open>'\<alpha>\<close>. 
 
 \<^enum> \<^emph>\<open>quantity calculus\<close> consisting of \<^emph>\<open>quantity equations\<close> allowing to infer that 
   \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> is isomorphic to \<^typ>\<open>M\<cdot>L\<cdot>T\<^sup>-\<^sup>2\<close> is isomorphic to \<open>F\<close>
@@ -204,7 +203,7 @@ Our ISQ model provides the following fundamental concepts:
    \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>  corresponding to the above mentioned base vectors.
 
 \<^enum> \<^emph>\<open>(Abstract) Measurement Systems\<close> represented by type 
-   \<^typ>\<open>('a, 'd::enum, 's::unit_system) Measurement_System\<close>, which are a refinement
+   \<^typ>\<open>('\<alpha>, 'd::enum, 's::unit_system) Measurement_System\<close>, which are a refinement
    of quantities. The refinement is modelled by a polymorphic record extensions; as a 
    consequence, Abstract Measurement Systems inherit the algebraic properties of quantities.
  
@@ -218,7 +217,7 @@ Technically, \<^typ>\<open>SI\<close> is a tag-type that represents the fact tha
 actually a quantifiable entity in the sense of the SI system. In other words, this means that 
 the magnitude \<^term>\<open>1\<close> in quantity \<^term>\<open>1 *\<^sub>Q metre\<close> actually refers to one metre intended to be measured 
 according to the SI standard and gas type \<^typ>\<open>\<int>[L,SI]\<close> . At this point, it becomes impossible, 
-for example, to add to one foot,  in the sense of the BIS, to one metre in the SI without creating 
+for example, to add one foot,  in the sense of the BIS, to one metre in the SI without creating 
 a type-inconsistency.
 
 The theory of the SI is created by specialising the \<open>Measurement_System\<close>-type with the 
@@ -237,7 +236,7 @@ concepts:
 
 
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
- \<open>Introduction to some Advanced Isabelle Specification Constructs\<close>
+ \<open>Background: Some Advanced Isabelle Constructs\<close>
 text\<open>This work uses a number of features of Isabelle/HOL and its
 meta-logic Isabelle/Pure, that are not necessarily available in another
 system of the LCF-Prover family and that needs therefore some explanation:
@@ -255,13 +254,13 @@ system of the LCF-Prover family and that needs therefore some explanation:
 \<^item> Code-generation: Reflection via \<open>eval\<close> 
 % do we use somewhere nbe ?
 
-\<^item> The lifting package 
+\<^item> The lifting package
 
 
 
 \<close>
 
-figure*[induct_type_set::figure, relative_width="100", 
+figure*[induct_type_set::figure, relative_width="90", 
         src="''figures/induct_type_class_scheme.png''"]\<open>
   "Inductive" subset of DIM-Types interpreted 
 \<close>
@@ -269,6 +268,67 @@ figure*[induct_type_set::figure, relative_width="100",
 
 section*[pas::technical,main_author="Some(@{author ''bu''})"] 
 \<open>Preliminary Algebraic Structures\<close>
+text\<open>At the core, the multiplicative operation on physical dimension
+results in additions of the exponents of base vectors:
+
+   @{cartouche [display, indent=10] 
+     \<open>(M\<^sup>\<alpha>\<^sup>1\<cdot>L\<^sup>\<alpha>\<^sup>2\<cdot>T\<^sup>\<alpha>\<^sup>3\<cdot>I\<^sup>\<alpha>\<^sup>4\<cdot>\<Theta>\<^sup>\<alpha>\<^sup>5\<cdot>N\<^sup>\<alpha>\<^sup>6\<cdot>J\<^sup>\<alpha>\<^sup>7) * (M\<^sup>\<beta>\<^sup>1\<cdot>L\<^sup>\<beta>\<^sup>2\<cdot>T\<^sup>\<beta>\<^sup>3\<cdot>I\<^sup>\<beta>\<^sup>4\<cdot>\<Theta>\<^sup>\<beta>\<^sup>5\<cdot>N\<^sup>\<beta>\<^sup>6\<cdot>J\<^sup>\<beta>\<^sup>7) 
+     = (M\<^sup>\<alpha>\<^sup>1\<^sup>+\<^sup>\<beta>\<^sup>1\<cdot>L\<^sup>\<alpha>\<^sup>2\<^sup>+\<^sup>\<beta>\<^sup>2\<cdot>T\<^sup>\<alpha>\<^sup>3\<^sup>+\<^sup>\<beta>\<^sup>3\<cdot>I\<^sup>\<alpha>\<^sup>4\<^sup>+\<^sup>\<beta>\<^sup>4\<cdot>\<Theta>\<^sup>\<alpha>\<^sup>5\<^sup>+\<^sup>\<beta>\<^sup>5\<cdot>N\<^sup>\<alpha>\<^sup>6\<^sup>+\<^sup>\<beta>\<^sup>6\<cdot>J\<^sup>\<alpha>\<^sup>7\<^sup>+\<^sup>\<beta>\<^sup>7)\<close> } 
+\<close>
+text\<open>
+This motivates type classes that represent this algebraic structure. We chose to
+represent it for the case of vectors of arbitrary length. We define the classes
+@{class \<open>group_mult\<close>} and the abelian multiplicative groups as follows: 
+\<close>
+
+text\<open>
+@{theory_text [display, indent=10]
+\<open>
+notation times (infixl "\<cdot>" 70)
+
+class group_mult = inverse + monoid_mult +
+  assumes left_inverse: "inverse a \<cdot> a = 1"
+  assumes multi_inverse_conv_div [simp]: "a \<cdot> (inverse b) = a / b"
+... 
+class ab_group_mult = comm_monoid_mult + group_mult
+...
+abbreviation (input) npower :: "'\<alpha>::{power,inverse} \<Rightarrow> nat \<Rightarrow> '\<alpha>"  ("(_\<^sup>-\<^sup>_)" [1000,999] 999) 
+  where "npower x n \<equiv> inverse (x ^ n)"
+\<close>
+}
+\<close>
+text\<open> ... and derive the respective properties:
+@{theory_text [display, indent=10] \<open>
+lemma div_conv_mult_inverse : "a / b = a \<cdot> (inverse b)" ...
+lemma diff_self             : "a / a = 1" ...
+lemma mult_distrib_inverse  : "(a * b) / b = a" ...
+lemma mult_distrib_inverse' : "(a * b) / a = b" ...
+lemma inverse_distrib       : "inverse (a * b)  =  (inverse a) * (inverse b)" ...
+lemma inverse_divid         : "inverse (a / b) = b / a" ... \<close>
+}.
+\<close>
+
+text\<open>On this basis we define \<^emph>\<open>dimension vectors\<close> of arbitrary size via a type definition 
+as follows:
+@{theory_text [display, indent=10] \<open>
+typedef ('\<beta>, '\<nu>) dimvec = "UNIV :: ('\<nu>::enum \<Rightarrow> '\<beta>) set"
+  morphisms dim_nth dim_lambda ..
+\<close>}.
+
+Here, the functions \<^term>\<open>dim_nth\<close> and \<^term>\<open>dim_lambda\<close> represent the usual function pair
+that establish the  isomorphism between the defined type \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> and the 
+implementing set of all objects of type \<^typ>\<open>('\<nu>::enum \<Rightarrow> '\<beta>) set\<close>. Note that the index-type
+\<^typ>\<open>'\<nu>\<close> is restricted via the type class \<^class>\<open>enum\<close> to be enumerable.
+
+Via a number of intermediate lemmas over types, we can finally establish the desired result:
+If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
+\<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group. This is expressed in Isabelle as follows:
+@{theory_text [display, indent=10] \<open>
+instance dimvec :: (ab_group_add, enum) ab_group_mult
+  by (<proof ommitted>)
+\<close>}.
+\<close>
+
 
 section*[dom::technical,main_author="Some(@{author ''bu''})"] 
 \<open>The Domain: ISQ Dimensions, ISQ Units\<close>

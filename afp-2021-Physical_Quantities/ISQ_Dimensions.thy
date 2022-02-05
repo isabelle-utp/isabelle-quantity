@@ -70,7 +70,7 @@ text \<open> Quantity dimensions are used to distinguish quantities of different
   an integer that denotes the power to which it is raised. We use a special vector type to represent
   dimensions, and then specialise this to the seven major dimensions. \<close>
 
-typedef ('n, 'd) dimvec = "UNIV :: ('d::enum \<Rightarrow> 'n) set"
+typedef ('\<beta>, '\<nu>) dimvec = "UNIV :: ('\<nu>::enum \<Rightarrow> '\<beta>) set"
   morphisms dim_nth dim_lambda ..
 
 declare dim_lambda_inject [simplified, simp]
