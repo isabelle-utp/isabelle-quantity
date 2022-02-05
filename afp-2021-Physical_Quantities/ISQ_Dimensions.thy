@@ -223,7 +223,7 @@ lemma sdim_enum [simp]:
   by (simp_all add: enum_ind_def enum_sdim_def)
 
 type_synonym Dimension = "(int, sdim) dimvec"
-
+                          
 abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
 abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
 abbreviation TimeBD        ("\<^bold>T") where "\<^bold>T \<equiv> mk_BaseDim Time"
@@ -255,7 +255,7 @@ text \<open> We can use the base dimensions and algebra to form dimension expres
 term "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
 term "\<^bold>M\<cdot>\<^bold>L\<^sup>-\<^sup>3"
 
-value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"
+value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"             
 
 lemma "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = mk_dimvec [1, 1, - 2, 0, 0, 0, 0]"
   by (simp add: si_def)
@@ -486,13 +486,13 @@ struct
   
   val dims = [@{typ L}, @{typ M}, @{typ T}, @{typ I}, @{typ \<Theta>}, @{typ N}, @{typ J}];
 
-  fun typ_to_dim (Type (@{type_name Length}, [])) = [1, 0, 0, 0, 0, 0, 0] |
-      typ_to_dim (Type (@{type_name Mass}, []))   = [0, 1, 0, 0, 0, 0, 0] |
-      typ_to_dim (Type (@{type_name Time}, []))   = [0, 0, 1, 0, 0, 0, 0] |
-      typ_to_dim (Type (@{type_name Current}, []))   = [0, 0, 0, 1, 0, 0, 0] |
+  fun typ_to_dim (Type (@{type_name Length}, []))        = [1, 0, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Mass}, []))          = [0, 1, 0, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Time}, []))          = [0, 0, 1, 0, 0, 0, 0] |
+      typ_to_dim (Type (@{type_name Current}, []))       = [0, 0, 0, 1, 0, 0, 0] |
       typ_to_dim (Type (@{type_name Temperature}, []))   = [0, 0, 0, 0, 1, 0, 0] |
-      typ_to_dim (Type (@{type_name Amount}, []))   = [0, 0, 0, 0, 0, 1, 0] |
-      typ_to_dim (Type (@{type_name Intensity}, []))   = [0, 0, 0, 0, 0, 0, 1] |
+      typ_to_dim (Type (@{type_name Amount}, []))        = [0, 0, 0, 0, 0, 1, 0] |
+      typ_to_dim (Type (@{type_name Intensity}, []))     = [0, 0, 0, 0, 0, 0, 1] |
       typ_to_dim (Type (@{type_name NoDimension}, []))   = [0, 0, 0, 0, 0, 0, 0] |
       typ_to_dim (Type (@{type_name DimInv}, [x])) = map (fn x => 0 - x) (typ_to_dim x) |
       typ_to_dim (Type (@{type_name DimTimes}, [x, y])) 

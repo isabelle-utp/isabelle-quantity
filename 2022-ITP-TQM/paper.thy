@@ -24,14 +24,13 @@ define_shortcut* hol      \<rightleftharpoons> \<open>HOL\<close>
                  holcsp   \<rightleftharpoons> \<open>HOL-CSP\<close>  \<comment>\<open>obsolete\<close> 
 
 (*>*)
-
 title*[tit::title]\<open>A Sound Type System for Physical Quantities, Units, and Measurements\<close>
                                   
 author*[simon,email="\<open>simon.foster@york.ac.uk\<close>",affiliation="\<open>University of York\<close>"]\<open>Simon Foster\<close>
-author*[bu,email="\<open>wolff@lri.fr\<close>",affiliation = "\<open>LRI, Université Paris-Saclay\<close>"]\<open>Burkhart Wolff\<close>
+author*[bu,email="\<open>wolff@lri.fr\<close>",affiliation = "\<open>LMF, Université Paris-Saclay\<close>"]\<open>Burkhart Wolff\<close>
                
-abstract*[abs, keywordlist="[\<open>Type-Systems\<close>,\<open>Formal Theories\<close>,\<open>Isabelle/HOL\<close>,
-                             \<open>Physical Quantities\<close>,\<open>Physical Dimensions\<close>,\<open>VIM\<close>]"]
+abstract*[abs, keywordlist="[\<open>Formal Theories\<close>,\<open>Type-Systems\<close>,\<open>Isabelle/HOL\<close>,
+                             \<open>Physical Quantities\<close>,\<open>Physical Measurements\<close>,\<open>SI\<close>,\<open>BIS\<close>]"]
 \<open>
 We present a theory in Isabelle/HOL @{cite "nipkow.ea:isabelle:2002"} that builds a formal model for
  both the  \<^emph>\<open>International System of Quantities\<close> (ISQ) and the \<^emph>\<open>International System of Units\<close> (SI), 
@@ -73,6 +72,7 @@ be used when specifying multiples and fractions of the units. The system also sp
 still nowadays a wealth of different measuring systems such as the \<^emph>\<open>British Imperial System\<close> 
 (BIS) and the \<^emph>\<open>United States Customary System\<close> (USC), the SI is more or less the de-facto reference
 behind all these systems.
+\<^footnote>\<open>See also \<^url>\<open>https://en.wikipedia.org/wiki/International_System_of_Units\<close>.\<close>
 
 The present Isabelle theory builds a formal model for both the ISQ and the SI, together with a 
 deep integration into Isabelle's order-sorted polymorphic type system 
@@ -102,7 +102,85 @@ type-safe conversions between the SI system and others, like the British Imperia
 % 
 % (cited from \<^url>\<open>https://en.wikipedia.org/wiki/International_System_of_Units}\<close>).
 
+\<close>
+(*<*)
+syntax
+  "_nat"         :: "type" ("\<nat>")
+  "_int"         :: "type" ("\<int>")
+  "_real"        :: "type" ("\<real>")
 
+translations
+  (type) "\<nat>" == (type) "nat"
+  (type) "\<int>" == (type) "int"
+  (type) "\<real>" == (type) "real"
+
+declare[[show_sorts=true]]
+term\<open>4500\<close>
+declare[[show_sorts=false]]
+
+thm metre_definition kilogram_definition
+
+(*>*)
+text\<open>
+As a result of our theory development\<^footnote>\<open>The sources can be found 
+in the Isabelle Archive of Formal Proofs at 
+\<^url>\<open>https://www.isa-afp.org/entries/Physical_Quantities.html\<close>\<close>, 
+it is possible to express ``4500.0 kilogram times metre per second squared''
+ has the type \<^typ>\<open>\<real>[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> This type means that the magnitude 
+\<open>4500.0\<close> (which by lexical convention is considered as a real number) 
+of the dimension  \<^typ>\<open>M \<cdot> L \<cdot> T\<^sup>-\<^sup>3\<close> is a  quantity intended to be measured 
+in the SI-system, which means that it actually represents a force measured in Newtons.
+Via a type synonym, the above type expression gets the type \<^typ>\<open>\<real> newton\<close>.  
+
+In the example, the \<^emph>\<open>magnitude\<close> type part of this type is the real numbers \<^typ>\<open>\<real>\<close>.  
+In general, however, magnitude types can be arbitrary HOL types in HOL.
+If the term above is presented slightly differently as ``4500 kilogram times metre 
+per second squared'', the inferred type will be \<^typ>\<open>'\<alpha>::numeral[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> where
+\<^typ>\<open>'\<alpha>::numeral\<close> is a magnitude belonging to the type-class numeral, to which also
+types like \<^typ>\<open>\<nat>\<close>, \<^typ>\<open>\<int>\<close>, \<open>float\<close>, integer numbers representable by 32 bits (\<open>32word\<close>), 
+IEEE-754 floating-point numbers \<open>float\<close>, or, a vector in the three-dimensional space 
+\<^typ>\<open>\<real>\<^sup>3\<close> belong. Thus, our type-system allows to capture both conceptual entities in
+physics as well as implementation issues in concrete physical calculations on a computer.
+
+As mentioned before, it is a main objective of this work to support the quantity calculus of 
+ISQ and the resulting equations on derived SI entities (cf. @{cite "SI-Brochure"}), both from 
+a type checking as well as a proof-checking perspective. Our design objectives are not easily 
+reconciled, however, and so some substantial theory engineering is required. On the one hand, 
+we want a deep integration of dimensions and units into the Isabelle type system. On the
+other, we need to do normal-form calculations on types, so that, for example, the units 
+\<^typ>\<open>'\<alpha>[s \<cdot> m \<cdot> s\<^sup>-\<^sup>2]\<close> and \<^typ>\<open>'\<alpha>[m \<cdot> s\<^sup>-\<^sup>1]\<close> can be equated.
+\<close>
+
+text\<open>
+
+Isabelle's type system follows the Curry-style paradigm, which rules out the possibility of direct 
+calculations on type-terms (in contrast to Coq-like systems). However, our semantic interpretation 
+of ISQ and SI allows for the foundation of the heterogeneous equivalence relation \<open>\<cong>\<^sub>Q\<close> 
+in semantic terms. This means that we can relate quantities with syntactically different dimension 
+types, yet with same dimension semantics. This paves the way for derived rules that do computations 
+of terms, which represent type computations indirectly. This principle is the basis for the tactic 
+support, which allows for the dimensional type checking of key definitions of the SI system
+inside Isabelle/HOL, \<^ie> without making use of code-generated reflection. 
+For example, the crucial definitions adapted from the SI Brochure that 
+give the concrete definitions for the metre and the kilogram can be presented as follows: \<^vs>\<open>0.3cm\<close>
+
+\<^theory_text>\<open>theorem metre_definition\<close>
+\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
+\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
+
+\<^theory_text>\<open>theorem kilogram_definition\<close>
+\<^item> \<^term>\<open>((1 *\<^sub>Q kilogram)::('\<alpha>::field_char_0) kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second\<close> 
+\<close>
+
+text\<open>
+These equations giving the concrete definitions for the 
+metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
+(Planck constant) can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided of our theory.
+\<close>
+
+
+subsubsection\<open>The Plan of the Theory Development\<close>
+text\<open>
 In the following we describe the overall theory architecture in more detail.
 Our ISQ model provides the following fundamental concepts:
 \<^enum> \<^emph>\<open>dimensions\<close> represented by a type \<^typ>\<open>(int, 'd::enum) dimvec\<close>, \<^ie> a \<^typ>\<open>'d\<close>-indexed
@@ -139,10 +217,9 @@ to the SI system --- the \<^emph>\<open>British Imperial System\<close> (BIS) is
 Technically, \<^typ>\<open>SI\<close> is a tag-type that represents the fact that the magnitude of a quantity is 
 actually a quantifiable entity in the sense of the SI system. In other words, this means that 
 the magnitude \<^term>\<open>1\<close> in quantity \<^term>\<open>1 *\<^sub>Q metre\<close> actually refers to one metre intended to be measured 
-according to the SI standard and gas type \<^typ>\<open>int[L,SI]\<close> . At this point, it becomes impossible, 
+according to the SI standard and gas type \<^typ>\<open>\<int>[L,SI]\<close> . At this point, it becomes impossible, 
 for example, to add to one foot,  in the sense of the BIS, to one metre in the SI without creating 
 a type-inconsistency.
-
 
 The theory of the SI is created by specialising the \<open>Measurement_System\<close>-type with the 
 SI-tag-type and adding new infrastructure. The SI theory provides the following fundamental 
@@ -158,55 +235,55 @@ concepts:
   \<open>1 km/h = 1/3.6 m/s\<close>.
 \<close>
 
-text\<open>
-As a result, it is possible to express ``4500.0 kilogram times metre per second squared'' 
-which has the type \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close>.  
-This type means that the magnitude \<open>4500.0\<close> of the dimension  \<^typ>\<open>real[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> is a 
-quantity intended to be measured in the SI-system, which means that it actually represents a 
-force measured in Newtons.
-Via a type synonym, the above type expression gets thy type \<^typ>\<open>real newton\<close>.  
-In the example, the \<^emph>\<open>magnitude\<close> type of the measurement unit is the real numbers (typ>\<open>real\<close>).  
-In general, however, magnitude types can be arbitrary types from the HOL library, so for 
-example integer numbers \<^typ>\<open>int\<close>, integer numbers representable by 32 bits (\<open>32word\<close>), 
-IEEE-754 floating-point numbers \<open>float\<close>, or, a vector in the three-dimensional space 
-\<^typ>\<open>real\<^sup>3\<close>. Thus, our type-system allows to capture both conceptual entities in
-physics as well as implementation issues in concrete physical calculations on a computer.
-
-As mentioned before, it is a main objective of this work to support the quantity calculus of 
-ISQ and the resulting equations on derived SI entities (cf. @{cite "SI-Brochure"}), both from 
-a type checking as well as a proof-checking perspective. Our design objectives are not easily 
-reconciled, however, and so some substantial theory engineering is required. On the one hand, 
-we want a deep integration of dimensions and units into the Isabelle type system. On the
-other, we need to do normal-form calculations on types, so that, for example, the units 
-\<^typ>\<open>'a[s \<cdot> m \<cdot> s\<^sup>-\<^sup>2]\<close> and \<^typ>\<open>'a[m \<cdot> s\<^sup>-\<^sup>1]\<close> can be equated.
-
-Isabelle's type system follows the Curry-style paradigm, which rules out the possibility of direct 
-calculations on type-terms (in contrast to Coq-like systems). However, our semantic interpretation 
-of ISQ and SI allows for the foundation of the heterogeneous equivalence relation \<open>\<cong>\<^sub>Q\<close> 
-in semantic terms. This means that we can relate quantities with syntactically different dimension 
-types, yet with same dimension semantics. This paves the way for derived rules that do computations 
-of terms, which represent type computations indirectly. This principle is the basis for the tactic 
-support, which allows for the dimensional type checking of key definitions of the SI system. Some 
-examples are given below.\<^vs>\<open>0.3cm\<close>
-
-\<^theory_text>\<open>theorem metre_definition\<close>
-\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
-\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
-\<close>
-text\<open>
-These equations are both adapted from the SI Brochure, and give the concrete definitions for the 
-metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
-(Planck constant). They are both prove using the tactic \<^theory_text>\<open>si-calc\<close>.
-\<close>
 
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
- \<open>Introduction to some Advanced Isabelle Specification Constructs \<close>
+ \<open>Introduction to some Advanced Isabelle Specification Constructs\<close>
+text\<open>This work uses a number of features of Isabelle/HOL and its
+meta-logic Isabelle/Pure, that are not necessarily available in another
+system of the LCF-Prover family and that needs therefore some explanation:
+
+\<^item> Type-classes and order-sorted parametric polymorphism 
+  @{cite "DBLP_conf_fpca_NipkowS91" and "NipkowPrehofer95"}.
+  Haskell-like type-classes allow for types depend on constants 
+  and represent therefore a restricted form of dependent types. 
+
+\<^item> The meta-logic \<^verbatim>\<open>Pure\<close> providing mechanisms to denote types
+  inside the term-language: \<open>'\<alpha> itself\<close> denotes an unspecified 
+  type and \<open>TYPE\<close> aa constructor that injects 
+  the language of types into the language of terms.
+  
+\<^item> Code-generation: Reflection via \<open>eval\<close> 
+% do we use somewhere nbe ?
+
+\<^item> The lifting package 
+
+
+
+\<close>
+
+figure*[induct_type_set::figure, relative_width="100", 
+        src="''figures/induct_type_class_scheme.png''"]\<open>
+  "Inductive" subset of DIM-Types interpreted 
+\<close>
+
 
 section*[pas::technical,main_author="Some(@{author ''bu''})"] 
 \<open>Preliminary Algebraic Structures\<close>
 
 section*[dom::technical,main_author="Some(@{author ''bu''})"] 
 \<open>The Domain: ISQ Dimensions, ISQ Units\<close>
+
+(*<*)
+ML\<open>
+Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}
+\<close>
+(*>*)
+text\<open>
+
+\<^ML>\<open>Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
+\<^ML>\<open>Dimension_Type.normalise  @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
+\<close>
 
 section*[types::technical,main_author="Some(@{author ''bu''})"] 
 \<open>ISQ Types, SI Types\<close>
