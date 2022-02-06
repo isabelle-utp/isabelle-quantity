@@ -257,12 +257,11 @@ system of the LCF-Prover family and that needs therefore some explanation:
 \<^item> The lifting package
 
 
-
 \<close>
 
 figure*[induct_type_set::figure, relative_width="85", 
         src="''figures/induct_type_class_scheme.png''"]\<open>
-  "Inductive" subset of DIM-Types interpreted 
+    The "Inductive" Subset of \<open>dim_types\<close> interpreted in the \<open>Dimension\<close>-Type
 \<close>
 
 
@@ -331,7 +330,7 @@ If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index
 
 
 section*[dom::technical,main_author="Some(@{author ''bu''})"] 
-\<open>The Domain: ISQ Dimension Terms and Calculations in the 'Algebra of Dimensions'\<close>
+\<open>The Domain: ISQ Dimension Terms and Calculations\<close>
 
 
 text\<open>In the following, we will construct a concrete semantic domain as instance of
@@ -408,7 +407,7 @@ the language of dimensions is represented by a shallow embedding in the \<^typ>\
 
 
 section*[types::technical,main_author="Some(@{author ''bu''})"] 
-\<open>Dimension Types and its Semantics in Terms of the \<^typ>\<open>Dimension\<close>-Type \<close>
+\<open>Dimension Types and their Semantics in Terms of the \<^typ>\<open>Dimension\<close>-Type\<close>
 
 text\<open>The next section on our road is the construction of a sub-language of type-expressions.
 To this end, we define a \<^emph>\<open>type class\<close> by those type-terms for which we have an interpretation
@@ -503,30 +502,44 @@ begin
   [si_eq]: "dim_ty_sem_DimInv x = inverse (dim_ty_sem TYPE('\<alpha>))"
   instance by (intro_classes, simp_all add: dim_ty_sem_DimInv_def, (transfer, simp)+)
 end\<close>}
-\<close>
 
+Finally, we introduce some syntactic sugar for such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha>\<close> or 
+\<open>'\<alpha>\<^sup>-\<^sup>4"\<close>
+\<close>
 figure*[induct_type_SML_interpreted::figure, relative_width="85", 
         src="''figures/induct_type_class_scheme_ML.png''"]\<open>
-  "Inductive" subset of DIM-Types interpreted 
+  The "Inductive" subset of \<open>dim_types\<close> interpreted in SML Lists\<close>
+text\<open>
+By the way, we also implemented two morphisms on the SML-level underlying Isabelle, 
+which is straight-forward and ommited here. These functions yield for:
+@{theory_text [display, indent=10] \<open>
+ML\<open>
+Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
+Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}
 \<close>
-
+\<close>}
+the system output:
+@{theory_text [display, indent=10] \<open>
+val it = [~2, 0, 4, 2, 0, 0, 0]: int list
+val it = "L \<cdot> M\<^sup>2 \<cdot> N\<^sup>3": typ
+val it = "L\<^sup>-\<^sup>2 \<cdot> T\<^sup>4 \<cdot> I\<^sup>2": typ
+\<close>}
+\<close>
 
 (*<*)
 ML\<open>
 Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
 Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}
 \<close>
 (*>*)
-text\<open>
 
-\<^ML>\<open>Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
-\<^ML>\<open>Dimension_Type.normalise  @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
-\<close>
 section*[cong::technical,main_author="Some(@{author ''bu''})"] 
-\<open>Computing the 'Algebra of Dimensions'\<close>
+\<open>ISQ Quantity and SI Types\<close>
 
 section*[expls::example,main_author="Some(@{author ''bu''})"] 
-\<open>Consequences and Examples\<close>
+\<open>Validation by the VIM and the 'Brochure'\<close>
 
 section\<open>Related Work and Conclusion\<close>
 text\<open>
@@ -1529,7 +1542,8 @@ close_monitor*[this]
 
 *)
 
+(*<*)
 end
-
+(*>*)
 
  
