@@ -179,63 +179,32 @@ metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<
 (Planck constant). They can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
 \<close>
 
-(*
-subsubsection\<open>The Plan of the Theory Development\<close>
+subsection\<open>The Plan of the Theory Development\<close>
 text\<open>
 In the following we describe the overall theory architecture in more detail.
 Our ISQ model provides the following fundamental concepts:
-\<^enum> \<^emph>\<open>dimensions\<close> represented by a type \<^typ>\<open>(\<int>, 'd::enum) dimvec\<close>, \<^ie> a \<^typ>\<open>'d\<close>-indexed
-  vector space of integers representing the exponents of the dimension vector. 
-  \<^typ>\<open>'d\<close> is constrained to be a dimension type later.
+\<^enum> the definition and theory of a vector space \<^emph>\<open>dimensions\<close> and 
+  the base vectors  \<^term>\<open>\<^bold>L\<close>, \<^term>\<open>\<^bold>M\<close>, \<^term>\<open>\<^bold>T\<close>, \<^term>\<open>\<^bold>I\<close>, \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>.
 
-\<^enum> \<^emph>\<open>quantities\<close> represented by type \<^typ>\<open>('\<alpha>, 'd::enum) Quantity\<close>, which are constructed as 
-  a  vector space and a magnitude type \<^typ>\<open>'\<alpha>\<close>. 
+\<^enum> the extension of dimensions by magnitudes to a structure of \<^emph>\<open>quantities\<close>,
 
-\<^enum> \<^emph>\<open>quantity calculus\<close> consisting of \<^emph>\<open>quantity equations\<close> allowing to infer that 
-  \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> is isomorphic to \<^typ>\<open>M\<cdot>L\<cdot>T\<^sup>-\<^sup>2\<close> is isomorphic to \<open>F\<close>
+\<^enum> the extension of quantities to a structure of \<^emph>\<open>Measurement Systems\<close>
+
+\<^enum> the type definitions abstracting dimensions, quantities, and measurement systems 
+  
+\<^enum> a \<^emph>\<open>quantity calculus\<close> consisting of \<^emph>\<open>quantity equations\<close>, \<^ie> rules resulting
+  from the algebraic structure of  dimensions, quantities, and measurement systems.
+
+\<^enum> the abstraction of dimensions, quantities, and measurement systems induces an isompophism
+  on  types: thus, \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> is isomorphic to \<^typ>\<open>M\<cdot>L\<cdot>T\<^sup>-\<^sup>2\<close> is isomorphic to \<open>F\<close>
   (the left-hand-side equals mass times acceleration which is equal to force). 
 
-\<^enum>  a kind of equivalence relation \<open>=\<^sub>Q\<close> on quantities, permitting to relate
-      quantities of different dimension types.
+\<^enum> a standardised set of symbols for SI-units such as \<open>m\<close>, \<open>kg\<close>, \<open>s\<close>, \<open>A\<close>, \<open>K\<close>,  \<open>mol\<close>, and  \<open>cd\<close>;
 
-\<^enum> \<^emph>\<open>base quantities\<close> for \<^emph>\<open>length\<close>, \<^emph>\<open>mass\<close>, \<^emph>\<open>time\<close>, \<^emph>\<open>electric current\<close>,
-  \<^emph>\<open>temperature\<close>, \<^emph>\<open>amount of substance\<close>, and \<^emph>\<open>luminous intensity\<close>, 
-  serving as concrete instance of the vector instances, and for syntax
-  a set of the constant symbols  \<^term>\<open>\<^bold>L\<close>, \<^term>\<open>\<^bold>M\<close>, \<^term>\<open>\<^bold>T\<close>, \<^term>\<open>\<^bold>I\<close>,  
-   \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>  corresponding to the above mentioned base vectors.
-
-\<^enum> \<^emph>\<open>(Abstract) Measurement Systems\<close> represented by type 
-   \<^typ>\<open>('\<alpha>, 'd::enum, 's::unit_system) Measurement_System\<close>, which are a refinement
-   of quantities. The refinement is modelled by a polymorphic record extensions; as a 
-   consequence, Abstract Measurement Systems inherit the algebraic properties of quantities.
- 
-\<^enum>  \<^emph>\<open>derived dimensions\<close> types such as \<^emph>\<open>volume\<close>  \<^typ>\<open>L\<^sup>3\<close> or energy 
-   \<^typ>\<open>M\<cdot>L\<^sup>2\<cdot>T\<^sup>-\<^sup>2\<close> corresponding to \<^emph>\<open>derived quantities\<close>.
+\<^enum> a standardised set of symbols of SI prefixes for multiples of SI units, such as
+  \<^term>\<open>giga\<close> (\<open>=10\<^sup>9\<close>), \<^term>\<open>kilo\<close> (\<open>=10\<^sup>3\<close>),  \<^term>\<open>milli\<close> (\<open>=10\<^sup>-\<^sup>3\<close>), etc.
 \<close>
-text\<open>
-Then, through a fresh type-constructor  \<^typ>\<open>SI\<close>, the abstract measurement systems are instantiated 
-to the SI system --- the \<^emph>\<open>British Imperial System\<close> (BIS) is constructed analogously.  
-Technically, \<^typ>\<open>SI\<close> is a tag-type that represents the fact that the magnitude of a quantity is 
-actually a quantifiable entity in the sense of the SI system. In other words, this means that 
-the magnitude \<^term>\<open>1\<close> in quantity \<^term>\<open>1 *\<^sub>Q metre\<close> actually refers to one metre intended to be measured 
-according to the SI standard and has type \<^typ>\<open>\<int>[L,SI]\<close> . At this point, it becomes impossible, 
-for example, to add one foot,  in the sense of the BIS, to one metre in the SI without creating 
-a type-inconsistency.
 
-The theory of the SI is created by specialising the \<open>Measurement_System\<close>-type with the 
-SI-tag-type and adding new infrastructure. The SI theory provides the following fundamental 
-concepts:
-\<^enum> measuring units and types corresponding to the ISQ base quantities such
-  as \<^emph>\<open>metre\<close>, \<^emph>\<open>kilogram\<close>, \<^emph>\<open>second\<close>, \<^emph>\<open>ampere\<close>, \<^emph>\<open>kelvin\<close>, \<^emph>\<open>mole\<close> and
-  \<^emph>\<open>candela\<close> (together with procedures how to measure a metre, for example, which are
-  defined in accompanying standards);
-\<^enum> a standardised set of symbols for units such as \<open>m\<close>, \<open>kg\<close>, \<open>s\<close>, \<open>A\<close>, \<open>K\<close>,  \<open>mol\<close>, and  \<open>cd\<close>;
-\<^enum> a standardised set of symbols of SI prefixes for multiples of SI units, such as 
-  \<^term>\<open>giga\<close> (\<open>=10\<^sup>9\<close>), \<^term>\<open>kilo\<close> (\<open>=10\<^sup>3\<close>),  \<^term>\<open>milli\<close> (\<open>=10\<^sup>-\<^sup>3\<close>), etc.; and a set of
-\<^enum> \<^emph>\<open>unit equations\<close> and conversion equations such as \<open>J = kg m\<^sup>2 / s\<^sup>2\<close> or 
-  \<open>1 km/h = 1/3.6 m/s\<close>.
-\<close>
-*)
 
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
  \<open>Background: Some Advanced Isabelle Constructs\<close>
