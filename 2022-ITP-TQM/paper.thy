@@ -164,10 +164,10 @@ For example, the crucial definitions adapted from the SI Brochure that
 give the concrete definitions for the metre and the kilogram can be presented as follows: \<^vs>\<open>0.3cm\<close>
 
 \<^theory_text>\<open>theorem metre_definition\<close>
-\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>
-\<^item> \<^term>\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>
+\<^item> @{term [show_types=false]\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>}
+\<^item> @{term [show_types=false]\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>}
 
-\<^noindent>\<^theory_text>\<open>theorem kilogram_definition\<close>
+\<^noindent> \<^theory_text>\<open>theorem kilogram_definition\<close>
 \<^item> \<^term>\<open>((1 *\<^sub>Q kilogram)::('\<alpha>::field_char_0) kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second\<close> 
 \<close>
 
@@ -216,7 +216,7 @@ to the SI system --- the \<^emph>\<open>British Imperial System\<close> (BIS) is
 Technically, \<^typ>\<open>SI\<close> is a tag-type that represents the fact that the magnitude of a quantity is 
 actually a quantifiable entity in the sense of the SI system. In other words, this means that 
 the magnitude \<^term>\<open>1\<close> in quantity \<^term>\<open>1 *\<^sub>Q metre\<close> actually refers to one metre intended to be measured 
-according to the SI standard and gas type \<^typ>\<open>\<int>[L,SI]\<close> . At this point, it becomes impossible, 
+according to the SI standard and has type \<^typ>\<open>\<int>[L,SI]\<close> . At this point, it becomes impossible, 
 for example, to add one foot,  in the sense of the BIS, to one metre in the SI without creating 
 a type-inconsistency.
 
@@ -316,22 +316,50 @@ typedef ('\<beta>, '\<nu>) dimvec = "UNIV :: ('\<nu>::enum \<Rightarrow> '\<beta
 \<close>}.
 
 Here, the functions \<^term>\<open>dim_nth\<close> and \<^term>\<open>dim_lambda\<close> represent the usual function pair
-that establish the  isomorphism between the defined type \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> and the 
-implementing set of all objects of type \<^typ>\<open>('\<nu>::enum \<Rightarrow> '\<beta>) set\<close>. Note that the index-type
-\<^typ>\<open>'\<nu>\<close> is restricted via the type class \<^class>\<open>enum\<close> to be enumerable.
+that establish the  isomorphism between the defined type \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> and an 
+implementing domain, in this case the universal set of type \<^typ>\<open>('\<nu>::enum \<Rightarrow> '\<beta>) set\<close>. 
+Note that the index-type \<^typ>\<open>'\<nu>\<close> is restricted to be enumerable by type class \<^class>\<open>enum\<close>.
 
 Via a number of intermediate lemmas over types, we can finally establish the desired result:
 If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
 \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group. This is expressed in Isabelle as follows:
 @{theory_text [display, indent=10] \<open>
-instance dimvec :: (ab_group_add, enum) ab_group_mult
-  by (<proof ommitted>)
+instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof ommitted>)
 \<close>}.
 \<close>
 
 
 section*[dom::technical,main_author="Some(@{author ''bu''})"] 
 \<open>The Domain: ISQ Dimensions, ISQ Units\<close>
+text\<open>In the following, we will construct a concrete semantic domain as instance of
+ \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close>. This is where the general model of the dimension vector space of
+@{technical "pas"} becomes a specific instance of the current ISQ standard as defined 
+@{cite "bipm_jcgm_2012_VIM"}; should physicians discover one day a new physical quantity,
+this would just imply a change of the following enumeration. Moreover, we will define
+the ISQ standards dimensions as \<^emph>\<open>base vectors\<close> in this vector space; historically, there 
+had been alternative proposals of a quantity system that boil down to the choice of another
+eigen-vector set in this vector space. \<close>
+
+text\<open>
+The definition of an enumeration and the proof that it can be accommodated to the required 
+infrastructure of the @{class "enum"}-class is straight-forward, and the construction of our
+domain \<^typ>\<open>Dimension\<close> follows immediately:
+@{theory_text [display, indent=10] \<open>
+datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensity
+
+instantiation sdim :: enum 
+begin
+  definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
+  definition "enum_all_sdim P \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> P Current \<and> P Temperature \<and> P Amount \<and> P Intensity"
+  definition "enum_ex_sdim P \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> P Current \<or> P Temperature \<or> P Amount \<or> P Intensity"
+  instance <proof ommitted>
+end
+
+type_synonym Dimension = "(\<int>, sdim) dimvec"\<close>}
+
+Note that the @{class "enum"}-class stems from the Isabelle/HOL library and is intended to 
+present sufficient infrastructure for the code-generator.
+\<close>
 
 (*<*)
 ML\<open>
