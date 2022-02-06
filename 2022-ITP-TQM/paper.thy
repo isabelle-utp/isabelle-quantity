@@ -174,9 +174,9 @@ give the concrete definitions for the metre and the kilogram can be presented as
 \<close>
 
 text\<open>
-These equations giving the concrete definitions for the 
+These equations give the concrete definitions for the 
 metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
-(Planck constant) can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
+(Planck constant). They can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
 \<close>
 
 (*
