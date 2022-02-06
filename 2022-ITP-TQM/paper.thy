@@ -182,7 +182,7 @@ subsubsection\<open>The Plan of the Theory Development\<close>
 text\<open>
 In the following we describe the overall theory architecture in more detail.
 Our ISQ model provides the following fundamental concepts:
-\<^enum> \<^emph>\<open>dimensions\<close> represented by a type \<^typ>\<open>(int, 'd::enum) dimvec\<close>, \<^ie> a \<^typ>\<open>'d\<close>-indexed
+\<^enum> \<^emph>\<open>dimensions\<close> represented by a type \<^typ>\<open>(\<int>, 'd::enum) dimvec\<close>, \<^ie> a \<^typ>\<open>'d\<close>-indexed
   vector space of integers representing the exponents of the dimension vector. 
   \<^typ>\<open>'d\<close> is constrained to be a dimension type later.
 
@@ -248,7 +248,7 @@ system of the LCF-Prover family and that needs therefore some explanation:
 
 \<^item> The meta-logic \<^verbatim>\<open>Pure\<close> providing mechanisms to denote types
   inside the term-language: \<open>'\<alpha> itself\<close> denotes an unspecified 
-  type and \<open>TYPE\<close> aa constructor that injects 
+  type and \<open>TYPE\<close> a constructor that injects 
   the language of types into the language of terms.
   
 \<^item> Code-generation: Reflection via \<open>eval\<close> 
@@ -260,7 +260,7 @@ system of the LCF-Prover family and that needs therefore some explanation:
 
 \<close>
 
-figure*[induct_type_set::figure, relative_width="90", 
+figure*[induct_type_set::figure, relative_width="85", 
         src="''figures/induct_type_class_scheme.png''"]\<open>
   "Inductive" subset of DIM-Types interpreted 
 \<close>
@@ -320,17 +320,20 @@ that establish the  isomorphism between the defined type \<^typ>\<open>('\<beta>
 implementing domain, in this case the universal set of type \<^typ>\<open>('\<nu>::enum \<Rightarrow> '\<beta>) set\<close>. 
 Note that the index-type \<^typ>\<open>'\<nu>\<close> is restricted to be enumerable by type class \<^class>\<open>enum\<close>.
 
-Via a number of intermediate lemmas over types, we can finally establish the desired result:
-If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
-\<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group. This is expressed in Isabelle as follows:
+Via a number of intermediate lemmas over types, we can finally establish the desired result
+ in Isabelle compactly as follows:
 @{theory_text [display, indent=10] \<open>
 instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof ommitted>)
-\<close>}.
+\<close>}
+If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
+\<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group.
 \<close>
 
 
 section*[dom::technical,main_author="Some(@{author ''bu''})"] 
-\<open>The Domain: ISQ Dimensions, ISQ Units\<close>
+\<open>The Domain: ISQ Dimension Terms and Calculations in the 'Algebra of Dimensions'\<close>
+
+
 text\<open>In the following, we will construct a concrete semantic domain as instance of
  \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close>. This is where the general model of the dimension vector space of
 @{technical "pas"} becomes a specific instance of the current ISQ standard as defined 
@@ -350,16 +353,163 @@ datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensit
 instantiation sdim :: enum 
 begin
   definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
-  definition "enum_all_sdim P \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> P Current \<and> P Temperature \<and> P Amount \<and> P Intensity"
-  definition "enum_ex_sdim P \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> P Current \<or> P Temperature \<or> P Amount \<or> P Intensity"
+  definition "enum_all_sdim P  \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> ..."
+  definition "enum_ex_sdim P   \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> ..."
   instance <proof ommitted>
 end
 
 type_synonym Dimension = "(\<int>, sdim) dimvec"\<close>}
 
 Note that the @{class "enum"}-class stems from the Isabelle/HOL library and is intended to 
-present sufficient infrastructure for the code-generator.
+present sufficient infrastructure for the code-generator. Note, further, that 
+@{cite "bipm_jcgm_2012_VIM"} discusses also the possibility of rational exponents, but finally
+defines them as integer numbers \<^typ>\<open>\<int>\<close>.
 \<close>
+
+text\<open>A base dimension is a dimension where precisely one component has power 1: it is the 
+  dimension of a base quantity. Here we define the seven base dimensions. 
+  For the concrete definition of the seven base vectors we define a constructor:
+
+@{theory_text [display, indent=10] \<open>
+definition mk_BaseDim :: "sdim \<Rightarrow> Dimension" where
+"mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+\<close>}
+
+which lets us achieve a first major milestone on our journey:
+a \<^emph>\<open>term\<close> representation of base vectors together with the capability to
+prove and to compute dimension-algebraic equivalences. We introduce
+the ISQ dimension symbols defined in @{cite "bipm_jcgm_2012_VIM"}: 
+
+@{theory_text [display, indent=10] \<open>
+abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
+abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
+...
+abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
+
+lemma BD_mk_dimvec [si_def]: 
+  "\<^bold>L = mk_dimvec [1, 0, 0, 0, 0, 0, 0]"
+  "\<^bold>M = mk_dimvec [0, 1, 0, 0, 0, 0, 0]"
+  ...
+\<close>}
+A demonstration of a computation \<^footnote>\<open>The command \<^theory_text>\<open>value\<close> compiles the argument to SML code and
+executes it\<close> and a proof is shown in the example below:
+
+@{theory_text [display, indent=10] \<open>
+value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"             
+
+lemma "\<^bold>L\<cdot>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = mk_dimvec [1, 1, - 2, 0, 0, 0, 0]"  by (simp add: si_def) \<close>}
+
+Note that the multiplication operation \<^term>\<open>(\<cdot>)\<close> is inherited from the fact that the
+ \<^typ>\<open>Dimension\<close>-type is a proven instance of the \<^class>\<open>ab_group_mult\<close>-class. So far, 
+the language of dimensions is represented by a shallow embedding in the \<^typ>\<open>Dimension\<close> type.
+\<close>
+
+
+
+
+section*[types::technical,main_author="Some(@{author ''bu''})"] 
+\<open>Dimension Types and its Semantics in Terms of the \<^typ>\<open>Dimension\<close>-Type \<close>
+
+text\<open>The next section on our road is the construction of a sub-language of type-expressions.
+To this end, we define a \<^emph>\<open>type class\<close> by those type-terms for which we have an interpretation
+function \<^const>\<open>dim_ty_sem\<close> 
+into the values of the \<^typ>\<open>Dimension\<close>-type. For our construction it suffices that the type-symbols 
+of this class have a \<^emph>\<open>unitary\<close>, \<^ie>, one-elementary, carrier-set.\<close>
+
+text\<open>
+@{theory_text [display, indent=10] \<open>
+class dim_type = unitary +
+  fixes   dim_ty_sem :: "'\<alpha> itself \<Rightarrow> Dimension"
+
+class basedim_type = dim_type +
+  assumes is_BaseDim: "is_BaseDim (dim_ty_sem (TYPE('\<alpha>)))"
+
+\<close>}
+
+Recall that the the type constructor \<^typ>\<open>'\<alpha> itself\<close> from Isabelle/Pure denotes an unspecified 
+type and \<open>TYPE\<close> a constructor that injects the language of types into the language of terms. 
+We also introduce a sub-type-class \<^class>\<open>basedim_type\<close> for base-dimensions.\<close>
+
+text \<open> The definition of the basic dimension type constructors is straightforward via a
+  one-elementary set, \<^typ>\<open>unit set\<close>. The latter is adequate since we need just an abstract syntax 
+  for type expressions, so just one value for the \<^verbatim>\<open>dimension\<close>-type symbols. We define types for
+  each of the seven base dimensions, and also for dimensionless quantities. 
+
+@{theory_text [display, indent=10] \<open>
+typedef Length      = "UNIV :: unit set" .. setup_lifting type_definition_Length
+type_synonym L = Length
+typedef Mass        = "UNIV :: unit set" .. setup_lifting type_definition_Mass
+type_synonym M = Mass
+...
+\<close>}
+\<close>
+
+text\<open>The following instantiation proof places the freshly constructed type symbol \<^typ>\<open>Length\<close> in the
+class \<^class>\<open>basedim_type\<close> by setting its semantic interpretation to the corresponding value
+in the \<^typ>\<open>Dimension\<close>-type.
+@{theory_text [display, indent=10] \<open>
+instantiation Length :: basedim_type
+begin
+definition [si_eq]: "dim_ty_sem_Length (\<alpha>::Length itself) = \<^bold>L"
+instance <proof ommitted>
+end\<close>}
+Note that Isabelle enforces a convention to name the definition of an operation assumed
+in the interface of the class to be the concatenation of the interface name (\<^eg> \<^const>\<open>dim_ty_sem\<close>)
+and the name of the class intantiation (\<^eg> \<^const>\<open>Length\<close>).
+For the other 6 base-types we proceed analogously.
+\<close>
+(* I (bu) use a notational hack here: in the original theory, the _ - dummyless type is used.
+   Rather than this undocumented and arcane feature, I use \<alpha> (note: not '\<alpha>) which has the same
+   effect for unknown reasons in the real code in ISQ-Dimensions, in the hope that a reader  
+   might just overlook this detail and get nevertheless a kind of "immediate" understanding
+   without diving too deep here. 
+*)
+
+
+text\<open> Dimension type expressions can be constructed by multiplication and division of the base
+  dimension types above. Consequently, we need to define multiplication and inverse operators
+  at the type level as well. On the class of dimension types (in which we have already inserted 
+  the base dimension types), the definitions of the type constructors for inner product and inverse 
+  is straightforward. 
+
+@{theory_text [display, indent=10] \<open>
+typedef ('\<alpha>::dim_type, '\<beta>::dim_type) DimTimes (infixl "\<cdot>" 69) = "UNIV :: unit set" ..
+setup_lifting type_definition_DimTimes\<close>}
+
+  The type \<^typ>\<open>('\<alpha>,'\<beta>) DimTimes\<close> is parameterised by two types, \<^typ>\<open>'\<alpha>\<close> and \<^typ>\<open>'\<beta>\<close> that must
+  both be elements of the \<^class>\<open>dim_type\<close> class. As with the base dimensions, it is a unitary type
+  as its purpose is to represent dimension type expressions. We instantiate \<^class>\<open>dim_type\<close> with
+  this type, where the semantics of a product dimension expression is the product of the underlying
+  dimensions. This means that multiplication of two dimension types yields a dimension type. 
+
+@{theory_text [display, indent=10] \<open>
+instantiation DimTimes :: (dim_type, dim_type) dim_type
+begin
+  definition dim_ty_sem_DimTimes :: "('\<alpha> \<cdot> '\<beta>) itself \<Rightarrow> Dimension" where
+  [si_eq]: "dim_ty_sem_DimTimes x = (dim_ty_sem TYPE('\<alpha>)) \<cdot> (dim_ty_sem TYPE('\<beta>))"
+  instance by (intro_classes, simp_all add: dim_ty_sem_DimTimes_def, (transfer, simp)+)
+end\<close>}
+
+Thus, the semantic interpretation of the product of two \<^class>\<open>dim_type\<close>'s is a homomorphism
+over the product of two dimensions. Similarly, we define inversion of dimension types and 
+prove that dimension types areclosed under this. 
+
+@{theory_text [display, indent=10] \<open>
+typedef '\<alpha> DimInv ("(_\<^sup>-\<^sup>1)" [999] 999) = "UNIV :: unit set" ..
+setup_lifting type_definition_DimInv
+instantiation DimInv :: (dim_type) dim_type
+begin
+  definition dim_ty_sem_DimInv :: "('-\<^sup>1) itself \<Rightarrow> Dimension" where
+  [si_eq]: "dim_ty_sem_DimInv x = inverse (dim_ty_sem TYPE('\<alpha>))"
+  instance by (intro_classes, simp_all add: dim_ty_sem_DimInv_def, (transfer, simp)+)
+end\<close>}
+\<close>
+
+figure*[induct_type_SML_interpreted::figure, relative_width="85", 
+        src="''figures/induct_type_class_scheme_ML.png''"]\<open>
+  "Inductive" subset of DIM-Types interpreted 
+\<close>
+
 
 (*<*)
 ML\<open>
@@ -372,10 +522,6 @@ text\<open>
 \<^ML>\<open>Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
 \<^ML>\<open>Dimension_Type.normalise  @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
 \<close>
-
-section*[types::technical,main_author="Some(@{author ''bu''})"] 
-\<open>ISQ Types, SI Types\<close>
-
 section*[cong::technical,main_author="Some(@{author ''bu''})"] 
 \<open>Computing the 'Algebra of Dimensions'\<close>
 
@@ -393,7 +539,7 @@ most comprehensive account of ISQ and SI in a theory prover.
 
 text\<open>\pagebreak\<close>
 
-
+(*<*)
 section\<open>Annex\<close>
 
 subsection\<open>Alien stuff - Examples to Typeset in DOF.\<close>
@@ -424,6 +570,7 @@ be distinguished:
 
 \<close>
 
+(*>*)
 (*
 text\<open>
 Generalizations of these two operators \<open>\<box>x\<in>A. P(x)\<close> and \<open>\<Sqinter>x\<in>A. P(x)\<close> allow for modeling the concepts 

@@ -13,3 +13,4 @@ session "2022-ITP-TQM" = "Isabelle_DOF" +
     "figures/Req-Def-ex.png"
     "lstisadof.sty"
     "figures/induct_type_class_scheme.png"
+    "figures/induct_type_class_scheme_ML.png"

@@ -331,49 +331,50 @@ text\<open> Next, we embed the base dimensions into the dimension type expressio
 
 instantiation Length :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Length (_::Length itself) = \<^bold>L"
+definition [si_eq]: "dim_ty_sem_Length (\<alpha>::Length itself) = \<^bold>L"
 instance by (intro_classes, auto simp add: dim_ty_sem_Length_def, (transfer, simp)+)
 end
+(* Was _ for alpha (not: not 'alpha). Works nevertheless for unknown reasons. *)
 
 instantiation Mass :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Mass (_::Mass itself) = \<^bold>M"
+definition [si_eq]: "dim_ty_sem_Mass (\<alpha>::Mass itself) = \<^bold>M"
 instance by (intro_classes, auto simp add: dim_ty_sem_Mass_def, (transfer, simp)+)
 end
 
 instantiation Time :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Time (_::Time itself) = \<^bold>T"
+definition [si_eq]: "dim_ty_sem_Time (\<alpha>::Time itself) = \<^bold>T"
 instance by (intro_classes, auto simp add: dim_ty_sem_Time_def, (transfer, simp)+)
 end
 
 instantiation Current :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Current (_::Current itself) = \<^bold>I"
+definition [si_eq]: "dim_ty_sem_Current (\<alpha>::Current itself) = \<^bold>I"
 instance by (intro_classes, auto simp add: dim_ty_sem_Current_def, (transfer, simp)+)
 end
 
 instantiation Temperature :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Temperature (_::Temperature itself) = \<^bold>\<Theta>"
+definition [si_eq]: "dim_ty_sem_Temperature (\<alpha>::Temperature itself) = \<^bold>\<Theta>"
 instance by (intro_classes, auto simp add: dim_ty_sem_Temperature_def, (transfer, simp)+)
 end
 
 instantiation Amount :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Amount (_::Amount itself) = \<^bold>N"
+definition [si_eq]: "dim_ty_sem_Amount (\<alpha>::Amount itself) = \<^bold>N"
 instance by (intro_classes, auto simp add: dim_ty_sem_Amount_def, (transfer, simp)+)
 end   
 
 instantiation Intensity :: basedim_type
 begin
-definition [si_eq]: "dim_ty_sem_Intensity (_::Intensity itself) = \<^bold>J"
+definition [si_eq]: "dim_ty_sem_Intensity (\<alpha>::Intensity itself) = \<^bold>J"
 instance by (intro_classes, auto simp add: dim_ty_sem_Intensity_def, (transfer, simp)+)
 end
 
 instantiation NoDimension :: dim_type
 begin
-definition [si_eq]: "dim_ty_sem_NoDimension (_::NoDimension itself) = (1::Dimension)"
+definition [si_eq]: "dim_ty_sem_NoDimension (\<alpha>::NoDimension itself) = (1::Dimension)"
 instance by (intro_classes, auto simp add: dim_ty_sem_NoDimension_def, (transfer, simp)+)
 end
 
@@ -387,8 +388,8 @@ subsubsection \<open> Dimension Type Constructors: Inner Product and Inverse \<c
 text\<open> Dimension type expressions can be constructed by multiplication and division of the base
   dimension types above. Consequently, we need to define multiplication and inverse operators
   at the type level as well. On the class of dimension types (in which we have already inserted 
-  the base dimension types), the definitions of the type constructors for inner product and inverse is 
-  straightforward. \<close>
+  the base dimension types), the definitions of the type constructors for inner product and inverse 
+  is straightforward. \<close>
 
 typedef ('a::dim_type, 'b::dim_type) DimTimes (infixl "\<cdot>" 69) = "UNIV :: unit set" ..
 setup_lifting type_definition_DimTimes
@@ -402,7 +403,7 @@ text \<open> The type \<^typ>\<open>('a,'b) DimTimes\<close> is parameterised by
 instantiation DimTimes :: (dim_type, dim_type) dim_type
 begin
   definition dim_ty_sem_DimTimes :: "('a \<cdot> 'b) itself \<Rightarrow> Dimension" where
-  [si_eq]: "dim_ty_sem_DimTimes x = QD('a) * QD('b)"
+  [si_eq]: "dim_ty_sem_DimTimes x = (dim_ty_sem TYPE('a)) \<cdot> (dim_ty_sem TYPE('b))"
   instance by (intro_classes, simp_all add: dim_ty_sem_DimTimes_def, (transfer, simp)+)
 end
 
@@ -414,7 +415,7 @@ setup_lifting type_definition_DimInv
 instantiation DimInv :: (dim_type) dim_type
 begin
   definition dim_ty_sem_DimInv :: "('a\<^sup>-\<^sup>1) itself \<Rightarrow> Dimension" where
-  [si_eq]: "dim_ty_sem_DimInv x = inverse QD('a)"
+  [si_eq]: "dim_ty_sem_DimInv x = inverse (dim_ty_sem TYPE('a))"
   instance by (intro_classes, simp_all add: dim_ty_sem_DimInv_def, (transfer, simp)+)
 end
 
