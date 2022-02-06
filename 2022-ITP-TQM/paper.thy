@@ -176,10 +176,10 @@ give the concrete definitions for the metre and the kilogram can be presented as
 text\<open>
 These equations giving the concrete definitions for the 
 metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
-(Planck constant) can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided of our theory.
+(Planck constant) can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
 \<close>
 
-
+(*
 subsubsection\<open>The Plan of the Theory Development\<close>
 text\<open>
 In the following we describe the overall theory architecture in more detail.
@@ -235,7 +235,7 @@ concepts:
 \<^enum> \<^emph>\<open>unit equations\<close> and conversion equations such as \<open>J = kg m\<^sup>2 / s\<^sup>2\<close> or 
   \<open>1 km/h = 1/3.6 m/s\<close>.
 \<close>
-
+*)
 
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
  \<open>Background: Some Advanced Isabelle Constructs\<close>
@@ -571,6 +571,107 @@ record ('\<alpha>, 's::unit_system) Measurement_System = "('\<alpha>) Quantity" 
 where \<^class>\<open>unit_system\<close>  again forces the carrier-set of its instances to have cardinality 1.
 \<close>
 
+subsection \<open>Dimension Typed Measurement Systems \<close>
+
+text \<open> We can now define the type of parameterized quantities
+ \<^typ>\<open>('\<alpha>, 'd::dim_type, 's::unit_system) QuantT\<close> by \<open>('\<alpha>, 's) Measurement_System\<close>'s,
+which have a dimension equal to the semantic interpretation of the \<^typ>\<open>'d::dim_type\<close>:
+
+@{theory_text [display, indent=10] \<open>
+typedef (overloaded) ('\<alpha>, 'd::dim_type, 's::unit_system) QuantT ("_[_, _]" [999,0,0] 999) 
+                     = "{x :: ('\<alpha>, 's) Measurement_System. dim x = dim_ty_sem TYPE('d)}"
+  morphisms fromQ toQ <non-emptyness proof omitted>
+
+setup_lifting type_definition_QuantT
+\<close>}
+where \<^typ>\<open>'s\<close> is a tag-type characterizing the concrete measuring system (\<^eg>, SI, BIS, UCS, ...).
+Via the class \<^class>\<open>unit_system\<close> these tag-types are again restricted to carrier-sets of 
+cardinality 1. 
+
+Intuitively, the term \<^term>\<open>x :: '\<alpha>['d, 's]\<close> can be read as ``$x$ is a quantity with magnitude
+of type \<^typ>\<open>'\<alpha>\<close>, dimension type \<^typ>\<open>'d\<close>, and measured in system \<^typ>\<open>'s\<close>. \<close>
+
+subsection\<open>Operators in Typed Quantities\<close>
+text \<open> We define several operators on typed quantities. These variously compose the dimension types
+  as well. Multiplication composes the two dimension types. Inverse constructs and inverted 
+  dimension type. Division is defined in terms of multiplication and inverse. 
+
+@{theory_text [display, indent=10] \<open>
+lift_definition 
+  qtimes :: "('\<alpha>::comm_ring_1)['\<tau>1::dim_type, 's::unit_system] 
+             \<Rightarrow> '\<alpha>['\<tau>2::dim_type, 's] \<Rightarrow> '\<alpha>['\<tau>1 \<cdot>'\<tau>2, 's]" (infixl "\<^bold>\<cdot>" 69) 
+  is "(*)" by (simp add: dim_ty_sem_DimTimes_def times_Quantity_ext_def)
+
+lift_definition 
+  qinverse :: "('\<alpha>::field)['\<tau>::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['\<tau>-\<^sup>1, 's]" ("(_\<^sup>-\<^sup>\<one>)" [999] 999) 
+  is "inverse" by (simp add: inverse_Quantity_ext_def dim_ty_sem_DimInv_def)\<close>}
+
+  Additionally, a scalar product \<^term>\<open>(*\<^sub>Q)\<close> and an addition on the magnitude component is 
+  introduced that preserves the algebraic properties of the magnitude type:
+
+@{theory_text [display, indent=10] \<open>
+lift_definition scaleQ 
+      :: "'\<alpha> \<Rightarrow> '\<alpha>::comm_ring_1['d::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d, 's]" (infixr "*\<^sub>Q" 63)
+    is "\<lambda> r x. \<lparr> mag = r * mag x, dim = dim_ty_sem TYPE('d), unit_sys = unit \<rparr>" <proof>
+
+instantiation QuantT :: (plus, dim_type, unit_system) plus
+begin
+lift_definition plus_QuantT :: "'\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's]"
+  is "\<lambda> x y. \<lparr> mag = mag x + mag y, dim = dim_ty_sem TYPE('d), unit_sys = unit \<rparr>" <proof>
+instance ..
+end
+\<close>}
+
+
+\<close>
+
+
+(*
+text \<open> Since quantities can have dimension type expressions that are distinct, but denote the same
+  dimension, it is necessary to define the following function for coercion between two dimension
+  expressions. This requires that the underlying dimensions are the same. 
+
+@{theory_text [display, indent=10] \<open>
+definition coerceQuantT :: 
+           "'d\<^sub>2 itself \<Rightarrow> '\<alpha>['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d\<^sub>2::dim_type, 's]" 
+  where [si_def]: "dim_ty_sem TYPE('d\<^sub>1) = dim_ty_sem TYPE('d\<^sub>1) 
+                   \<Longrightarrow> coerceQuantT t x = (toQ (fromQ x))" \<close>}
+and add additional syntax that allows for abbreviating \<open>coerceQuantT TYPE('\<tau>)\<close> by \<open>QCOERCE[\<tau>]\<close>
+\<close>
+*)
+subsection \<open> Predicates on Typed Quantities \<close>
+
+text \<open> The standard HOL order \<^term>\<open>(\<le>)\<close> and equality \<^term>\<open>(=)\<close> have the homogeneous type
+  \<^typ>\<open>'a \<Rightarrow> 'a \<Rightarrow> bool\<close> and so they cannot compare values of different types. Consequently,
+  we define a heterogeneous order and equivalence on typed quantities. 
+  Both operations were defined as lifting of the core operations.
+
+@{theory_text [display, indent=10] \<open>
+lift_definition qless_eq :: "'\<alpha>::order['d::dim_type,'s::unit_system] \<Rightarrow> '\<alpha>['d::dim_type,'s] \<Rightarrow> bool" 
+  (infix "\<lesssim>\<^sub>Q" 50) is "(\<le>)" .
+
+lift_definition qequiv :: "'\<alpha>['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d\<^sub>2::dim_type, 's] \<Rightarrow> bool" 
+  (infix "\<cong>\<^sub>Q" 50) is "(=)" .
+\<close>}
+
+  These are both fundamentally the same as the usual order and equality relations, but they
+  permit potentially different dimension types, \<^typ>\<open>'d1\<close> and \<^typ>\<open>'d2\<close>. Two typed quantities are
+  comparable only when the two dimension types have the same semantic dimension.
+
+  The equivalence properties on \<^term>\<open>(\<cong>\<^sub>Q)\<close> hold and even a restricted form of congruence 
+  inside the \<^class>\<open>dim_type\<close>'s can be established.
+\<close>
+
+subsection \<open> SI as Typed Quantities \<close>
+text\<open>It is now straight-forward to define an appropriate tag-type \<^typ>\<open>SI\<close> and to introduce
+appropriate syntactic abbreviations that identify the type \<^typ>\<open>'\<alpha>[L,SI]\<close> with \<^typ>\<open>'\<alpha>[m]\<close>,
+\<^typ>\<open>'\<alpha>[M,SI]\<close> with  \<^typ>\<open>'\<alpha>[kg]\<close>,  \<^typ>\<open>'\<alpha>[T,SI]\<close> with  \<^typ>\<open>'\<alpha>[s]\<close>, etc, \<^ie> the standard's 
+symbols for measurements in the 'système international des mesurements' (SI).
+Since these are just syntactic shortcuts, all operations and derived propertied in this section 
+also apply to the SI system, as well as equivalent presentations of the British Imperial System (BIS)
+or the US-customer system (UCS). If needed, type-safe conversion operations between these 
+systems can be defined, whose precision will depend on the underlying magnitude types, however.  
+\<close>
 
 section*[expls::example,main_author="Some(@{author ''bu''})"] 
 \<open>Validation by the VIM and the 'Brochure'\<close>

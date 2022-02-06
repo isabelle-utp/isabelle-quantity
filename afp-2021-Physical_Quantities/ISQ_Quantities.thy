@@ -274,8 +274,8 @@ text \<open> Since quantities can have dimension type expressions that are disti
   dimension, it is necessary to define the following function for coercion between two dimension
   expressions. This requires that the underlying dimensions are the same. \<close>
 
-definition coerceQuantT :: "'d\<^sub>2 itself \<Rightarrow> 'a['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> 'a['d\<^sub>2::dim_type, 's]" where
-[si_def]: "QD('d\<^sub>1) = QD('d\<^sub>2) \<Longrightarrow> coerceQuantT t x = (toQ (fromQ x))"
+definition coerceQuantT :: "'d\<^sub>2 itself \<Rightarrow> 'a['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> 'a['d\<^sub>2::dim_type, 's]" 
+  where [si_def]: "QD('d\<^sub>1) = QD('d\<^sub>2) \<Longrightarrow> coerceQuantT t x = (toQ (fromQ x))"
 
 syntax
   "_QCOERCE" :: "type \<Rightarrow> logic \<Rightarrow> logic" ("QCOERCE[_]")
