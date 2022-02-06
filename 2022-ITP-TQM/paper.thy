@@ -107,11 +107,13 @@ type-safe conversions between the SI system and others, like the British Imperia
 syntax
   "_nat"         :: "type" ("\<nat>")
   "_int"         :: "type" ("\<int>")
+  "_rat"         :: "type" ("\<rat>")
   "_real"        :: "type" ("\<real>")
 
 translations
   (type) "\<nat>" == (type) "nat"
   (type) "\<int>" == (type) "int"
+  (type) "\<rat>" == (type) "rat"
   (type) "\<real>" == (type) "real"
 
 declare[[show_sorts=true]]
@@ -322,7 +324,7 @@ Note that the index-type \<^typ>\<open>'\<nu>\<close> is restricted to be enumer
 Via a number of intermediate lemmas over types, we can finally establish the desired result
  in Isabelle compactly as follows:
 @{theory_text [display, indent=10] \<open>
-instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof ommitted>)
+instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof omitted)
 \<close>}
 If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
 \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group.
@@ -354,7 +356,7 @@ begin
   definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
   definition "enum_all_sdim P  \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> ..."
   definition "enum_ex_sdim P   \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> ..."
-  instance <proof ommitted>
+  instance <proof omitted>
 end
 
 type_synonym Dimension = "(\<int>, sdim) dimvec"\<close>}
@@ -450,7 +452,7 @@ in the \<^typ>\<open>Dimension\<close>-type.
 instantiation Length :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Length (\<alpha>::Length itself) = \<^bold>L"
-instance <proof ommitted>
+instance <proof omitted>
 end\<close>}
 Note that Isabelle enforces a convention to name the definition of an operation assumed
 in the interface of the class to be the concatenation of the interface name (\<^eg> \<^const>\<open>dim_ty_sem\<close>)
@@ -503,28 +505,26 @@ begin
   instance by (intro_classes, simp_all add: dim_ty_sem_DimInv_def, (transfer, simp)+)
 end\<close>}
 
-Finally, we introduce some syntactic sugar for such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha>\<close> or 
-\<open>'\<alpha>\<^sup>-\<^sup>4"\<close>
+Finally, we introduce some syntactic sugar such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha>\<close> or 
+\<open>'\<alpha>\<^sup>-\<^sup>4\<close> for \<open>('\<alpha>\<^sup>4)\<^sup>-\<^sup>1\<close>.
 \<close>
 figure*[induct_type_SML_interpreted::figure, relative_width="85", 
         src="''figures/induct_type_class_scheme_ML.png''"]\<open>
   The "Inductive" subset of \<open>dim_types\<close> interpreted in SML Lists\<close>
 text\<open>
 By the way, we also implemented two morphisms on the SML-level underlying Isabelle, 
-which is straight-forward and ommited here. These functions yield for:
+which is straight-forward and omitted here (C.f. @{figure \<open>induct_type_SML_interpreted\<close>}). 
+These functions yield for: 
 @{theory_text [display, indent=10] \<open>
-ML\<open>
-Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
-Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
-Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}
-\<close>
+ML\<open> Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
+    Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
+    Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
 \<close>}
 the system output:
 @{theory_text [display, indent=10] \<open>
-val it = [~2, 0, 4, 2, 0, 0, 0]: int list
-val it = "L \<cdot> M\<^sup>2 \<cdot> N\<^sup>3": typ
-val it = "L\<^sup>-\<^sup>2 \<cdot> T\<^sup>4 \<cdot> I\<^sup>2": typ
-\<close>}
+  val it = [~2, 0, 4, 2, 0, 0, 0]: int list
+  val it = "L \<cdot> M\<^sup>2 \<cdot> N\<^sup>3": typ
+  val it = "L\<^sup>-\<^sup>2 \<cdot> T\<^sup>4 \<cdot> I\<^sup>2": typ\<close>}
 \<close>
 
 (*<*)
@@ -537,6 +537,40 @@ Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>
 
 section*[cong::technical,main_author="Some(@{author ''bu''})"] 
 \<open>ISQ Quantity and SI Types\<close>
+subsection \<open> The Semantic Domain of Physical Quantities\<close>
+
+text \<open> Here, we give a semantic domain for particular values of physical quantities. A quantity 
+  is usually expressed as a number and a measurement unit, and the goal is to support this. First,
+  though, we give a more general semantic domain where a quantity has a magnitude and a dimension. 
+
+@{theory_text [display, indent=10] \<open>
+record ('\<alpha>) Quantity =
+  mag  :: '\<alpha>          \<comment> \<open> Magnitude of the quantity. \<close>
+  dim  :: "Dimension" \<comment> \<open> Dimension of the quantity -- denotes the kind of quantity. \<close>
+\<close>}
+
+  The magnitude type is parametric as we permit the magnitude to be represented using any kind
+  of numeric type, such as \<^typ>\<open>\<int>\<close>, \<^typ>\<open>\<rat>\<close>, or \<^typ>\<open>\<real>\<close>, though we usually minimally expect
+  a field. \<close>
+text\<open>
+By a number of class instantiations, we lift the type \<open>'\<alpha> Quantity\<close> into the class 
+\<^class>\<open>comm_monoid_mult\<close>, provided that the magnitude is of that class. The following
+homomorphisms hold:
+@{theory_text [display, indent=10] \<open>
+lemma mag_times  [simp]: "mag (x \<cdot> y) = mag x \<cdot> mag y" <proof>
+lemma dim_times  [simp]: "dim (x \<cdot> y) = dim x \<cdot> dim y" <proof>
+lemma mag_inverse [simp]: "mag (inverse x) = inverse (mag x)" <proof>
+lemma dim_inverse [simp]: "dim (inverse x) = inverse (dim x)" <proof>
+\<close>}\<close>
+
+text\<open>
+@{theory_text [display, indent=10] \<open>
+record ('\<alpha>, 's::unit_system) Measurement_System = "('\<alpha>) Quantity" +
+  unit_sys  :: 's \<comment> \<open> The system of units being employed \<close>
+\<close>}
+where \<^class>\<open>unit_system\<close>  again forces the carrier-set of its instances to have cardinality 1.
+\<close>
+
 
 section*[expls::example,main_author="Some(@{author ''bu''})"] 
 \<open>Validation by the VIM and the 'Brochure'\<close>
