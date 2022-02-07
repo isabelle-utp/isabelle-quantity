@@ -182,26 +182,35 @@ metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<
 subsection\<open>The Plan of the Theory Development\<close>
 text\<open>
 In the following we describe the overall theory architecture in more detail.
-Our ISQ model provides the following fundamental concepts:
+Our ISQ and SI model provides the following fundamental concepts:
+
 \<^enum> the definition and theory of a vector space \<^emph>\<open>dimensions\<close> and 
-  the base vectors  \<^term>\<open>\<^bold>L\<close>, \<^term>\<open>\<^bold>M\<close>, \<^term>\<open>\<^bold>T\<close>, \<^term>\<open>\<^bold>I\<close>, \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>.
+  the base vector terms  \<^term>\<open>\<^bold>L\<close>, \<^term>\<open>\<^bold>M\<close>, \<^term>\<open>\<^bold>T\<close>, \<^term>\<open>\<^bold>I\<close>, \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>
+  and their products and inverses \<^term>\<open>\<^bold>M \<cdot> L / T\<close>.
 
 \<^enum> the extension of dimensions by magnitudes to a structure of \<^emph>\<open>quantities\<close>,
+  together with its terms \<open>\<lparr> mag, dim, \<dots> \<rparr>\<close>, products and inverses.
 
-\<^enum> the extension of quantities to a structure of \<^emph>\<open>Measurement Systems\<close>
+\<^enum> the extension of quantities to a structure of \<^emph>\<open>measurement systems\<close> with
+  terms \<open>\<lparr> mag, dim, unit_sys \<rparr>\<close>, scalar products, products and inverses.
 
-\<^enum> the type definitions abstracting dimensions, quantities, and measurement systems 
+\<^enum> the type definitions abstracting dimensions, quantities, and measurement systems,
+  providing ISQ conform type symbols such as \<^typ>\<open>L\<close>, \<^typ>\<open>M\<close>, \<^typ>\<open>T\<close> and type
+  expressions \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> as well as type expressions for measurement systems
+  such as \<^typ>\<open>\<real>[M\<cdot>L/T,'s]\<close>.
   
 \<^enum> a \<^emph>\<open>quantity calculus\<close> consisting of \<^emph>\<open>quantity equations\<close>, \<^ie> rules resulting
   from the algebraic structure of  dimensions, quantities, and measurement systems.
 
-\<^enum> the abstraction of dimensions, quantities, and measurement systems induces an isompophism
+\<^enum> the abstraction of dimensions, quantities, and measurement systems induces an isomorphism
   on  types: thus, \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> is isomorphic to \<^typ>\<open>M\<cdot>L\<cdot>T\<^sup>-\<^sup>2\<close> is isomorphic to \<open>F\<close>
-  (the left-hand-side equals mass times acceleration which is equal to force). 
+  (the first type equals mass times acceleration which is equal to \<^emph>\<open>force\<close>). 
 
-\<^enum> a standardised set of symbols for SI-units such as \<open>m\<close>, \<open>kg\<close>, \<open>s\<close>, \<open>A\<close>, \<open>K\<close>,  \<open>mol\<close>, and  \<open>cd\<close>;
+\<^enum> an instance of measurement systems providing types such as \<^typ>\<open>\<real>[M\<cdot>L/T,SI]\<close> together 
+  with syntax support for standardised SI-unit symbols such 
+  as \<open>m\<close>, \<open>kg\<close>, \<open>s\<close>, \<open>A\<close>, \<open>K\<close>,  \<open>mol\<close>, and  \<open>cd\<close>.
 
-\<^enum> a standardised set of symbols of SI prefixes for multiples of SI units, such as
+\<^enum> a standardised set of symbols of SI-prefixes for multiples of SI-units, such as
   \<^term>\<open>giga\<close> (\<open>=10\<^sup>9\<close>), \<^term>\<open>kilo\<close> (\<open>=10\<^sup>3\<close>),  \<^term>\<open>milli\<close> (\<open>=10\<^sup>-\<^sup>3\<close>), etc.
 \<close>
 
