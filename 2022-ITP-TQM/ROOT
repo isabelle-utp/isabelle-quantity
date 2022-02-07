@@ -14,3 +14,6 @@ session "2022-ITP-TQM" = "Isabelle_DOF" +
     "lstisadof.sty"
     "figures/induct_type_class_scheme.png"
     "figures/induct_type_class_scheme_ML.png"
+    "figures/cc-by.pdf"
+    "figures/orcid.pdf"
+    "figures/lipics-logo-bw.pdf"

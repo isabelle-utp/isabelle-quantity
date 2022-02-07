@@ -7,7 +7,6 @@ theory "paper"
           
 begin
 
-
 open_monitor*[this::article]
 
 declare[[ strict_monitor_checking  = false]]
@@ -190,7 +189,7 @@ Our ISQ and SI model provides the following fundamental concepts:
 
 \<^enum> the definition and theory of a vector space \<^emph>\<open>dimensions\<close> and 
   the base vector terms  \<^term>\<open>\<^bold>L\<close>, \<^term>\<open>\<^bold>M\<close>, \<^term>\<open>\<^bold>T\<close>, \<^term>\<open>\<^bold>I\<close>, \<^term>\<open>\<^bold>\<Theta>\<close>, \<^term>\<open>\<^bold>N\<close>, \<^term>\<open>\<^bold>J\<close>
-  and their products and inverses \<^term>\<open>\<^bold>M \<cdot> L / T\<close>.
+  and their products and inverses as in the expression \<^term>\<open>\<^bold>M \<cdot> L / T\<close>.
 
 \<^enum> the extension of dimensions by magnitudes to a structure of \<^emph>\<open>quantities\<close>,
   together with its terms \<open>\<lparr> mag, dim, \<dots> \<rparr>\<close>, products and inverses.
@@ -221,6 +220,10 @@ Our ISQ and SI model provides the following fundamental concepts:
 \<close>
 
 
+figure*[induct_type_set::figure, relative_width="85", 
+        src="''figures/induct_type_class_scheme.png''"]
+\<open>The "Inductive" Subset of \<open>dim_types\<close>-types interpreted in the \<open>Dimension\<close>-Type\<close>
+
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
  \<open>Background: Some Advanced Isabelle Specification Constructs\<close>
 text\<open>This work uses a number of features of Isabelle/HOL and its
@@ -238,7 +241,7 @@ text\<open>
   For example, it is possible to define a type-class \<open>preorder\<close> which
   carries syntactic as well as semantic requirements on  type-instances:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 class ord =
   fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 begin notation  less_eq  ("'(\<le>')")  end
@@ -251,7 +254,7 @@ begin ... end
   
   An instantiation of this class with the concrete type \<^typ>\<open>nat\<close> has then the format:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 instantiation nat :: preorder
 begin
 definition less_eq_nat :: "nat \<Rightarrow> nat \<Rightarrow> bool" where "x \<le> y =  ... "
@@ -262,7 +265,7 @@ end
   Note that instantiations are also possible for parametric type constructors such as 
   \<^typ>\<open>('\<alpha>::preorder) list\<close>: here, an instantiation may use the preorder of the argument
   class \<^typ>\<open>'\<alpha>::preorder\<close> both in the definition as well as the proof part.
-  Note further, that we will use \<^typ>\<open>nat\<close> and \<^typ>\<open>\<nat>\<close> as synonyms in this paper.
+  Note further, that we will use \<^theory_text>\<open>nat\<close> and \<^typ>\<open>\<nat>\<close> as type synonyms in this paper.
 \<close>
 
 subsection\<open>Types in Type-abstractions and as Terms\<close>
@@ -297,10 +300,6 @@ text \<open>
 MORE TO COME
 \<close>
 
-figure*[induct_type_set::figure, relative_width="85", 
-        src="''figures/induct_type_class_scheme.png''"]
-\<open>The "Inductive" Subset of \<open>dim_types\<close> interpreted in the \<open>Dimension\<close>-Type\<close>
-
 
 section*[pas::technical,main_author="Some(@{author ''bu''})"] 
 \<open>Preliminary Algebraic Structures\<close>
@@ -318,7 +317,7 @@ represent it for the case of vectors of arbitrary length. We define the classes
 \<close>
 
 text\<open>
-@{theory_text [display, indent=10]
+@{theory_text [display, indent=3]
 \<open>
 notation times (infixl "\<cdot>" 70)
 
@@ -334,7 +333,7 @@ abbreviation (input) npower :: "'\<alpha>::{power,inverse} \<Rightarrow> nat \<R
 }
 \<close>
 text\<open> ... and derive the respective properties:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 lemma div_conv_mult_inverse : "a / b = a \<cdot> (inverse b)" ...
 lemma diff_self             : "a / a = 1" ...
 lemma mult_distrib_inverse  : "(a * b) / b = a" ...
@@ -346,7 +345,7 @@ lemma inverse_divid         : "inverse (a / b) = b / a" ... \<close>
 
 text\<open>On this basis we define \<^emph>\<open>dimension vectors\<close> of arbitrary size via a type definition 
 as follows:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 typedef ('\<beta>, '\<nu>) dimvec = "UNIV :: ('\<nu>::enum \<Rightarrow> '\<beta>) set"
   morphisms dim_nth dim_lambda ..
 \<close>}.
@@ -358,7 +357,7 @@ Note that the index-type \<^typ>\<open>'\<nu>\<close> is restricted to be enumer
 
 Via a number of intermediate lemmas over types, we can finally establish the desired result
  in Isabelle compactly as follows:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof omitted)
 \<close>}
 If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
@@ -383,7 +382,7 @@ text\<open>
 The definition of an enumeration and the proof that it can be accommodated to the required 
 infrastructure of the @{class "enum"}-class is straight-forward, and the construction of our
 domain \<^typ>\<open>Dimension\<close> follows immediately:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensity
 
 instantiation sdim :: enum 
@@ -406,7 +405,7 @@ text\<open>A base dimension is a dimension where precisely one component has pow
   dimension of a base quantity. Here we define the seven base dimensions. 
   For the concrete definition of the seven base vectors we define a constructor:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 definition mk_BaseDim :: "sdim \<Rightarrow> Dimension" where
 "mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
 \<close>}
@@ -416,7 +415,7 @@ a \<^emph>\<open>term\<close> representation of base vectors together with the c
 prove and to compute dimension-algebraic equivalences. We introduce
 the ISQ dimension symbols defined in @{cite "bipm_jcgm_2012_VIM"}: 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
 abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
 ...
@@ -430,7 +429,7 @@ lemma BD_mk_dimvec [si_def]:
 A demonstration of a computation \<^footnote>\<open>The command \<^theory_text>\<open>value\<close> compiles the argument to SML code and
 executes it\<close> and a proof is shown in the example below:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 value "\<^bold>L\<cdot>\<^bold>M\<cdot>\<^bold>T\<^sup>-\<^sup>2"             
 
 lemma "\<^bold>L\<cdot>M\<cdot>\<^bold>T\<^sup>-\<^sup>2 = mk_dimvec [1, 1, - 2, 0, 0, 0, 0]"  by (simp add: si_def) \<close>}
@@ -453,7 +452,7 @@ into the values of the \<^typ>\<open>Dimension\<close>-type. For our constructio
 of this class have a \<^emph>\<open>unitary\<close>, \<^ie>, one-elementary, carrier-set.\<close>
 
 text\<open>
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 class dim_type = unitary +
   fixes   dim_ty_sem :: "'\<alpha> itself \<Rightarrow> Dimension"
 
@@ -471,7 +470,7 @@ text \<open> The definition of the basic dimension type constructors is straight
   for type expressions, so just one value for the \<^verbatim>\<open>dimension\<close>-type symbols. We define types for
   each of the seven base dimensions, and also for dimensionless quantities. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 typedef Length      = "UNIV :: unit set" .. setup_lifting type_definition_Length
 type_synonym L = Length
 typedef Mass        = "UNIV :: unit set" .. setup_lifting type_definition_Mass
@@ -483,7 +482,7 @@ type_synonym M = Mass
 text\<open>The following instantiation proof places the freshly constructed type symbol \<^typ>\<open>Length\<close> in the
 class \<^class>\<open>basedim_type\<close> by setting its semantic interpretation to the corresponding value
 in the \<^typ>\<open>Dimension\<close>-type.
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 instantiation Length :: basedim_type
 begin
 definition [si_eq]: "dim_ty_sem_Length (\<alpha>::Length itself) = \<^bold>L"
@@ -508,7 +507,7 @@ text\<open> Dimension type expressions can be constructed by multiplication and 
   the base dimension types), the definitions of the type constructors for inner product and inverse 
   is straightforward. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 typedef ('\<alpha>::dim_type, '\<beta>::dim_type) DimTimes (infixl "\<cdot>" 69) = "UNIV :: unit set" ..
 setup_lifting type_definition_DimTimes\<close>}
 
@@ -518,7 +517,7 @@ setup_lifting type_definition_DimTimes\<close>}
   this type, where the semantics of a product dimension expression is the product of the underlying
   dimensions. This means that multiplication of two dimension types yields a dimension type. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 instantiation DimTimes :: (dim_type, dim_type) dim_type
 begin
   definition dim_ty_sem_DimTimes :: "('\<alpha> \<cdot> '\<beta>) itself \<Rightarrow> Dimension" where
@@ -530,7 +529,7 @@ Thus, the semantic interpretation of the product of two \<^class>\<open>dim_type
 over the product of two dimensions. Similarly, we define inversion of dimension types and 
 prove that dimension types areclosed under this. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 typedef '\<alpha> DimInv ("(_\<^sup>-\<^sup>1)" [999] 999) = "UNIV :: unit set" ..
 setup_lifting type_definition_DimInv
 instantiation DimInv :: (dim_type) dim_type
@@ -550,13 +549,13 @@ text\<open>
 By the way, we also implemented two morphisms on the SML-level underlying Isabelle, 
 which is straight-forward and omitted here (C.f. @{figure \<open>induct_type_SML_interpreted\<close>}). 
 These functions yield for: 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 ML\<open> Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
     Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
     Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
 \<close>}
 the system output:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
   val it = [~2, 0, 4, 2, 0, 0, 0]: int list
   val it = "L \<cdot> M\<^sup>2 \<cdot> N\<^sup>3": typ
   val it = "L\<^sup>-\<^sup>2 \<cdot> T\<^sup>4 \<cdot> I\<^sup>2": typ\<close>}
@@ -578,7 +577,7 @@ text \<open> Here, we give a semantic domain for particular values of physical q
   is usually expressed as a number and a measurement unit, and the goal is to support this. First,
   though, we give a more general semantic domain where a quantity has a magnitude and a dimension. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 record ('\<alpha>) Quantity =
   mag  :: '\<alpha>          \<comment> \<open> Magnitude of the quantity. \<close>
   dim  :: "Dimension" \<comment> \<open> Dimension of the quantity -- denotes the kind of quantity. \<close>
@@ -591,7 +590,7 @@ text\<open>
 By a number of class instantiations, we lift the type \<open>'\<alpha> Quantity\<close> into the class 
 \<^class>\<open>comm_monoid_mult\<close>, provided that the magnitude is of that class. The following
 homomorphisms hold:
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 lemma mag_times  [simp]: "mag (x \<cdot> y) = mag x \<cdot> mag y" <proof>
 lemma dim_times  [simp]: "dim (x \<cdot> y) = dim x \<cdot> dim y" <proof>
 lemma mag_inverse [simp]: "mag (inverse x) = inverse (mag x)" <proof>
@@ -599,7 +598,7 @@ lemma dim_inverse [simp]: "dim (inverse x) = inverse (dim x)" <proof>
 \<close>}\<close>
 
 text\<open>
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 record ('\<alpha>, 's::unit_system) Measurement_System = "('\<alpha>) Quantity" +
   unit_sys  :: 's \<comment> \<open> The system of units being employed \<close>
 \<close>}
@@ -612,7 +611,7 @@ text \<open> We can now define the type of parameterized quantities
  \<^typ>\<open>('\<alpha>, 'd::dim_type, 's::unit_system) QuantT\<close> by \<open>('\<alpha>, 's) Measurement_System\<close>'s,
 which have a dimension equal to the semantic interpretation of the \<^typ>\<open>'d::dim_type\<close>:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 typedef (overloaded) ('\<alpha>, 'd::dim_type, 's::unit_system) QuantT ("_[_, _]" [999,0,0] 999) 
                      = "{x :: ('\<alpha>, 's) Measurement_System. dim x = dim_ty_sem TYPE('d)}"
   morphisms fromQ toQ <non-emptyness proof omitted>
@@ -631,7 +630,7 @@ text \<open> We define several operators on typed quantities. These variously co
   as well. Multiplication composes the two dimension types. Inverse constructs and inverted 
   dimension type. Division is defined in terms of multiplication and inverse. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 lift_definition 
   qtimes :: "('\<alpha>::comm_ring_1)['\<tau>1::dim_type, 's::unit_system] 
              \<Rightarrow> '\<alpha>['\<tau>2::dim_type, 's] \<Rightarrow> '\<alpha>['\<tau>1 \<cdot>'\<tau>2, 's]" (infixl "\<^bold>\<cdot>" 69) 
@@ -644,7 +643,7 @@ lift_definition
   Additionally, a scalar product \<^term>\<open>(*\<^sub>Q)\<close> and an addition on the magnitude component is 
   introduced that preserves the algebraic properties of the magnitude type:
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 lift_definition scaleQ 
       :: "'\<alpha> \<Rightarrow> '\<alpha>::comm_ring_1['d::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d, 's]" (infixr "*\<^sub>Q" 63)
     is "\<lambda> r x. \<lparr> mag = r * mag x, dim = dim_ty_sem TYPE('d), unit_sys = unit \<rparr>" <proof>
@@ -666,7 +665,7 @@ text \<open> Since quantities can have dimension type expressions that are disti
   dimension, it is necessary to define the following function for coercion between two dimension
   expressions. This requires that the underlying dimensions are the same. 
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 definition coerceQuantT :: 
            "'d\<^sub>2 itself \<Rightarrow> '\<alpha>['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d\<^sub>2::dim_type, 's]" 
   where [si_def]: "dim_ty_sem TYPE('d\<^sub>1) = dim_ty_sem TYPE('d\<^sub>1) 
@@ -681,7 +680,7 @@ text \<open> The standard HOL order \<^term>\<open>(\<le>)\<close> and equality 
   we define a heterogeneous order and equivalence on typed quantities. 
   Both operations were defined as lifting of the core operations.
 
-@{theory_text [display, indent=10] \<open>
+@{theory_text [display, indent=3] \<open>
 lift_definition qless_eq :: "'\<alpha>::order['d::dim_type,'s::unit_system] \<Rightarrow> '\<alpha>['d::dim_type,'s] \<Rightarrow> bool" 
   (infix "\<lesssim>\<^sub>Q" 50) is "(\<le>)" .
 
