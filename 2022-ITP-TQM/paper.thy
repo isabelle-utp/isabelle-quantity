@@ -179,6 +179,10 @@ metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<
 (Planck constant). They can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
 \<close>
 
+(*<*)
+declare_reference*[induct_type_set::figure]
+(*>*)
+
 subsection\<open>The Plan of the Theory Development\<close>
 text\<open>
 In the following we describe the overall theory architecture in more detail.
@@ -205,6 +209,8 @@ Our ISQ and SI model provides the following fundamental concepts:
 \<^enum> the abstraction of dimensions, quantities, and measurement systems induces an isomorphism
   on  types: thus, \<^typ>\<open>L\<cdot>T\<^sup>-\<^sup>1\<cdot>T\<^sup>-\<^sup>1\<cdot>M\<close> is isomorphic to \<^typ>\<open>M\<cdot>L\<cdot>T\<^sup>-\<^sup>2\<close> is isomorphic to \<open>F\<close>
   (the first type equals mass times acceleration which is equal to \<^emph>\<open>force\<close>). 
+  The isomorphism on types is established by a semantic interpretation in
+  dimensions (c.f. @{figure (unchecked) \<open>induct_type_set\<close>}).
 
 \<^enum> an instance of measurement systems providing types such as \<^typ>\<open>\<real>[M\<cdot>L/T,SI]\<close> together 
   with syntax support for standardised SI-unit symbols such 
@@ -216,33 +222,84 @@ Our ISQ and SI model provides the following fundamental concepts:
 
 
 section*[bgr::background,main_author="Some(@{author ''bu''})"] 
- \<open>Background: Some Advanced Isabelle Constructs\<close>
+ \<open>Background: Some Advanced Isabelle Specification Constructs\<close>
 text\<open>This work uses a number of features of Isabelle/HOL and its
 meta-logic Isabelle/Pure, that are not necessarily available in another
-system of the LCF-Prover family and that needs therefore some explanation:
+system of the LCF-Prover family and that needs therefore some explanation.
+These concepts are in particular:\<close>
 
-\<^item> Type-classes and order-sorted parametric polymorphism 
-  @{cite "DBLP_conf_fpca_NipkowS91" and "NipkowPrehofer95"}.
-  Haskell-like type-classes allow for types depend on constants 
-  and represent therefore a restricted form of dependent types. 
+subsection\<open>Type-Classes\<close>
+text\<open>
+  Type-classes and order-sorted parametric polymorphism 
+  @{cite "DBLP_conf_fpca_NipkowS91" and "NipkowPrehofer95"} in Isabelle provide
+  Haskell-like type-classes that allow for types depend on constants 
+  and represent therefore a restricted form of dependent types
+  (c.f. \<^url>\<open>https://isabelle.in.tum.de/dist/Isabelle2021-1/doc/classes.pdf\<close>). 
+  For example, it is possible to define a type-class \<open>preorder\<close> which
+  carries syntactic as well as semantic requirements on  type-instances:
 
-\<^item> The meta-logic \<^verbatim>\<open>Pure\<close> providing mechanisms to denote types
-  inside the term-language: \<open>'\<alpha> itself\<close> denotes an unspecified 
-  type and \<open>TYPE\<close> a constructor that injects 
-  the language of types into the language of terms.
+@{theory_text [display, indent=10] \<open>
+class ord =
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+begin notation  less_eq  ("'(\<le>')")  end
+
+class preorder = ord +
+  assumes order_refl : "x \<le> x"
+  and    order_trans : "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z"
+begin ... end
+\<close>}
   
-\<^item> Code-generation: Reflection via \<open>eval\<close> 
-% do we use somewhere nbe ?
+  An instantiation of this class with the concrete type \<^typ>\<open>nat\<close> has then the format:
 
-\<^item> The lifting package
+@{theory_text [display, indent=10] \<open>
+instantiation nat :: preorder
+begin
+definition less_eq_nat :: "nat \<Rightarrow> nat \<Rightarrow> bool" where "x \<le> y =  ... "
+instance   <instance proof establishing order_refl and order_trans>
+end
+\<close>}
 
+  Note that instantiations are also possible for parametric type constructors such as 
+  \<^typ>\<open>('\<alpha>::preorder) list\<close>: here, an instantiation may use the preorder of the argument
+  class \<^typ>\<open>'\<alpha>::preorder\<close> both in the definition as well as the proof part.
+  Note further, that we will use \<^typ>\<open>nat\<close> and \<^typ>\<open>\<nat>\<close> as synonyms in this paper.
+\<close>
 
+subsection\<open>Types in Type-abstractions and as Terms\<close>
+text\<open>
+  The meta-logic \<^verbatim>\<open>Isabelle/Pure\<close> provides mechanisms to denote types of sort 'types'
+  in the type language as well in the term language:
+  \<open>'\<alpha> itself\<close> denotes an unspecified type and \<open>TYPE\<close> a constructor that injects 
+  the language of types into the language of terms. It is therefore possible
+  to abstract a type as such from a term and mimick the effect of a type instantiation
+  well-known in higher type-calculi by an ordinary
+  application. For example, some function \<open>f :: 'a itself \<Rightarrow> \<tau>\<close> may be instantiated via 
+   \<open>f (TYPE(\<nat>))\<close>.
+\<close>
+
+subsection\<open>Types as Parameters and as Terms\<close>
+text\<open> \<^verbatim>\<open>Isabelle\<close> provides a powerful code generation framework that is both 
+extremely versatile and reconfigurable as well as well supported by many
+specification constructs 
+(c.f. \<^url>\<open>https://isabelle.in.tum.de/dist/Isabelle2021-1/doc/codegen.pdf\<close>).
+For example, datatype definitions or recursive function definitions automatically
+produce the necessary setups for the code-generator, which can be configured with
+formally proven coding-rules to produce efficient SML (and other) code.
+In our context, it is of major importance since the normalisation process of 
+dimension types is computable, which paves the way for efficient decision procedures
+establishing the isomorphism of, \<^eg>, dimension types.  
+Note that the command \<^theory_text>\<open>value "E"\<close> makes direct use of the code-generator, as well
+as the \<^theory_text>\<open>eval\<close>-proof method.
+\<close>
+
+subsection\<open>The lifting package\<close>
+text \<open>
+MORE TO COME
 \<close>
 
 figure*[induct_type_set::figure, relative_width="85", 
-        src="''figures/induct_type_class_scheme.png''"]\<open>
-    The "Inductive" Subset of \<open>dim_types\<close> interpreted in the \<open>Dimension\<close>-Type
-\<close>
+        src="''figures/induct_type_class_scheme.png''"]
+\<open>The "Inductive" Subset of \<open>dim_types\<close> interpreted in the \<open>Dimension\<close>-Type\<close>
 
 
 section*[pas::technical,main_author="Some(@{author ''bu''})"] 
