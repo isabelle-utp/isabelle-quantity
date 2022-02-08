@@ -734,7 +734,6 @@ lemma "1 *\<^sub>Q (centi *\<^sub>Q metre)\<^sup>-\<^sup>\<one> = 100 *\<^sub>Q 
 section*[expls::example,main_author="Some(@{author ''bu''})"] 
 \<open>Validation by the VIM and the 'Brochure'\<close>
 
-section\<open>Related Work and Conclusion\<close>
 text\<open>
 For example, the crucial definitions adapted from the SI Brochure that 
 give the concrete definitions for the metre and the kilogram can be presented as follows: \<^vs>\<open>0.3cm\<close>
@@ -752,8 +751,26 @@ These equations give the concrete definitions for the
 metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
 (Planck constant). They can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
 \<close>
+ 
+section\<open>Related Work and Conclusion\<close>
+
+text\<open>We have presented a substantial theory development of about 2500 lines of definitions 
+and proofs that captures the ISQ and SI as defined in the international standard of the 
+VIM @{cite "bipm_jcgm_2012_VIM"}.
+The theory that is generally available on the Isabelle/HOL Archive of Formal Proofs provides
+a type system for physical quantities and measurements that is by construction sound and 
+complete. Given the fact that Isabelle's type-system is far from being trivial, we believe 
+that this is both significant and useful for applications in the hybrid system domain.
+We provided a validation of our theory by checking the mandatory definitions and described 
+corollaries in the VIM and the SI-Brochure@{cite "SI-Brochure"}. The provided proof support
+allows to do this smoothly.
+
+\<close>
+subsection\<open>Related Work\<close>
 
 text\<open>
+There had been numerous direct implementations of ISQ and SI for programming languages:
+we mention only ...
 
 This work has drawn inspiration from some previous formalisations of the ISQ and SI, notably Hayes 
 and Mahoney's formalisation in Z@{cite "HayesBrendan95"} and Aragon's algebraic structure for physical
