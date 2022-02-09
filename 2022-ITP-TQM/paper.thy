@@ -526,8 +526,8 @@ begin
 end\<close>}
 
 Thus, the semantic interpretation of the product of two \<^class>\<open>dim_type\<close>'s is a homomorphism
-over the product of two dimensions. Similarly, we define inversion of dimension types and 
-prove that dimension types areclosed under this. 
+over the product of two dimensions. Similarly, we define the inversion of dimension types and 
+prove that dimension types are closed under this operation. 
 
 @{theory_text [display, indent=3] \<open>
 typedef '\<alpha> DimInv ("(_\<^sup>-\<^sup>1)" [999] 999) = "UNIV :: unit set" ..
@@ -538,7 +538,7 @@ begin
   [si_eq]: "dim_ty_sem_DimInv x = inverse (dim_ty_sem TYPE('\<alpha>))"
   instance <proof>
 end\<close>}
-Finally, we introduce some syntactic sugar such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha>\<close> or 
+Finally, we introduce some syntactic sugar such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha>\<cdot>'\<alpha>\<cdot>'\<alpha>\<cdot>'\<alpha>\<close> or 
 \<open>'\<alpha>\<^sup>-\<^sup>4\<close> for \<open>('\<alpha>\<^sup>4)\<^sup>-\<^sup>1\<close>.
 \<close>
 figure*[induct_type_SML_interpreted::figure, relative_width="60", 
@@ -693,8 +693,8 @@ lift_definition
 
 subsection \<open> SI as Typed Quantities \<close>
 text\<open>It is now straight-forward to define an appropriate tag-type \<^typ>\<open>SI\<close> and to introduce
-appropriate syntactic abbreviations that identify the type \<^typ>\<open>'\<alpha>[L,SI]\<close> with \<^typ>\<open>'\<alpha>[m]\<close>,
-\<^typ>\<open>'\<alpha>[M,SI]\<close> with  \<^typ>\<open>'\<alpha>[kg]\<close>,  \<^typ>\<open>'\<alpha>[T,SI]\<close> with  \<^typ>\<open>'\<alpha>[s]\<close>, etc, \<^ie> the standard's 
+appropriate syntactic abbreviations that identify the type \<open>'\<alpha>[L,SI]\<close> with \<^typ>\<open>'\<alpha>[m]\<close>,
+\<open>'\<alpha>[M,SI]\<close> with  \<^typ>\<open>'\<alpha>[kg]\<close>, \<open>'\<alpha>[T,SI]\<close> with  \<^typ>\<open>'\<alpha>[s]\<close>, etc, \<^ie> the standard's 
 symbols for measurements in the 'système international des mesurements' (SI).
 Since these are just syntactic shortcuts, all operations and derived propertied in this section 
 also apply to the SI system, as well as equivalent presentations of the British Imperial System (BIS)
@@ -710,20 +710,18 @@ that can be composed with units using the scalar multiplication operator
 @{theory_text [display, indent=3] \<open>
 
 definition deca :: "'a" where [si_eq]: "deca = 10^1"
-definition hecto :: "'a" where [si_eq]: "hecto = 10^2"
+definition hecto:: "'a" where [si_eq]: "hecto = 10^2"
 definition kilo :: "'a" where [si_eq]: "kilo = 10^3"
 definition mega :: "'a" where [si_eq]: "mega = 10^6"
 
 ...
 
-definition deci :: "'a" where [si_eq]: "deci = 1/10^1"
+definition deci  :: "'a" where [si_eq]: "deci = 1/10^1"
 definition centi :: "'a" where [si_eq]: "centi = 1/10^2"
 definition milli :: "'a" where [si_eq]: "milli = 1/10^3"
 definition micro :: "'a" where [si_eq]: "micro = 1/10^6"
 ...
 \<close>}
-
-
 For example, it is therefore possible to represent and prove the following scalar calculations
 directly by \<open>si_simp\<close>:
 
@@ -752,7 +750,6 @@ Note that the most general magnitude types we support must form a field into whi
 natural numbers can  be injected. 
 
 Another large group of equations are just definitions that can be copied out of the book:
-
 \<^item> \<^term>\<open>minute = 60 *\<^sub>Q second\<close>
 \<^item> \<^term>\<open>hour = 60 *\<^sub>Q minute\<close>
 \<^item> \<^term>\<open>day = 24 *\<^sub>Q hour\<close>
@@ -764,11 +761,9 @@ Another large group of equations are just definitions that can be copied out of 
 \<^item> \<^term>\<open>dalton = 1.66053906660 * (1 / 10^27) *\<^sub>Q kilogram\<close>
 \<^item> etc.
 \<close>
-text\<open> On this basis, another group of unit equations can be recalculated in our theory
+text\<open>On this basis, another group of unit equations can be recalculated in our theory
 just by unfolding these definitions:
-
 @{theory_text [display, indent=3] \<open>
-
 lemma "1 *\<^sub>Q hour = 3600 *\<^sub>Q second"  by (si_simp)
 
 lemma "watt \<^bold>\<cdot> hour \<cong>\<^sub>Q 3600 *\<^sub>Q joule"   by (si_calc)
@@ -790,7 +785,8 @@ abbreviation Planck :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot>
 
 On  this basis, we can finally re-check  the foundational equations of the SI System:
 @{theory_text [display, indent=3] \<open>
-theorem second_definition: 
+
+theorem second_definition:
   "1 *\<^sub>Q second \<cong>\<^sub>Q (9192631770 *\<^sub>Q \<one>) \<^bold>/ \<Delta>v\<^sub>C\<^sub>s"
   by si_calc
 
@@ -803,7 +799,6 @@ theorem kilogram_definition:
   "   ((1 *\<^sub>Q kilogram)::'a kilogram) 
    \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
   by si_calc\<close>}
-
 As equations give the concrete definitions for the 
 metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> and \<^term>\<open>\<^bold>h\<close>, we can be fairly
 that even typos in the numerical constants appearing in the definitions are excluded.\<close>
