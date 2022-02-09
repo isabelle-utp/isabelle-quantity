@@ -22,12 +22,12 @@ define_shortcut* hol      \<rightleftharpoons> \<open>HOL\<close>
                  csp      \<rightleftharpoons> \<open>CSP\<close>      \<comment>\<open>obsolete\<close>
                  holcsp   \<rightleftharpoons> \<open>HOL-CSP\<close>  \<comment>\<open>obsolete\<close> 
 
-(*>*)
 title*[tit::title]\<open>A Sound Type System for Physical Quantities, Units, and Measurements\<close>
                                   
 author*[simon,email="\<open>simon.foster@york.ac.uk\<close>",affiliation="\<open>University of York\<close>"]\<open>Simon Foster\<close>
 author*[bu,email="\<open>wolff@lri.fr\<close>",affiliation = "\<open>LMF, Université Paris-Saclay\<close>"]\<open>Burkhart Wolff\<close>
-               
+(*>*)
+              
 abstract*[abs, keywordlist="[\<open>Formal Theories\<close>,\<open>Type-Systems\<close>,\<open>Isabelle/HOL\<close>,
                              \<open>Physical Quantities\<close>,\<open>Physical Measurements\<close>,\<open>SI\<close>,\<open>BIS\<close>]"]
 \<open>
@@ -126,7 +126,7 @@ As a result of our theory development\<^footnote>\<open>The sources can be found
 in the Isabelle Archive of Formal Proofs at 
 \<^url>\<open>https://www.isa-afp.org/entries/Physical_Quantities.html\<close>\<close>, 
 it is possible to express ``4500.0 kilogram times metre per second squared''
- has the type \<^typ>\<open>\<real>[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close> This type means that the magnitude 
+ has the type \<^typ>\<open>\<real>[M \<cdot> L \<cdot> T\<^sup>-\<^sup>3,SI]\<close>. This type means that the magnitude 
 \<open>4500.0\<close> (which by lexical convention is considered as a real number) 
 of the dimension  \<^typ>\<open>M \<cdot> L \<cdot> T\<^sup>-\<^sup>3\<close> is a  quantity intended to be measured 
 in the SI-system, which means that it actually represents a force measured in Newtons.
@@ -296,7 +296,7 @@ has the pattern for the binary case (cf. @{figure \<open>lifting\<close>}):
 
 \<^noindent> Besides compactness and conciseness, liftings have the advantage to setup 
 the code-generator appropriately, such that calculations on \<open>\<tau>\<^sub>A\<close> can be mapped 
-automatically on \<open>\<tau>\<^sub>C\<close>
+automatically on \<open>\<tau>\<^sub>C\<close>.
 \<close>
 
 
@@ -306,9 +306,9 @@ section*[pas::technical,main_author="Some(@{author ''bu''})"]
 text\<open>At the core, the multiplicative operation on physical dimension
 results in additions of the exponents of base vectors:
 
-   @{cartouche [display, indent=10] 
-     \<open>(M\<^sup>\<alpha>\<^sup>1\<cdot>L\<^sup>\<alpha>\<^sup>2\<cdot>T\<^sup>\<alpha>\<^sup>3\<cdot>I\<^sup>\<alpha>\<^sup>4\<cdot>\<Theta>\<^sup>\<alpha>\<^sup>5\<cdot>N\<^sup>\<alpha>\<^sup>6\<cdot>J\<^sup>\<alpha>\<^sup>7) * (M\<^sup>\<beta>\<^sup>1\<cdot>L\<^sup>\<beta>\<^sup>2\<cdot>T\<^sup>\<beta>\<^sup>3\<cdot>I\<^sup>\<beta>\<^sup>4\<cdot>\<Theta>\<^sup>\<beta>\<^sup>5\<cdot>N\<^sup>\<beta>\<^sup>6\<cdot>J\<^sup>\<beta>\<^sup>7) 
-     = (M\<^sup>\<alpha>\<^sup>1\<^sup>+\<^sup>\<beta>\<^sup>1\<cdot>L\<^sup>\<alpha>\<^sup>2\<^sup>+\<^sup>\<beta>\<^sup>2\<cdot>T\<^sup>\<alpha>\<^sup>3\<^sup>+\<^sup>\<beta>\<^sup>3\<cdot>I\<^sup>\<alpha>\<^sup>4\<^sup>+\<^sup>\<beta>\<^sup>4\<cdot>\<Theta>\<^sup>\<alpha>\<^sup>5\<^sup>+\<^sup>\<beta>\<^sup>5\<cdot>N\<^sup>\<alpha>\<^sup>6\<^sup>+\<^sup>\<beta>\<^sup>6\<cdot>J\<^sup>\<alpha>\<^sup>7\<^sup>+\<^sup>\<beta>\<^sup>7)\<close> } 
+@{cartouche [display, indent=3] \<open>
+  (M\<^sup>\<alpha>\<^sup>1\<cdot> L\<^sup>\<alpha>\<^sup>2\<cdot> T\<^sup>\<alpha>\<^sup>3\<cdot> I\<^sup>\<alpha>\<^sup>4\<cdot> \<Theta>\<^sup>\<alpha>\<^sup>5\<cdot> N\<^sup>\<alpha>\<^sup>6\<cdot> J\<^sup>\<alpha>\<^sup>7) * (M\<^sup>\<beta>\<^sup>1\<cdot> L\<^sup>\<beta>\<^sup>2\<cdot> T\<^sup>\<beta>\<^sup>3\<cdot> I\<^sup>\<beta>\<^sup>4\<cdot> \<Theta>\<^sup>\<beta>\<^sup>5\<cdot> N\<^sup>\<beta>\<^sup>6\<cdot> J\<^sup>\<beta>\<^sup>7) 
+= (M\<^sup>\<alpha>\<^sup>1\<^sup>+\<^sup>\<beta>\<^sup>1 \<cdot> L\<^sup>\<alpha>\<^sup>2\<^sup>+\<^sup>\<beta>\<^sup>2 \<cdot> T\<^sup>\<alpha>\<^sup>3\<^sup>+\<^sup>\<beta>\<^sup>3 \<cdot> I\<^sup>\<alpha>\<^sup>4\<^sup>+\<^sup>\<beta>\<^sup>4 \<cdot> \<Theta>\<^sup>\<alpha>\<^sup>5\<^sup>+\<^sup>\<beta>\<^sup>5 \<cdot> N\<^sup>\<alpha>\<^sup>6\<^sup>+\<^sup>\<beta>\<^sup>6 \<cdot> J\<^sup>\<alpha>\<^sup>7\<^sup>+\<^sup>\<beta>\<^sup>7)\<close> } 
 \<close>
 text\<open>
 This motivates type classes that represent this algebraic structure. We chose to
@@ -358,7 +358,7 @@ Note that the index-type \<^typ>\<open>'\<nu>\<close> is restricted to be enumer
 Via a number of intermediate lemmas over types, we can finally establish the desired result
  in Isabelle compactly as follows:
 @{theory_text [display, indent=3] \<open>
-instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof omitted)
+instance dimvec :: (ab_group_add, enum) ab_group_mult  by (<proof omitted>)
 \<close>}
 If \<^typ>\<open>'\<beta>\<close> is an abelian additive group, and if the index type \<^typ>\<open>'\<nu>\<close> is enumerable, 
 \<^typ>\<open>('\<beta>, '\<nu>) dimvec\<close> is an abelian multiplicative group.
@@ -387,7 +387,7 @@ datatype sdim = Length | Mass | Time | Current | Temperature | Amount | Intensit
 
 instantiation sdim :: enum 
 begin
-  definition "enum_sdim = [Length, Mass, Time, Current, Temperature, Amount, Intensity]"
+  definition "enum_sdim = [Length,Mass,Time,Current,Temperature,Amount,Intensity]"
   definition "enum_all_sdim P  \<longleftrightarrow> P Length \<and> P Mass \<and> P Time \<and> ..."
   definition "enum_ex_sdim P   \<longleftrightarrow> P Length \<or> P Mass \<or> P Time \<or> ..."
   instance <proof omitted>
@@ -407,7 +407,7 @@ text\<open>A base dimension is a dimension where precisely one component has pow
 
 @{theory_text [display, indent=3] \<open>
 definition mk_BaseDim :: "sdim \<Rightarrow> Dimension" where
-"mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
+          "mk_BaseDim d = dim_lambda (\<lambda> i. if (i = d) then 1 else 0)"
 \<close>}
 
 which lets us achieve a first major milestone on our journey:
@@ -471,9 +471,9 @@ text \<open> The definition of the basic dimension type constructors is straight
   each of the seven base dimensions, and also for dimensionless quantities. 
 
 @{theory_text [display, indent=3] \<open>
-typedef Length      = "UNIV :: unit set" .. setup_lifting type_definition_Length
+typedef Length = "UNIV :: unit set" .. setup_lifting type_definition_Length
 type_synonym L = Length
-typedef Mass        = "UNIV :: unit set" .. setup_lifting type_definition_Mass
+typedef Mass   = "UNIV :: unit set" .. setup_lifting type_definition_Mass
 type_synonym M = Mass
 ...
 \<close>}
@@ -522,7 +522,7 @@ instantiation DimTimes :: (dim_type, dim_type) dim_type
 begin
   definition dim_ty_sem_DimTimes :: "('\<alpha> \<cdot> '\<beta>) itself \<Rightarrow> Dimension" where
   [si_eq]: "dim_ty_sem_DimTimes x = (dim_ty_sem TYPE('\<alpha>)) \<cdot> (dim_ty_sem TYPE('\<beta>))"
-  instance by (intro_classes, simp_all add: dim_ty_sem_DimTimes_def, (transfer, simp)+)
+  instance <proof>
 end\<close>}
 
 Thus, the semantic interpretation of the product of two \<^class>\<open>dim_type\<close>'s is a homomorphism
@@ -536,23 +536,21 @@ instantiation DimInv :: (dim_type) dim_type
 begin
   definition dim_ty_sem_DimInv :: "('-\<^sup>1) itself \<Rightarrow> Dimension" where
   [si_eq]: "dim_ty_sem_DimInv x = inverse (dim_ty_sem TYPE('\<alpha>))"
-  instance by (intro_classes, simp_all add: dim_ty_sem_DimInv_def, (transfer, simp)+)
+  instance <proof>
 end\<close>}
-
 Finally, we introduce some syntactic sugar such as \<open>'\<alpha>\<^sup>4\<close> for \<open>'\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha> \<cdot> '\<alpha>\<close> or 
 \<open>'\<alpha>\<^sup>-\<^sup>4\<close> for \<open>('\<alpha>\<^sup>4)\<^sup>-\<^sup>1\<close>.
 \<close>
 figure*[induct_type_SML_interpreted::figure, relative_width="60", 
         src="''figures/induct_type_class_scheme_ML.png''"]\<open>
   The "Inductive" subset of \<open>dim_types\<close> interpreted in SML Lists\<close>
-text\<open>
-By the way, we also implemented two morphisms on the SML-level underlying Isabelle, 
+text\<open>By the way, we also implemented two morphisms on the SML-level underlying Isabelle, 
 which is straight-forward and omitted here (C.f. @{figure \<open>induct_type_SML_interpreted\<close>}). 
 These functions yield for: 
 @{theory_text [display, indent=3] \<open>
 ML\<open> Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
-    Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
-    Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
+     Dimension_Type.dim_to_typ [1,2,0,0,0,3,0];
+     Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"}\<close>
 \<close>}
 the system output:
 @{theory_text [display, indent=3] \<open>
@@ -608,13 +606,15 @@ where \<^class>\<open>unit_system\<close>  again forces the carrier-set of its i
 subsection \<open>Dimension Typed Measurement Systems \<close>
 
 text \<open> We can now define the type of parameterized quantities
- \<^typ>\<open>('\<alpha>, 'd::dim_type, 's::unit_system) QuantT\<close> by \<open>('\<alpha>, 's) Measurement_System\<close>'s,
-which have a dimension equal to the semantic interpretation of the \<^typ>\<open>'d::dim_type\<close>:
+ \<^typ>\<open>('\<alpha>, 'd::dim_type, 's::unit_system) QuantT\<close> by 
+\<open>('\<alpha>, 's) Measurement_System\<close>'s, which have a dimension equal to 
+the semantic interpretation of the \<^typ>\<open>'d::dim_type\<close>:
 
 @{theory_text [display, indent=3] \<open>
 typedef (overloaded) ('\<alpha>, 'd::dim_type, 's::unit_system) QuantT 
                      ("_[_, _]" [999,0,0] 999) 
-                     = "{x :: ('\<alpha>,'s)Measurement_System. dim x = dim_ty_sem TYPE('d)}"
+                     = "{x :: ('\<alpha>,'s)Measurement_System. 
+                              dim x = dim_ty_sem TYPE('d)}"
   morphisms fromQ toQ <non-emptyness proof omitted>
 
 setup_lifting type_definition_QuantT
@@ -634,25 +634,31 @@ text \<open> We define several operators on typed quantities. These variously co
 @{theory_text [display, indent=3] \<open>
 lift_definition 
   qtimes :: "('\<alpha>::comm_ring_1)['\<tau>1::dim_type, 's::unit_system] 
-             \<Rightarrow> '\<alpha>['\<tau>2::dim_type, 's] \<Rightarrow> '\<alpha>['\<tau>1 \<cdot>'\<tau>2, 's]" (infixl "\<^bold>\<cdot>" 69) 
-  is "(*)" by (simp add: dim_ty_sem_DimTimes_def times_Quantity_ext_def)
+             \<Rightarrow> '\<alpha>['\<tau>2::dim_type, 's] \<Rightarrow> '\<alpha>['\<tau>1 \<cdot>'\<tau>2, 's]" 
+             (infixl "\<^bold>\<cdot>" 69) 
+  is "(*)" <proof>
 
 lift_definition 
-  qinverse :: "('\<alpha>::field)['\<tau>::dim_type,'s::unit_system] \<Rightarrow>'\<alpha>['\<tau>-\<^sup>1,'s]" ("(_\<^sup>-\<^sup>\<one>)"[999]999) 
-  is "inverse" by (simp add: inverse_Quantity_ext_def dim_ty_sem_DimInv_def)\<close>}
+  qinverse :: "('\<alpha>::field)['\<tau>::dim_type,'s::unit_system] \<Rightarrow>'\<alpha>['\<tau>-\<^sup>1,'s]" 
+              ("(_\<^sup>-\<^sup>\<one>)"[999]999) 
+  is "inverse" <proof>\<close>}
 
   Additionally, a scalar product \<^term>\<open>(*\<^sub>Q)\<close> and an addition on the magnitude component is 
   introduced that preserves the algebraic properties of the magnitude type:
 
 @{theory_text [display, indent=3] \<open>
-lift_definition scaleQ::"'\<alpha>\<Rightarrow>'\<alpha>::comm_ring_1['d::dim_type,'s::unit_system]\<Rightarrow>'\<alpha>['d,'s]"
-                 (infixr"*\<^sub>Q"63)
-    is "\<lambda> r x. \<lparr> mag = r * mag x, dim = dim_ty_sem TYPE('d), unit_sys = unit \<rparr>" <proof>
+lift_definition 
+   scaleQ::"'\<alpha>\<Rightarrow>'\<alpha>::comm_ring_1['d::dim_type,'s::unit_system]\<Rightarrow>'\<alpha>['d,'s]"
+            (infixr"*\<^sub>Q"63)
+   is "\<lambda> r x. \<lparr> mag = r * mag x, dim = dim_ty_sem TYPE('d), unit_sys = unit \<rparr>" 
+       <proof>
 
 instantiation QuantT :: (plus, dim_type, unit_system) plus
 begin
-lift_definition plus_QuantT :: "'\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's]"
-  is "\<lambda> x y. \<lparr> mag = mag x+mag y, dim = dim_ty_sem TYPE('d),unit_sys = unit \<rparr>" <proof>
+lift_definition 
+  plus_QuantT :: "'\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's] \<Rightarrow> '\<alpha>['d, 's]"
+  is "\<lambda> x y. \<lparr> mag = mag x+mag y, dim = dim_ty_sem TYPE('d),unit_sys = unit \<rparr>" 
+     <proof>
 instance ..
 end
 \<close>}\<close>
@@ -668,13 +674,13 @@ text \<open> The standard HOL order \<^term>\<open>(\<le>)\<close> and equality 
   and order on \<^typ>\<open>Dimension\<close>'s.
 
 @{theory_text [display, indent=3] \<open>
-lift_definition qless_eq :: 
-                "'\<alpha>::order['d::dim_type,'s::unit_system] \<Rightarrow> '\<alpha>['d::dim_type,'s] \<Rightarrow> bool"
+lift_definition 
+    qless_eq :: "'\<alpha>::order['d::dim_type,'s::unit_system] \<Rightarrow> '\<alpha>['d,'s] \<Rightarrow> bool"
                 (infix "\<lesssim>\<^sub>Q" 50) is "(\<le>)" .
 
-lift_definition qequiv :: 
-                "'\<alpha>['d\<^sub>1::dim_type, 's::unit_system] \<Rightarrow> '\<alpha>['d\<^sub>2::dim_type, 's] \<Rightarrow> bool" 
-                (infix "\<cong>\<^sub>Q" 50) is "(=)" .
+lift_definition
+    qequiv ::  "'\<alpha>['d\<^sub>1::dim_type, 's::unit_system]\<Rightarrow>'\<alpha>['d\<^sub>2::dim_type,'s] \<Rightarrow> bool" 
+                (infix "\<cong>\<^sub>Q" 50) is "(=)".
 \<close>}
 
   These are both fundamentally the same as the usual order and equality relations, but they
@@ -718,8 +724,8 @@ definition micro :: "'a" where [si_eq]: "micro = 1/10^6"
 \<close>}
 
 
-For example, it is therefore possible to represent 
-and prove the following scalar calculations:
+For example, it is therefore possible to represent and prove the following scalar calculations
+directly by \<open>si_simp\<close>:
 
 @{theory_text [display, indent=3] \<open>
 lemma "2.3 *\<^sub>Q (centi *\<^sub>Q metre)\<^sup>\<three> = 2.3 \<cdot> 1/10^6 *\<^sub>Q metre\<^sup>\<three>"
@@ -735,24 +741,74 @@ section*[expls::example,main_author="Some(@{author ''bu''})"]
 \<open>Validation by the VIM and the 'Brochure'\<close>
 
 text\<open>
-For example, the crucial definitions adapted from the SI Brochure that 
-give the concrete definitions for the metre and the kilogram can be presented as follows: \<^vs>\<open>0.3cm\<close>
+Of course, the question arises if our construction actually captures the SI standard, as
+described in the  VIM and the 'Brochure'. The question can be answered in the sense that 
+both as well as accompanying documents mention a number of equations and consequences of
+the 'algebra of quantities' and the 'algebra of SI'. It is therefore possible 
+to just represent the catalogue of equalities of the VIM inside our theory and check if
+the expected results turn out to be provable on our theory. 
 
-\<^theory_text>\<open>theorem metre_definition\<close>
-\<^item> @{term [show_types=false]\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q \<^bold>c \<^bold>\<cdot> (299792458 *\<^sub>Q \<one>)\<^sup>-\<^sup>\<one> \<^bold>\<cdot> second\<close>}
-\<^item> @{term [show_types=false]\<open>1 *\<^sub>Q metre \<cong>\<^sub>Q 9192631770 / 299792458 *\<^sub>Q \<^bold>c \<^bold>\<cdot> (9192631770 *\<^sub>Q second\<^sup>-\<^sup>\<one>)\<^sup>-\<^sup>\<one>\<close>}
+Note that the most general magnitude types we support must form a field into which the
+natural numbers can  be injected. 
 
-\<^noindent> \<^theory_text>\<open>theorem kilogram_definition\<close>
-\<^item> \<^term>\<open>((1 *\<^sub>Q kilogram)::('\<alpha>::field_char_0) kilogram) \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second\<close> 
+Another large group of equations are just definitions that can be copied out of the book:
+
+\<^item> \<^term>\<open>minute = 60 *\<^sub>Q second\<close>
+\<^item> \<^term>\<open>hour = 60 *\<^sub>Q minute\<close>
+\<^item> \<^term>\<open>day = 24 *\<^sub>Q hour\<close>
+\<^item> \<^term>\<open>astronomical_unit = 149597870700 *\<^sub>Q metre\<close>
+\<^item> \<^term>\<open>degree = (2\<cdot>(of_real pi) / 180) *\<^sub>Q radian\<close>
+\<^item> \<^term>\<open>n\<degree> \<equiv> n *\<^sub>Q degree\<close>
+\<^item> \<^term>\<open>litre = 1/1000 *\<^sub>Q metre\<^sup>\<three>\<close>
+\<^item> \<^term>\<open>tonne = 10^3 *\<^sub>Q kilogram\<close>
+\<^item> \<^term>\<open>dalton = 1.66053906660 * (1 / 10^27) *\<^sub>Q kilogram\<close>
+\<^item> etc.
 \<close>
+text\<open> On this basis, another group of unit equations can be recalculated in our theory
+just by unfolding these definitions:
 
-text\<open>
-These equations give the concrete definitions for the 
-metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> (speed of light) and \<^term>\<open>\<^bold>h\<close> 
-(Planck constant). They can be proven directly using the tactic \<^theory_text>\<open>si-calc\<close> provided by our theory.
-\<close>
+@{theory_text [display, indent=3] \<open>
+
+lemma "1 *\<^sub>Q hour = 3600 *\<^sub>Q second"  by (si_simp)
+
+lemma "watt \<^bold>\<cdot> hour \<cong>\<^sub>Q 3600 *\<^sub>Q joule"   by (si_calc)
+
+lemma "25 *\<^sub>Q metre \<^bold>/ second = 90 *\<^sub>Q (kilo *\<^sub>Q metre) \<^bold>/ hour"  by (si_calc)\<close>}
+
+The Cs frequency \<^term>\<open>\<Delta>v\<^sub>C\<^sub>s\<close>, the speed of light \<^term>\<open>\<^bold>c\<close>, the Planck constant \<^term>\<open>\<^bold>h\<close> etc.
+are similar abbreviations:
+
+@{theory_text [display, indent=3] \<open>
+abbreviation caesium_frequency:: "'a[T\<^sup>-\<^sup>1,SI]" ("\<Delta>v\<^sub>C\<^sub>s") where
+  "caesium_frequency \<equiv> 9192631770 *\<^sub>Q hertz"
+
+abbreviation speed_of_light :: "'a[L \<cdot> T\<^sup>-\<^sup>1,SI]" ("\<^bold>c") where
+  "speed_of_light \<equiv> 299792458 *\<^sub>Q (metre\<^bold>\<cdot>second\<^sup>-\<^sup>\<one>)"
+
+abbreviation Planck :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot> T,SI]" ("\<^bold>h") where
+  "Planck \<equiv> (6.62607015 \<cdot> 1/(10^34)) *\<^sub>Q (joule\<^bold>\<cdot>second)"\<close>}
+
+On  this basis, we can finally re-check  the foundational equations of the SI System:
+@{theory_text [display, indent=3] \<open>
+theorem second_definition: 
+  "1 *\<^sub>Q second \<cong>\<^sub>Q (9192631770 *\<^sub>Q \<one>) \<^bold>/ \<Delta>v\<^sub>C\<^sub>s"
+  by si_calc
+
+theorem metre_definition: 
+  "1 *\<^sub>Q metre \<cong>\<^sub>Q (\<^bold>c \<^bold>/ (299792458 *\<^sub>Q \<one>))\<^bold>\<cdot>second"
+  "1 *\<^sub>Q metre \<cong>\<^sub>Q (9192631770 / 299792458) *\<^sub>Q (\<^bold>c \<^bold>/ \<Delta>v\<^sub>C\<^sub>s)"
+  by si_calc+
+
+theorem kilogram_definition:
+  "   ((1 *\<^sub>Q kilogram)::'a kilogram) 
+   \<cong>\<^sub>Q (\<^bold>h \<^bold>/ (6.62607015 \<cdot> 1/(10^34) *\<^sub>Q \<one>))\<^bold>\<cdot>metre\<^sup>-\<^sup>\<two>\<^bold>\<cdot>second" 
+  by si_calc\<close>}
+
+As equations give the concrete definitions for the 
+metre and kilogram in terms of the physical constants \<^term>\<open>\<^bold>c\<close> and \<^term>\<open>\<^bold>h\<close>, we can be fairly
+that even typos in the numerical constants appearing in the definitions are excluded.\<close>
  
-section\<open>Related Work and Conclusion\<close>
+section\<open>Conclusion and Related Work\<close>
 
 text\<open>We have presented a substantial theory development of about 2500 lines of definitions 
 and proofs that captures the ISQ and SI as defined in the international standard of the 
@@ -770,16 +826,21 @@ subsection\<open>Related Work\<close>
 
 text\<open>
 There had been numerous direct implementations of ISQ and SI for programming languages:
-we mention only ...
+early implementations by Jean Goubault-Larrecq have been worked out in the early 90ies 
+and is still implemented in  GimML. At about the same time works on Dimension Types has been
+presented  by Andrew Kennedy @{cite "10.1007/3-540-57880-3_23"}, and a more recent account along this
+line is by Garrigue and Ly @{cite "garrigue:hal-01503084"}. All these works attempt to directly
+implement a type-system in an ML-like language, while our approach \<^emph>\<open>formally derives\<close> such 
+type inference inside the framework of parameterized polymorphism and the theoretical framework
+of HOL.  
 
-This work has drawn inspiration from some previous formalisations of the ISQ and SI, notably Hayes 
-and Mahoney's formalisation in Z@{cite "HayesBrendan95"} and Aragon's algebraic structure for physical
-quantities@{cite "Aragon2004-SI"}. To the best of our knowledge, our mechanisation represents the 
-most comprehensive account of ISQ and SI in a theory prover.
+As a formal development, this work has drawn inspiration from some previous formalisations of 
+the ISQ and SI, notably Hayes and Mahoney's formalisation in Z@{cite "HayesBrendan95"} and 
+Aragon's algebraic structure for physical quantities@{cite "Aragon2004-SI"}. However, to the 
+best of our knowledge, our mechanisation represents  the most comprehensive account of ISQ and 
+SI in a theory prover.
 
-\pagebreak
 \<close>
-
 
 (*<*)
 end
