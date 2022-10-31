@@ -518,13 +518,11 @@ struct
   fun normalise t = 
     if (is_dim_type t) then dim_to_typ (typ_to_dim t) else t;
 
-  val normalise = dim_to_typ o typ_to_dim;
-
 end;
 
 Dimension_Type.typ_to_dim @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
 Dimension_Type.normalise @{typ "L\<^sup>-\<^sup>2\<cdot>M\<^sup>-\<^sup>1\<cdot>T\<^sup>4\<cdot>I\<^sup>2\<cdot>M"};
-Dimension_Type.normalise @{typ nat}
+Dimension_Type.normalise @{typ "nat"} (* We can normalise non-dimension types without error *)
 \<close>
 
 end
