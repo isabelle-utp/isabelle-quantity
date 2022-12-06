@@ -13,7 +13,7 @@ definition [si_def, si_eq]: "day = 24 *\<^sub>Q hour"
 definition [si_def, si_eq]: "astronomical_unit = 149597870700 *\<^sub>Q metre"
 
 definition degree :: "'a::real_field[L/L]" where
-[si_def, si_eq]: "degree = (2\<cdot>(of_real pi) / 180) *\<^sub>Q radian"
+[si_def, si_eq]: "degree = ((of_real pi) / 180) *\<^sub>Q radian"
 
 abbreviation degrees ("_\<degree>" [999] 999) where "n\<degree> \<equiv> n *\<^sub>Q degree"
 
