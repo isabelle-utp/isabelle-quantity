@@ -61,6 +61,9 @@ definition gallon :: "'a[Volume]" where
 definition degrees_farenheit :: "'a \<Rightarrow> 'a[\<Theta>]" ("_\<degree>F" [999] 999)
   where [si_eq]: "degrees_farenheit x = (x + 459.67)\<cdot>5/9 *\<^sub>Q kelvin"
 
+definition pound_force :: "'a[M \<cdot> L \<cdot> T\<^sup>-\<^sup>2]" where
+[si_eq]: "pound_force = 4.448222 *\<^sub>Q newton"
+
 default_sort type
 
 subsection \<open> Unit Equations \<close>

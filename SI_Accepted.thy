@@ -17,6 +17,8 @@ definition degree :: "'a::real_field[L/L]" where
 
 abbreviation degrees ("_\<degree>" [999] 999) where "n\<degree> \<equiv> n *\<^sub>Q degree"
 
+definition [si_def, si_eq]: "hectare = 10^4 *\<^sub>Q metre\<^sup>\<two>"
+
 definition [si_def, si_eq]: "litre = 1/1000 *\<^sub>Q metre\<^sup>\<three>"
 
 definition [si_def, si_eq]: "tonne = 10^3 *\<^sub>Q kilogram"
@@ -26,7 +28,13 @@ definition [si_def, si_eq]: "dalton = 1.66053906660 * (1 / 10^27) *\<^sub>Q kilo
 subsection \<open> Example Unit Equations \<close>
 
 lemma "1 *\<^sub>Q hour = 3600 *\<^sub>Q second"
-  by (si_simp)
+  by si_simp
+
+lemma "1 *\<^sub>Q day = 86400 *\<^sub>Q second"
+  by si_simp
+
+lemma "1 *\<^sub>Q hectare = 1 *\<^sub>Q (hecto *\<^sub>Q metre)\<^sup>\<two>"
+  by si_simp
 
 lemma "watt \<^bold>\<cdot> hour \<cong>\<^sub>Q 3600 *\<^sub>Q joule"   by (si_calc)
 
