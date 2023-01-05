@@ -74,7 +74,7 @@ lift_definition convschema_BIS :: "BIS itself \<Rightarrow> (BIS, SI) Conversion
 instance ..
 end
 
-lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993" 
+lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143992" 
                            "MassF (convschema a) = 0.453592338"
                            "TimeF (convschema a) = 1" 
                            "CurrentF (convschema a) = 1" 
@@ -83,18 +83,16 @@ lemma BIS_SI_simps [simp]: "LengthF (convschema (a::BIS itself)) = 0.9143993"
 
 subsection \<open> Conversion Examples \<close>
 
-lemma "metrify (foot :: rat[L, BIS]) = 0.9143993 / 3 *\<^sub>Q metre"
+lemma "metrify (foot :: rat[L, BIS]) = 0.9143992 / 3 *\<^sub>Q metre"
   by (simp add: foot_def)
 
-lemma "metrify ((70::rat) *\<^sub>Q mile \<^bold>/ hour) = (704087461 / 22500000) *\<^sub>Q (metre \<^bold>/ second)"
+lemma "metrify ((70::rat) *\<^sub>Q mile \<^bold>/ hour) = (88010923 / 2812500) *\<^sub>Q (metre \<^bold>/ second)"
   by (si_simp)
 
-lemma "metrify ((15::rat) *\<^sub>Q acre) = (30351376698209787 / 500000000000) *\<^sub>Q metre\<^sup>\<two>"
+lemma "metrify ((15::rat) *\<^sub>Q acre) = (474240157182363 / 7812500000) *\<^sub>Q metre\<^sup>\<two>"
   by (si_simp)
 
-lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) *\<^sub>Q centimetre) = 100000 / 9143993 *\<^sub>Q yard"
+lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) *\<^sub>Q centimetre) = 12500 / 1142999 *\<^sub>Q yard"
   by simp
-
-
 
 end
