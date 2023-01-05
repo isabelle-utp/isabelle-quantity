@@ -35,11 +35,15 @@ definition [si_eq]: "furlong = 220 *\<^sub>Q yard"
 
 definition [si_eq]: "mile = 1760 *\<^sub>Q yard"
 
-definition [si_eq]: "acre = 4840 *\<^sub>Q yard\<^sup>\<three>"
+definition [si_eq]: "acre = 4840 *\<^sub>Q yard\<^sup>\<two>"
 
 definition [si_eq]: "ounce = 1/12 *\<^sub>Q pound"
 
 definition [si_eq]: "gallon = 277.421 *\<^sub>Q inch\<^sup>\<three>"
+
+text \<open> The gallon's definition was standardised in the Weights and Measures Act 1824. The original 
+       metric measurement of the standard was 277.274 cubic inches, but a more accurate 
+       measurement was made in 1931-1932 as 277.421. \<close>
 
 definition [si_eq]: "quart = 1/4 *\<^sub>Q gallon"
 
@@ -59,8 +63,13 @@ instantiation BIS :: metrifiable
 begin
 
 lift_definition convschema_BIS :: "BIS itself \<Rightarrow> (BIS, SI) Conversion" is
-"\<lambda> x. \<lparr> cLengthF = 0.9143993, cMassF = 0.453592338, cTimeF = 1
-      , cCurrentF = 1, cTemperatureF = 5/9, cAmountF = 1, cIntensityF = 1 \<rparr>" by simp
+"\<lambda> x. \<lparr> cLengthF = 0.9143992 \<comment> \<open> The length of the Imperial Standard Yard in metres measured in 1895 \<close>
+      , cMassF = 0.453592338 \<comment> \<open> The mass of the Imperial Standard Yard in kilograms measured in 1895 \<close>
+      , cTimeF = 1
+      , cCurrentF = 1
+      , cTemperatureF = 5/9 \<comment> \<open> Conversion factor between Rankine and Kelvin \<close>
+      , cAmountF = 1
+      , cIntensityF = 1 \<rparr>" by simp
 
 instance ..
 end
@@ -78,6 +87,9 @@ lemma "metrify (foot :: rat[L, BIS]) = 0.9143993 / 3 *\<^sub>Q metre"
   by (simp add: foot_def)
 
 lemma "metrify ((70::rat) *\<^sub>Q mile \<^bold>/ hour) = (704087461 / 22500000) *\<^sub>Q (metre \<^bold>/ second)"
+  by (si_simp)
+
+lemma "metrify ((15::rat) *\<^sub>Q acre) = (30351376698209787 / 500000000000) *\<^sub>Q metre\<^sup>\<two>"
   by (si_simp)
 
 lemma "QMC(CGS \<rightarrow> BIS) ((1::rat) *\<^sub>Q centimetre) = 100000 / 9143993 *\<^sub>Q yard"
