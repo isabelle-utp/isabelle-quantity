@@ -1,7 +1,7 @@
 section \<open> British Imperial System (1824/1897) \<close>
 
 theory BIS
-  imports ISQ SI_Units CGS
+  imports ISQ SI_Accepted CGS
 begin
 
 text \<open> The values in the British Imperial System (BIS) are derived from the UK Weights and Measures 
@@ -52,10 +52,6 @@ definition [si_eq]: "pint = 1/8 *\<^sub>Q gallon"
 definition [si_eq]: "peck = 2 *\<^sub>Q gallon"
 
 definition [si_eq]: "bushel = 8 *\<^sub>Q gallon"
-
-definition [si_eq]: "minute = 60 *\<^sub>Q second"
-
-definition [si_eq]: "hour = 60 *\<^sub>Q minute"
 
 subsection \<open> Conversion to SI \<close>
 
